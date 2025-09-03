@@ -1,173 +1,77 @@
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/ui/navigation-menu";
-import { Menu } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [activeSubmenu, setActiveSubmenu] = useState(null);
+
+  const Links = [
+    { label: "Beranda", href: "/" },
+    {
+      label: "Profil",
+      submenu: [
+        { label: "Visi Misi", href: "/visi-misi" },
+        { label: "Sejarah", href: "/sejarah" },
+        { label: "Struktur", href: "/struktur" },
+      ],
+    },
+    {
+      label: "Publikasi",
+      submenu: [
+        { label: "Galeri", href: "/galeri" },
+        { label: "Berita", href: "/berita" },
+      ],
+    },
+    { label: "Dokumen", href: "/dokumen" },
+    { label: "Kontak", href: "/kontak" },
+  ];
+
+  const handleMouseEnter = (index) => {
+    setActiveSubmenu(index);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveSubmenu(null);
+  };
 
   return (
-    <nav>
-      <div className="flex justify-between items-center h-16 px-4 pl-0 shadow-lg shadow-black/20">
-        {/* Logo */}
-        <div className="bg-cyan-700 h-full flex items-center px-4 relative">
-          <img
-            src="/kominfologo.png"
-            alt="Diskominfo Kota Bogor"
-            className="h-10"
-          />
-        </div>
-
-        {/* Desktop Menu */}
-        <div className="hidden md:flex">
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <a href="#" className="px-3 py-2 hover:text-cyan-700">
-                    Beranda
-                  </a>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Profil</NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute bg-white shadow-lg rounded-md p-2">
-                  <ul className="flex flex-col space-y-1">
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <a
-                          href="#"
-                          className="px-3 py-1 hover:bg-gray-100 rounded"
-                        >
-                          Visi Misi
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <a
-                          href="#"
-                          className="px-3 py-1 hover:bg-gray-100 rounded"
-                        >
-                          Sejarah
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <a
-                          href="#"
-                          className="px-3 py-1 hover:bg-gray-100 rounded"
-                        >
-                          Struktur
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Publikasi</NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute bg-white shadow-lg rounded-md p-2">
-                  <ul className="flex flex-col space-y-1">
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <a
-                          href="#"
-                          className="px-3 py-1 hover:bg-gray-100 rounded"
-                        >
-                          Galeri
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <a
-                          href="#"
-                          className="px-3 py-1 hover:bg-gray-100 rounded"
-                        >
-                          Berita
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <a href="#" className="px-3 py-2 hover:text-cyan-700">
-                    Dokumen
-                  </a>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <a href="#" className="px-3 py-2 hover:text-cyan-700">
-                    Kontak
-                  </a>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
-
-        {/* Mobile Button */}
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)}>
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
+    <nav className="bg-cyan-600 flex justify-between fixed z-50 md:bg-white">
+      <div className="bg-cyan-600 w-1/6 p-3">
+        <img src="/kominfologo.png" alt="" />
       </div>
+      <div>
+        <ul className="flex space-x-10 justify-center items-center p-4 h-full">
+          {Links.map((link, index) => (
+            <li
+              key={index}
+              className="relative"
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Link
+                to={link.href}
+                className="hover:text-orange-600 transition-all font-medium text-cyan-600"
+              >
+                {link.label}
+              </Link>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden flex flex-col space-y-2 px-4 pb-4 bg-white shadow-lg">
-          <a href="#" className="py-1">
-            Beranda
-          </a>
-          <details>
-            <summary className="cursor-pointer py-1">Profil</summary>
-            <div className="ml-4 flex flex-col space-y-1">
-              <a href="#" className="py-1">
-                Visi Misi
-              </a>
-              <a href="#" className="py-1">
-                Sejarah
-              </a>
-              <a href="#" className="py-1">
-                Struktur
-              </a>
-            </div>
-          </details>
-          <details>
-            <summary className="cursor-pointer py-1">Publikasi</summary>
-            <div className="ml-4 flex flex-col space-y-1 relative">
-              <a href="#" className="py-1">
-                Galeri
-              </a>
-              <a href="#" className="py-1">
-                Berita
-              </a>
-            </div>
-          </details>
-          <a href="#" className="py-1">
-            Dokumen
-          </a>
-          <a href="#" className="py-1">
-            Kontak
-          </a>
-        </div>
-      )}
+              {link.submenu && activeSubmenu === index && (
+                <ul className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md py-2">
+                  {link.submenu.map((subItem, subIndex) => (
+                    <li key={subIndex}>
+                      <Link
+                        to={subItem.href}
+                        className="block px-4 py-2 hover:bg-cyan-50 hover:text-cyan-600"
+                      >
+                        {subItem.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   );
 }

@@ -26,7 +26,6 @@ export default function Navbar() {
             >
               Beranda
             </a>
-
             {/* Profil Dropdown */}
             <div
               className="relative group"

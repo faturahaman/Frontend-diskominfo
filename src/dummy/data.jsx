@@ -35,6 +35,7 @@ export const agendaData = [
     time: '08:00 - 12:00 WIB',
     location: 'Aula Diskominfo',
     type: 'Offline',
+    category: 'Pimpinan',
     description: 'Kegiatan sosialisasi program pemerintah kepada masyarakat daerah Jakarta Utara dalam rangka peningkatan pelayanan publik.'
   },
   {
@@ -44,6 +45,7 @@ export const agendaData = [
     time: '09:00 - 11:00 WIB',
     location: 'Ruang Rapat Lantai 3',
     type: 'Offline',
+    category: 'Wakil Pimpinan',
     description: 'Rapat koordinasi rutin bulanan tim IT untuk evaluasi sistem dan perencanaan pengembangan infrastruktur.'
   },
   {
@@ -53,6 +55,7 @@ export const agendaData = [
     time: '13:00 - 17:00 WIB',
     location: 'Gedung Serbaguna',
     type: 'Offline',
+    category: 'Sekretaris',
     description: 'Workshop mengenai digitalisasi layanan publik untuk meningkatkan efisiensi dan transparansi pelayanan.'
   },
   {
@@ -62,6 +65,7 @@ export const agendaData = [
     time: '10:00 - 15:00 WIB',
     location: 'Balai Kota Bogor',
     type: 'Offline',
+    category: 'Pimpinan',
     description: 'Pelatihan penggunaan media sosial yang efektif untuk pelaku UMKM dalam memasarkan produk mereka.'
   }
 ];

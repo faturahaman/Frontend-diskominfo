@@ -5,7 +5,7 @@ import Sambutan from "../components/Sambutan";
 import Berita from "../components/Berita";
 
 
-export default function Home() {
+export default function HomePage() {
   return (
     <>
       <Navbar />

@@ -76,7 +76,7 @@
     };
 
     return (
-      <nav className="bg-white shadow-lg fixed w-full z-50 top-0">
+      <nav className="bg-white opacity-80 shadow-lg fixed w-full z-50 top-0">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center h-14 lg:h-16">
             {/* Logo */}

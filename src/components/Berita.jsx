@@ -1,51 +1,41 @@
 // NewsAgendaSection.jsx
 import React, { useState, useMemo, useCallback } from "react";
-// ✅ 1. Impor `Link` dari react-router-dom dan ikon `ArrowRight`
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-import NewsCard from "./../ui/NewsCard";
-import AgendaCard from "./../ui/AgendaCard";
-import { newsData, agendaData, monthNames } from "./../dummy/data";
+import NewsCard from "../ui/NewsCard";
+import AgendaCard from "../ui/AgendaCard";
+import { newsData, agendaData, monthNames } from "../dummy/data";
 
-// Fungsi murni (pure function) dipindah ke luar komponen.
 const getDaysInMonth = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth();
   return new Date(year, month + 1, 0).getDate();
 };
 
-// Komponen untuk tombol tanggal dibuat terpisah agar lebih rapi (Component Composition).
-const AgendaDayButton = ({ day, isSelected, isToday, hasAgenda, onSelectDate }) => {
-  return (
-    <button
-      onClick={() => onSelectDate(day)}
-      className={`relative h-9 flex flex-col items-center justify-center text-xs rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 ${
-        isSelected
-          ? "bg-[#3C7A94] text-white border-[#3C7A94] font-bold shadow"
-          : isToday
-          ? "border-cyan-500 text-cyan-600 font-bold bg-cyan-50" // Style untuk hari ini
-          : "border-gray-300 hover:bg-gray-100 text-gray-700"
-      }`}
-    >
-      <span>{day.getDate()}</span>
-      {hasAgenda && (
-        <span className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${
-          isSelected ? 'bg-white' : 'bg-[#3C7A94]'
-        }`}></span>
-      )}
-    </button>
-  );
-};
-
+const AgendaDayButton = ({ day, isSelected, isToday, hasAgenda, onSelectDate }) => (
+  <button
+    onClick={() => onSelectDate(day)}
+    className={`relative h-10 flex flex-col items-center justify-center text-xs rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 ${
+      isSelected
+        ? "bg-[#3C7A94] text-white border-[#3C7A94] font-bold shadow"
+        : isToday
+        ? "border-cyan-500 text-cyan-600 font-bold bg-cyan-50"
+        : "border-gray-300 hover:bg-gray-100 text-gray-700"
+    }`}
+  >
+    <span>{day.getDate()}</span>
+    {hasAgenda && (
+      <span className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white" : "bg-[#3C7A94]"}`}></span>
+    )}
+  </button>
+);
 
 const NewsAgendaSection = () => {
-  // --- STATE ---
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [page, setPage] = useState(0);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const today = useMemo(() => new Date(), []);
 
-  // --- MEMOIZED VALUES & DERIVED STATE ---
   const totalDays = useMemo(() => getDaysInMonth(currentMonth), [currentMonth]);
 
   const currentDays = useMemo(() => {
@@ -58,20 +48,22 @@ const NewsAgendaSection = () => {
     return days;
   }, [page, totalDays, currentMonth]);
 
-  const getAgendasForDate = useCallback((date) => {
-    const dateString = date.toISOString().split("T")[0];
-    return agendaData.filter((agenda) => agenda.date === dateString);
-  }, []);
+  const getAgendasForDate = useCallback(
+    (date) => {
+      const dateString = date.toISOString().split("T")[0];
+      return agendaData.filter((agenda) => agenda.date === dateString);
+    },
+    []
+  );
 
   const agendasToShow = useMemo(() => getAgendasForDate(selectedDate), [selectedDate, getAgendasForDate]);
 
-  // --- CALLBACKS ---
   const nextPage = useCallback(() => {
     const maxPage = Math.ceil(totalDays / 5) - 1;
     if (page < maxPage) {
-      setPage(p => p + 1);
+      setPage((p) => p + 1);
     } else {
-      setCurrentMonth(d => {
+      setCurrentMonth((d) => {
         const newDate = new Date(d);
         newDate.setMonth(newDate.getMonth() + 1);
         return newDate;
@@ -82,9 +74,9 @@ const NewsAgendaSection = () => {
 
   const prevPage = useCallback(() => {
     if (page > 0) {
-      setPage(p => p - 1);
+      setPage((p) => p - 1);
     } else {
-      setCurrentMonth(d => {
+      setCurrentMonth((d) => {
         const newDate = new Date(d);
         newDate.setMonth(newDate.getMonth() - 1);
         return newDate;
@@ -93,83 +85,92 @@ const NewsAgendaSection = () => {
     }
   }, [page, currentMonth]);
 
-
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
-      <div className="grid lg:grid-cols-4 gap-8">
-        {/* --- BERITA TERBARU --- */}
-        <div className="lg:col-span-3">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">BERITA TERBARU</h1>
-            <p className="text-gray-600 text-sm">
-              Berita atau artikel terbaru dari Dinas Komunikasi dan Informatika Kota Bogor
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6 mb-6">
-            {newsData.slice(0, 3).map((news) => (
-              <NewsCard key={news.id} news={news} />
-            ))}
-          </div>
-          <Link to="/berita" className="bg-[#3C7A94] text-white px-5 py-2 rounded-full shadow hover:bg-[#2f6175] transition">
-            BERITA SELENGKAPNYA
-          </Link>
-        </div>
-
-        {/* --- AGENDA --- */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col h-full">
-            <div className="flex items-center justify-between mb-4">
-              <button onClick={prevPage} className="p-2 hover:bg-gray-100 rounded-full transition-colors group" aria-label="Bulan sebelumnya">
-                <ChevronLeft size={20} className="text-gray-700 group-hover:text-gray-900" />
-              </button>
-              <h3 className="font-semibold text-gray-800 text-sm">
-                {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-              </h3>
-              <button onClick={nextPage} className="p-2 hover:bg-gray-100 rounded-full transition-colors group" aria-label="Bulan berikutnya">
-                <ChevronRight size={20} className="text-gray-700 group-hover:text-gray-900" />
-              </button>
+    <div className="min-h-screen bg-gray-100 py-10">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        <div className="grid lg:grid-cols-4 gap-8">
+          
+          {/* --- BERITA TERBARU --- */}
+          <div className="lg:col-span-3">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-800 mb-2">BERITA TERBARU</h1>
+              <p className="text-gray-600 text-sm">
+                Berita atau artikel terbaru dari Dinas Komunikasi dan Informatika Kota Bogor
+              </p>
             </div>
-
-            <div className="grid grid-cols-5 gap-2 mb-6">
-              {currentDays.map((day) => (
-                <AgendaDayButton
-                  key={day.toDateString()}
-                  day={day}
-                  isSelected={selectedDate.toDateString() === day.toDateString()}
-                  isToday={today.toDateString() === day.toDateString()}
-                  hasAgenda={getAgendasForDate(day).length > 0}
-                  onSelectDate={setSelectedDate}
-                />
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
+              {newsData.slice(0, 3).map((news) => (
+                <NewsCard key={news.id} news={news} />
               ))}
             </div>
+            <Link
+              to="/berita"
+              className="inline-block bg-[#3C7A94] text-white px-5 py-2 rounded-full shadow hover:bg-[#2f6175] transition"
+            >
+              BERITA SELENGKAPNYA
+            </Link>
+          </div>
 
-            <h4 className="font-semibold text-gray-800 text-sm mb-3">
-              Agenda {selectedDate.toLocaleDateString("id-ID", {
-                weekday: "long", day: "numeric", month: "long", year: "numeric",
-              })}
-            </h4>
-
-            <div className="space-y-3 max-h-96 overflow-y-auto pr-2 flex-grow">
-              {agendasToShow.length > 0 ? (
-                agendasToShow.map((agenda) => (
-                  <AgendaCard key={agenda.id} agenda={agenda} />
-                ))
-              ) : (
-                <p className="text-gray-500 text-xs italic">Tidak ada agenda terjadwal.</p>
-              )}
-            </div>
-            
-            {/* ✅ 2. Tambahkan Link ke halaman /agenda di sini */}
-            <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-                <Link 
-                    to="/agenda" 
-                    className="text-sm font-semibold text-[#3C7A94] hover:text-[#2f6175] transition-colors group inline-flex items-center"
+          {/* --- AGENDA --- */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 flex flex-col h-full">
+              <div className="flex items-center justify-between mb-4">
+                <button
+                  onClick={prevPage}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
+                  aria-label="Bulan sebelumnya"
                 >
-                    Lihat Semua Agenda
-                    <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
+                  <ChevronLeft size={20} className="text-gray-700 group-hover:text-gray-900" />
+                </button>
+                <h3 className="font-semibold text-gray-800 text-sm">
+                  {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                </h3>
+                <button
+                  onClick={nextPage}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
+                  aria-label="Bulan berikutnya"
+                >
+                  <ChevronRight size={20} className="text-gray-700 group-hover:text-gray-900" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-5 gap-2 mb-4">
+                {currentDays.map((day) => (
+                  <AgendaDayButton
+                    key={day.toDateString()}
+                    day={day}
+                    isSelected={selectedDate.toDateString() === day.toDateString()}
+                    isToday={today.toDateString() === day.toDateString()}
+                    hasAgenda={getAgendasForDate(day).length > 0}
+                    onSelectDate={setSelectedDate}
+                  />
+                ))}
+              </div>
+
+              <h4 className="font-semibold text-gray-800 text-sm mb-3">
+                Agenda {selectedDate.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+              </h4>
+
+              <div className="space-y-3 max-h-96 overflow-y-auto pr-2 flex-grow">
+                {agendasToShow.length > 0 ? (
+                  agendasToShow.map((agenda) => <AgendaCard key={agenda.id} agenda={agenda} />)
+                ) : (
+                  <p className="text-gray-500 text-xs italic">Tidak ada agenda terjadwal.</p>
+                )}
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+                <Link
+                  to="/agenda"
+                  className="text-sm font-semibold text-[#3C7A94] hover:text-[#2f6175] transition-colors group inline-flex items-center"
+                >
+                  Lihat Semua Agenda
+                  <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
                 </Link>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

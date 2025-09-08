@@ -1,5 +1,3 @@
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import SecondaryPageTemplate from "../ui/PageLayout";
 
 const VisiMisi = () => {
@@ -11,9 +9,6 @@ const VisiMisi = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
-      <Navbar />
-
       <SecondaryPageTemplate title="Visi & Misi" breadcrumb={breadcrumb}>
         <div className="space-y-12">
           {/* Visi Section */}
@@ -85,9 +80,6 @@ const VisiMisi = () => {
           </div>
         </div>
       </SecondaryPageTemplate>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };

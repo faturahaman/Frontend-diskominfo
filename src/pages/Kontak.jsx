@@ -1,5 +1,3 @@
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import SecondaryPageTemplate from "../ui/PageLayout";
 import { MapPin, Phone, Mail } from "lucide-react";
 
@@ -30,9 +28,6 @@ const Sejarah = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
-      <Navbar />
-
       <SecondaryPageTemplate title="Kontak" breadcrumb={breadcrumb}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {data.map((item, idx) => (
@@ -47,9 +42,6 @@ const Sejarah = () => {
           ))}
         </div>
       </SecondaryPageTemplate>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };

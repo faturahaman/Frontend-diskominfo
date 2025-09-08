@@ -1,5 +1,3 @@
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import SecondaryPageTemplate from "../ui/PageLayout";
 
 const Sejarah = () => {
@@ -11,9 +9,6 @@ const Sejarah = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
-      <Navbar />
-
       <SecondaryPageTemplate title="Sejarah" breadcrumb={breadcrumb}>
         <div className="max-w-5xl mx-auto">
           {/* Card */}
@@ -61,9 +56,6 @@ const Sejarah = () => {
           </div>
         </div>
       </SecondaryPageTemplate>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };

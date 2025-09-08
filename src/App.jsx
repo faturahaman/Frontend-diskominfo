@@ -4,11 +4,12 @@ import { Routes, Route } from "react-router-dom";
 // Import halaman
 import HomePage from "./pages/home";
 import CalendarPage from "./pages/AgendaPage";
-import NewsDetail from "./pages/BeritaDetailPage"; // detail berita
-import NewsList from "./pages/BeritaPage";     // daftar berita (opsional kalau mau pisah)
+import NewsDetail from "./pages/BeritaDetailPage";
+import NewsList from "./pages/BeritaPage";     
 import VisiMisi from "./pages/VisiMisi";
 import Sejarah from "./pages/Sejarah";
 import Struktur from "./pages/Struktur";
+import Kontak from "./pages/Kontak";
 
 export default function App() {
   return (
@@ -31,6 +32,9 @@ export default function App() {
 
       {/* Halaman Struktur */}
       <Route path="/struktur" element={<Struktur />} />
+
+      {/* Halaman Kontak */}
+      <Route path="/kontak" element={<Kontak />} />
 
       {/* Halaman 404 */}
       <Route

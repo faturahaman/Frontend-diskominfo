@@ -25,7 +25,7 @@ export default function Struktural() {
       {/* selengkapnya */}
       <div>
         <Link
-          to="/"
+          to="/struktur"
           className="mt-8 inline-block bg-[#3C7A94] text-white px-5 py-2 rounded-full shadow hover:bg-orange-600 transition"
         >
           DATA SELENGKAPNYA

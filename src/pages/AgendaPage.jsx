@@ -85,7 +85,6 @@ const AgendaPage = () => {
 
   return (
     <>
-      <Navbar />
       <SecondaryPageTemplate title="Agenda Diskominfo Kota Bogor" breadcrumb={breadcrumb}>
         {/* Kontrol pencarian, filter, dan mode tampilan */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -109,7 +108,7 @@ const AgendaPage = () => {
           </div>
           <div className="flex space-x-3 mt-2 md:mt-0">
             <div className="">
-                dsds
+              <h3>Filter:</h3>
             </div>
             <label className="flex items-center text-xs">
               <input

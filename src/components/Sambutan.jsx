@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Sambutan() {
   return (
     <section className="max-w-5xl mx-auto px-4 py-16">
@@ -42,12 +44,12 @@ export default function Sambutan() {
             </p>
           </div>
 
-          <a
-            href="/struktur"
+          <Link
+            to="/sambutan-full"
             className="mt-6 px-6 py-2 border-2 border-[#1B4B73] text-[#1B4B73] rounded-md hover:bg-[#1B4B73] hover:text-white transition-colors"
           >
             Lihat Selengkapnya
-          </a>
+          </Link>
         </div>
       </div>
     </section>

@@ -190,7 +190,7 @@ export default function Navbar() {
 
                   {/* Submenu Desktop */}
                   {link.submenu && activeSubmenu === index && (
-                    <ul className="absolute left-0 mt-1.5 w-40 p-2 bg-white shadow-lg rounded-md py-1 z-50 border border-gray-100">
+                    <ul className="absolute left-0 mt-1.5 w-45 p-2 bg-white shadow-lg rounded-md py-1 z-50 border border-gray-100">
                       {link.submenu.map((subItem, subIndex) => (
                         <li key={subIndex}>
                           <Link

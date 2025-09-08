@@ -10,6 +10,7 @@ import VisiMisi from "./pages/VisiMisi";
 import Sejarah from "./pages/Sejarah";
 import Struktur from "./pages/Struktur";
 import Kontak from "./pages/Kontak";
+import SambutanFull from "./pages/SambutanFull";
 
 export default function App() {
   return (
@@ -23,6 +24,9 @@ export default function App() {
       {/* Halaman Berita */}
       <Route path="/berita" element={<NewsList />} />
       <Route path="/berita/:id" element={<NewsDetail />} />
+
+      {/* Halaman sambutan */}
+      <Route path="/sambutan-full" element={<SambutanFull />} />
 
       {/* Halaman Visi-misi */}
       <Route path="/visi-misi" element={<VisiMisi />} />

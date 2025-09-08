@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Struktural() {
   return (
     <section className="flex flex-col items-center py-12 px-4">
@@ -18,6 +20,16 @@ export default function Struktural() {
           alt="Struktur Organisasi Diskominfo"
           className="w-full max-w-5xl h-auto"
         />
+      </div>
+
+      {/* selengkapnya */}
+      <div>
+        <Link
+          to="/"
+          className="mt-8 inline-block bg-[#3C7A94] text-white px-5 py-2 rounded-full shadow hover:bg-orange-600 transition"
+        >
+          DATA SELENGKAPNYA
+        </Link>
       </div>
     </section>
   );

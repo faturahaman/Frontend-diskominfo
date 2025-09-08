@@ -6,6 +6,9 @@ import HomePage from "./pages/home";
 import CalendarPage from "./pages/AgendaPage";
 import NewsDetail from "./pages/BeritaDetailPage"; // detail berita
 import NewsList from "./pages/BeritaPage";     // daftar berita (opsional kalau mau pisah)
+import VisiMisi from "./pages/VisiMisi";
+import Sejarah from "./pages/Sejarah";
+import Struktur from "./pages/Struktur";
 
 export default function App() {
   return (
@@ -19,6 +22,15 @@ export default function App() {
       {/* Halaman Berita */}
       <Route path="/berita" element={<NewsList />} />
       <Route path="/berita/:id" element={<NewsDetail />} />
+
+      {/* Halaman Visi-misi */}
+      <Route path="/visi-misi" element={<VisiMisi />} />
+
+      {/* Halaman Sejarah */}
+      <Route path="/sejarah" element={<Sejarah />} />
+
+      {/* Halaman Struktur */}
+      <Route path="/struktur" element={<Struktur />} />
 
       {/* Halaman 404 */}
       <Route

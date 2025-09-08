@@ -76,7 +76,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white opacity-80 shadow-lg fixed w-full z-50 top-0">
+    <nav className="md:bg-white bg-cyan-800 opacity-80 shadow-lg fixed w-full z-50 top-0">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center h-14 lg:h-16">
           {/* Logo */}
@@ -97,7 +97,7 @@ export default function Navbar() {
                 setIsMenuOpen(!isMenuOpen);
                 setActiveSubmenu(null);
               }}
-              className="inline-flex items-center justify-center p-2 rounded-md text-cyan-800 hover:text-orange-500 hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500 transition-all duration-200"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-orange-500 hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500 transition-all duration-200"
               aria-expanded={isMenuOpen}
               aria-label="Toggle navigation menu"
             >

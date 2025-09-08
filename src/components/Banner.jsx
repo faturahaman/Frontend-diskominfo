@@ -6,9 +6,9 @@ import {
   CarouselPrevious,
 } from "@/ui/carousel";
 
-import Banner_1 from "../assets/banner_1.png";
-import Banner_2 from "../assets/banner_2.png";
-import Banner_3 from "../assets/banner_3.png";
+import Banner_1 from "../assets/banner_1.webp";
+import Banner_2 from "../assets/banner_2.webp";
+import Banner_3 from "../assets/banner_3.webp";
 
 export default function Banner() {
   return (

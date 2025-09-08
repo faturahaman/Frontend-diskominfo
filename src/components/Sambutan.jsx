@@ -43,7 +43,7 @@ export default function Sambutan() {
           </div>
 
           <a
-            href="/"
+            href="/struktur"
             className="mt-6 px-6 py-2 border-2 border-[#1B4B73] text-[#1B4B73] rounded-md hover:bg-[#1B4B73] hover:text-white transition-colors"
           >
             Lihat Selengkapnya

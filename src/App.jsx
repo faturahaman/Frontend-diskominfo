@@ -9,6 +9,7 @@ import NewsList from "./pages/BeritaPage";     // daftar berita (opsional kalau 
 import VisiMisi from "./pages/VisiMisi";
 import Sejarah from "./pages/Sejarah";
 import Struktur from "./pages/Struktur";
+import Dokumen from "./pages/DokumenPage";
 
 export default function App() {
   return (
@@ -31,6 +32,8 @@ export default function App() {
 
       {/* Halaman Struktur */}
       <Route path="/struktur" element={<Struktur />} />
+
+      <Route path="/dokumen" element={<Dokumen />} />
 
       {/* Halaman 404 */}
       <Route

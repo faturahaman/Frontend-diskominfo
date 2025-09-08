@@ -1,7 +1,3 @@
-// src/components/NewsAgenda/data.js
-
-// src/components/NewsAgenda/data.js
-
 export const newsData = [
   {
     id: 1,

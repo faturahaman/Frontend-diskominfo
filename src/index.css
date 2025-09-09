@@ -1,5 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./styles/fonts.css";
+
+/* cairo-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Cairo";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./fonts/cairo-v30-latin-regular.woff2") format("woff2");
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -113,6 +123,9 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  html {
+    font-family: "Cairo", system-ui, sans-serif;
   }
   body {
     @apply bg-background text-foreground;

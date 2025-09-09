@@ -1,7 +1,7 @@
 import React from "react";
 import SecondaryPageTemplate from "../ui/PageLayout";
 
-// 🔹 Komponen Kartu Orang
+
 const PersonCard = ({ foto, nama, jabatan, size = "md" }) => {
   const sizeClasses = {
     lg: "w-40 h-52",

@@ -11,6 +11,10 @@ import Sejarah from "./pages/Sejarah";
 import Struktur from "./pages/Struktur";
 import Kontak from "./pages/Kontak";
 import SambutanFull from "./pages/SambutanFull";
+import GaleriPage  from "./pages/GaleriPage";
+import FotoPage from "./pages/FotoPage";
+import VideoPage from "./pages/VideoPage";
+import DokumenPage from "./pages/DokumenPage";
 
 export default function App() {
   return (
@@ -25,10 +29,10 @@ export default function App() {
       <Route path="/berita" element={<NewsList />} />
       <Route path="/berita/:id" element={<NewsDetail />} />
 
-      {/* Halaman sambutan */}
+      {/* Halaman Sambutan */}
       <Route path="/sambutan-full" element={<SambutanFull />} />
 
-      {/* Halaman Visi-misi */}
+      {/* Halaman Visi-Misi */}
       <Route path="/visi-misi" element={<VisiMisi />} />
 
       {/* Halaman Sejarah */}
@@ -40,14 +44,44 @@ export default function App() {
       {/* Halaman Kontak */}
       <Route path="/kontak" element={<Kontak />} />
 
+      {/* Halaman Galeri */}
+      <Route path="/galeri" element={<GaleriPage />} />
+
+      {/* Halaman Foto */}
+      <Route path="/galeri/foto" element={<FotoPage />} />
+
+      {/* Halaman Video */}
+      <Route path="/galeri/video" element={<VideoPage />} />
+
+      {/* Halaman Dokumen */}
+      <Route path="/dokumen" element={<DokumenPage />} />
+
       {/* Halaman 404 */}
       <Route
         path="*"
         element={
-          <div className="flex h-screen items-center justify-center">
-            <h1 className="text-2xl font-bold text-red-500">
-              404 - Halaman tidak ditemukan
+          <div className="flex flex-col items-center justify-center h-screen px-4 bg-gray-50">
+            {/* Ikon / Ilustrasi */}
+            <div className="mb-4 text-6xl">🚫</div>
+
+            {/* Judul */}
+            <h1 className="mb-2 text-4xl font-extrabold text-gray-800">
+              404
             </h1>
+
+            {/* Subjudul */}
+            <p className="mb-6 text-lg text-center text-gray-600">
+              Oops! Halaman yang kamu cari tidak ditemukan.  
+              Mungkin alamat salah atau sudah dipindahkan.
+            </p>
+
+            {/* Tombol kembali */}
+            <a
+              href="/"
+              className="px-6 py-3 rounded-full bg-[#3f7d9a] text-white font-semibold shadow-md hover:bg-[#dd8c43] transition"
+            >
+              Kembali ke Beranda
+            </a>
           </div>
         }
       />

@@ -1,18 +1,7 @@
 // src/pages/DokumenPage.jsx
 import React, { useState, useMemo } from "react";
 import SecondaryPageTemplate from "./../ui/PageLayout";
-
-// Data dokumen
-const dokumenData = [
-  { no: 1, nama: "Rencana Induk Pengembangan E-Government Kota Bogor Tahun 2014-2018", keterangan: "Merupakan panduan strategis untuk pengembangan di Pemerintah Kota Bogor.", kategori: "Perencanaan" },
-  { no: 2, nama: "Modul SIMRAL Pengisian Pendapatan", keterangan: "Mencatat transaksi penerimaan penerimaan daerah di aplikasi SIMRAL.", kategori: "Aplikasi" },
-  { no: 3, nama: "Panduan Umum Tata Kelola TIK Nasional", keterangan: "Peraturan menteri tentang pedoman tata kelola TIK di institusi pemerintahan", kategori: "Regulasi" },
-  { no: 4, nama: "Instruksi Presiden No. 3 Tahun 2003", keterangan: "Tentang Kebijakan dan Strategi Nasional Pengembangan E-Government", kategori: "Regulasi" },
-  { no: 5, nama: "sop-pemasangan-dan-penggantian-jaringan", keterangan: "Pemasangan dan Penggantian Perangkat Jaringan", kategori: "Regulasi" },
-  { no: 6, nama: "Masterplan Smart City Kota Bogor", keterangan: "Visi, strategi, dan rencana aksi untuk pembangunan Smart City Kota Bogor", kategori: "Perencanaan" },
-  { no: 7, nama: "Penetapan RK Pemerintah Kota Bogor", keterangan: "Penetapan Rencana Kinerja Pemerintah Kota Bogor", kategori: "Perencanaan" },
-  { no: 8, nama: "Modul SIMRAL", keterangan: "Penjelasan Nama Pengguna (Login) dan Grup Hak Akses", kategori: "Aplikasi" },
-];
+import dokumenData from "../dummy/dokumenData"
 
 const DokumenPage = () => {
   const [search, setSearch] = useState("");
@@ -47,7 +36,7 @@ const DokumenPage = () => {
       breadcrumb={[{ label: "Beranda", link: "/" }, { label: "Dokumen" }]}
     >
       {/* Kontrol Show Entries, Filter Kategori, Search */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+      <div className="flex flex-col gap-2 mb-4 md:flex-row md:items-center md:justify-between">
         <div>
           Show{" "}
           <select
@@ -56,7 +45,7 @@ const DokumenPage = () => {
               setEntries(Number(e.target.value));
               setCurrentPage(1);
             }}
-            className="border px-2 py-1 rounded"
+            className="px-2 py-1 border rounded"
           >
             {[5, 10, 20].map(num => (
               <option key={num} value={num}>
@@ -75,7 +64,7 @@ const DokumenPage = () => {
               setKategoriFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="border px-2 py-1 rounded"
+            className="px-2 py-1 border rounded"
           >
             {kategoriOptions.map(k => (
               <option key={k} value={k}>
@@ -94,35 +83,35 @@ const DokumenPage = () => {
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
-            className="border px-2 py-1 rounded"
+            className="px-2 py-1 border rounded"
             placeholder="Cari dokumen..."
           />
         </div>
       </div>
 
       {/* Tabel Dokumen */}
-      <table className="w-full border-collapse border border-gray-300">
+      <table className="w-full border border-collapse border-gray-300">
         <thead>
           <tr className="bg-gray-200">
-            <th className="border px-4 py-2">No</th>
-            <th className="border px-4 py-2">Nama Dokumen</th>
-            <th className="border px-4 py-2">Keterangan</th>
-            <th className="border px-4 py-2">Kategori</th>
+            <th className="px-4 py-2 border">No</th>
+            <th className="px-4 py-2 border">Nama Dokumen</th>
+            <th className="px-4 py-2 border">Keterangan</th>
+            <th className="px-4 py-2 border">Kategori</th>
           </tr>
         </thead>
         <tbody>
           {paginatedData.length > 0 ? (
             paginatedData.map(doc => (
               <tr key={doc.no} className="hover:bg-gray-100">
-                <td className="border px-4 py-2">{doc.no}</td>
-                <td className="border px-4 py-2">{doc.nama}</td>
-                <td className="border px-4 py-2">{doc.keterangan}</td>
-                <td className="border px-4 py-2">{doc.kategori}</td>
+                <td className="px-4 py-2 border">{doc.no}</td>
+                <td className="px-4 py-2 border">{doc.nama}</td>
+                <td className="px-4 py-2 border">{doc.keterangan}</td>
+                <td className="px-4 py-2 border">{doc.kategori}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={4} className="border px-4 py-2 text-center">
+              <td colSpan={4} className="px-4 py-2 text-center border">
                 Tidak ada data
               </td>
             </tr>
@@ -131,7 +120,7 @@ const DokumenPage = () => {
       </table>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex items-center justify-between mt-4">
         <div>Total Data: {filteredData.length}</div>
         <div className="flex gap-2">
           <button

@@ -1,300 +1,231 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import clsx from "clsx";
+
+// Data navigasi
+const navLinks = [
+  { label: "Beranda", href: "/" },
+  {
+    label: "Profil",
+    submenu: [
+      { label: "Visi Misi", href: "/visi-misi" },
+      { label: "Sejarah", href: "/sejarah" },
+      { label: "Struktur", href: "/struktur" },
+    ],
+  },
+  {
+    label: "Publikasi",
+    submenu: [
+      { label: "Galeri", href: "/galeri" },
+      { label: "Berita", href: "/berita" },
+    ],
+  },
+  { label: "Dokumen", href: "/dokumen" },
+  { label: "Kontak", href: "/kontak" },
+];
 
 export default function Navbar() {
   const [activeSubmenu, setActiveSubmenu] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const hideTimeout = useRef(null); // simpan timeout
+  const hideTimeout = useRef(null);
   const location = useLocation();
+  const navRef = useRef(null);
 
-  // Tutup menu ketika route berubah
+  // Tutup menu saat klik di luar navbar
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+        setActiveSubmenu(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Tutup menu saat navigasi
   useEffect(() => {
     setIsMenuOpen(false);
     setActiveSubmenu(null);
   }, [location]);
 
-  // Tutup menu ketika klik di luar navbar
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isMenuOpen && !event.target.closest("nav")) {
-        setIsMenuOpen(false);
-        setActiveSubmenu(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMenuOpen]);
-
-  const Links = [
-    { label: "Beranda", href: "/" },
-    {
-      label: "Profil",
-      submenu: [
-        { label: "Visi Misi", href: "/visi-misi" },
-        { label: "Sejarah", href: "/sejarah" },
-        { label: "Struktur", href: "/struktur" },
-      ],
-    },
-    {
-      label: "Publikasi",
-      submenu: [
-        { label: "Galeri", href: "/galeri" },
-        { label: "Berita", href: "/berita" },
-      ],
-    },
-    { label: "Dokumen", href: "/dokumen" },
-    { label: "Kontak", href: "/kontak" },
-  ];
-
   const handleMouseEnter = (index) => {
     if (window.innerWidth >= 768) {
-      if (hideTimeout.current) {
-        clearTimeout(hideTimeout.current); // batalin close
-      }
+      if (hideTimeout.current) clearTimeout(hideTimeout.current);
       setActiveSubmenu(index);
     }
   };
 
   const handleMouseLeave = () => {
     if (window.innerWidth >= 768) {
-      hideTimeout.current = setTimeout(() => {
-        setActiveSubmenu(null);
-      }, 250); // delay 250ms
+      hideTimeout.current = setTimeout(() => setActiveSubmenu(null), 200);
     }
   };
 
-  const handleMobileSubmenuToggle = (index, hasSubmenu) => {
-    if (hasSubmenu) {
-      setActiveSubmenu(activeSubmenu === index ? null : index);
-    } else {
-      setIsMenuOpen(false);
-      setActiveSubmenu(null);
-    }
+  const handleMobileSubmenuToggle = (index) => {
+    setActiveSubmenu(activeSubmenu === index ? null : index);
   };
+
+  const closeMobileMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav className="md:bg-white bg-cyan-800 opacity-80 shadow-lg fixed w-full z-50 top-0">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center h-14 lg:h-16">
+    <nav ref={navRef} className="fixed top-0 z-50 w-full text-black border-b border-gray-200 shadow-lg bg-cyan-800 sm:bg-white sm:text-white">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex-shrink-0 bg-cyan-800 h-full flex items-center px-2">
-            <Link to="/" className="flex items-center">
-              <img
-                src="/kominfologo.png"
-                alt="Kominfo Logo"
-                className="h-8 lg:h-10 w-auto"
+          <div className="flex items-center h-full px-4 text-white p-auto bg-cyan-800">
+            <Link
+              to="/"
+              className="p-3"
+              onClick={closeMobileMenu}
+            >
+              <img 
+                src="/kominfologo.png" 
+                alt="Kominfo Logo" 
+                className="w-auto h-10" 
               />
             </Link>
           </div>
 
-          {/* Tombol menu mobile */}
-          <div className="md:hidden">
+          {/* Desktop Menu */}
+          <div className="items-center hidden pr-4 space-x-4 md:flex">
+            {navLinks.map((link, index) => (
+              <div
+                key={index}
+                className="relative"
+                onMouseEnter={() => handleMouseEnter(index)}
+                onMouseLeave={handleMouseLeave}
+              >
+                {link.submenu ? (
+                  <button
+                    className={clsx(
+                      "px-3 py-2 text-sm font-medium rounded hover:bg-gray-100 flex items-center",
+                      link.submenu.some((sub) => location.pathname === sub.href)
+                        ? "text-orange-600 bg-orange-50"
+                        : "text-gray-700"
+                    )}
+                  >
+                    {link.label}
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                ) : (
+                  <Link
+                    to={link.href}
+                    className={clsx(
+                      "px-3 py-2 text-sm font-medium rounded hover:bg-gray-100",
+                      location.pathname === link.href
+                        ? "text-orange-600 bg-orange-50"
+                        : "text-gray-700"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                )}
+
+                {/* Desktop Submenu */}
+                {link.submenu && activeSubmenu === index && (
+                  <div className="absolute left-0 z-50 w-48 mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+                    {link.submenu.map((subItem) => (
+                      <Link
+                        key={subItem.href}
+                        to={subItem.href}
+                        className={clsx(
+                          "block px-4 py-2 text-sm hover:bg-gray-50",
+                          location.pathname === subItem.href
+                            ? "text-orange-600 bg-orange-50"
+                            : "text-gray-700"
+                        )}
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="pr-4 md:hidden">
             <button
-              onClick={() => {
-                setIsMenuOpen(!isMenuOpen);
-                setActiveSubmenu(null);
-              }}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-orange-500 hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500 transition-all duration-200"
-              aria-expanded={isMenuOpen}
-              aria-label="Toggle navigation menu"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 text-gray-700 rounded hover:bg-gray-100"
             >
-              {/* Ikon hamburger */}
-              <svg
-                className={`${
-                  isMenuOpen ? "hidden" : "block"
-                } h-6 w-6 transition-transform duration-200`}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-              {/* Ikon close */}
-              <svg
-                className={`${
-                  isMenuOpen ? "block" : "hidden"
-                } h-6 w-6 transition-transform duration-200`}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
               </svg>
             </button>
           </div>
+        </div>
 
-          {/* Menu desktop */}
-          <div className="hidden md:flex items-center">
-            <ul className="flex items-center space-x-4 lg:space-x-6">
-              {Links.map((link, index) => (
-                <li
-                  key={index}
-                  className="relative group"
-                  onMouseEnter={() => handleMouseEnter(index)}
-                  onMouseLeave={handleMouseLeave}
-                >
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="bg-white border-t border-gray-200 md:hidden">
+            <div className="px-4 py-2 space-y-1">
+              {navLinks.map((link, index) => (
+                <div key={index}>
                   {link.submenu ? (
-                    <button
-                      className={`flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
-                        ${
-                          link.submenu.some(
-                            (sub) => location.pathname === sub.href
-                          )
-                            ? "bg-orange-50 text-orange-600"
-                            : "text-cyan-800 hover:text-orange-500"
-                        }`}
-                    >
-                      <span>{link.label}</span>
-                      <svg
-                        className="w-3.5 h-3.5 ml-1 transition-transform duration-200 group-hover:rotate-180"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div>
+                      <button
+                        onClick={() => handleMobileSubmenuToggle(index)}
+                        className={clsx(
+                          "w-full text-left px-3 py-2 text-sm font-medium rounded flex items-center justify-between",
+                          link.submenu.some((sub) => location.pathname === sub.href)
+                            ? "text-orange-600 bg-orange-50"
+                            : "text-gray-700 hover:bg-gray-100"
+                        )}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
+                        {link.label}
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                      
+                      {activeSubmenu === index && (
+                        <div className="mt-1 ml-4 space-y-1">
+                          {link.submenu.map((subItem) => (
+                            <Link
+                              key={subItem.href}
+                              to={subItem.href}
+                              onClick={closeMobileMenu}
+                              className={clsx(
+                                "block px-3 py-2 text-sm rounded",
+                                location.pathname === subItem.href
+                                  ? "text-orange-600 bg-orange-50"
+                                  : "text-gray-600 hover:bg-gray-50"
+                              )}
+                            >
+                              {subItem.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <Link
                       to={link.href}
-                      className={`flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
-                        ${
-                          location.pathname === link.href
-                            ? "bg-orange-50 text-orange-600"
-                            : "text-cyan-800 hover:text-orange-500"
-                        }`}
+                      onClick={closeMobileMenu}
+                      className={clsx(
+                        "block px-3 py-2 text-sm font-medium rounded",
+                        location.pathname === link.href
+                          ? "text-orange-600 bg-orange-50"
+                          : "text-gray-700 hover:bg-gray-100"
+                      )}
                     >
                       {link.label}
                     </Link>
                   )}
-
-                  {/* Submenu Desktop */}
-                  {link.submenu && activeSubmenu === index && (
-                    <ul className="absolute left-0 mt-1.5 w-45 p-2 bg-white shadow-lg rounded-md py-1 z-50 border border-gray-100">
-                      {link.submenu.map((subItem, subIndex) => (
-                        <li key={subIndex}>
-                          <Link
-                            to={subItem.href}
-                            className={`block px-3 py-1.5 text-xs font-medium transition-all duration-200
-                              ${
-                                location.pathname === subItem.href
-                                  ? "bg-orange-50 text-orange-600 border-l-2 border-orange-500"
-                                  : "text-cyan-800 hover:bg-orange-50 hover:text-orange-500"
-                              }`}
-                          >
-                            {subItem.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Menu mobile */}
-      <div
-        className={`${
-          isMenuOpen ? "block" : "hidden"
-        } md:hidden absolute top-14 left-0 w-full bg-white shadow-lg border-t border-gray-100 max-h-screen overflow-y-auto transition-all duration-300`}
-      >
-        <ul className="px-3 pt-3 pb-5 space-y-1.5">
-          {Links.map((link, index) => (
-            <li key={index} className="relative">
-              {link.submenu ? (
-                <div>
-                  <button
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
-                      ${
-                        link.submenu.some(
-                          (sub) => location.pathname === sub.href
-                        )
-                          ? "bg-orange-50 text-orange-600"
-                          : "text-cyan-800 hover:bg-orange-50 hover:text-orange-500"
-                      }`}
-                    onClick={() => handleMobileSubmenuToggle(index, true)}
-                  >
-                    <span>{link.label}</span>
-                    <svg
-                      className={`w-4 h-4 transition-transform duration-200 ${
-                        activeSubmenu === index ? "rotate-180" : ""
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </button>
-
-                  {activeSubmenu === index && (
-                    <ul className="mt-1.5 pl-3 space-y-1 border-l-2 border-orange-200">
-                      {link.submenu.map((subItem, subIndex) => (
-                        <li key={subIndex}>
-                          <Link
-                            to={subItem.href}
-                            className={`block px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200
-                              ${
-                                location.pathname === subItem.href
-                                  ? "bg-orange-50 text-orange-600"
-                                  : "text-cyan-800 hover:bg-orange-50 hover:text-orange-500"
-                              }`}
-                            onClick={() =>
-                              handleMobileSubmenuToggle(index, false)
-                            }
-                          >
-                            {subItem.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
                 </div>
-              ) : (
-                <Link
-                  to={link.href}
-                  className={`block px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
-                    ${
-                      location.pathname === link.href
-                        ? "bg-orange-50 text-orange-600"
-                        : "text-cyan-800 hover:bg-orange-50 hover:text-orange-500"
-                    }`}
-                  onClick={() => handleMobileSubmenuToggle(index, false)}
-                >
-                  {link.label}
-                </Link>
-              )}
-            </li>
-          ))}
-        </ul>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

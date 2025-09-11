@@ -1,71 +1,37 @@
+// src/dummy/newsData.js
 export const newsData = [
   {
     id: 1,
-    title: 'Pembukaan Passion X Fesma 2025 "A Voyage Through the Echoes of Sweet\'s Life"',
-    image: 'https://via.placeholder.com/400x250/8B5CF6/FFFFFF?text=Passion+X+Fesma+2025',
-    date: '2025-07-15',
-    excerpt: 'Pembukaan acara Passion X Fesma 2025 yang mengusung tema perjalanan melalui gema kehidupan manis.',
-    content: 'Dinas Komunikasi dan Informatika Kota Bogor dengan bangga mengumumkan pembukaan Passion X Fesma 2025 yang mengusung tema "A Voyage Through the Echoes of Sweet\'s Life". Acara ini merupakan festival musik dan seni yang akan menghadirkan berbagai pertunjukan menarik dari seniman lokal dan nasional.',
-    
-    author: 'Tim Diskominfo',
-    tags: ['Festival', 'Seni', 'Musik'],
-    highlights: [
-      'Pertunjukan seni dari 20 komunitas lokal.',
-      'Guest star: band nasional terkenal.',
-      'Pameran kuliner khas Bogor.'
-    ],
-    gallery: [
-      'https://via.placeholder.com/300x200/8B5CF6/FFFFFF?text=Panggung+Utama',
-      'https://via.placeholder.com/300x200/EC4899/FFFFFF?text=Booth+Kuliner',
-    ],
-    quote: '“Festival ini adalah wujud kolaborasi antara pemerintah dan komunitas kreatif Bogor.” – Kadis Kominfo',
-    source: 'https://diskominfo.bogorkota.go.id/fesma2025'
+    title: "Pembukaan Passion X Fesma 2025",
+    image: "https://via.placeholder.com/400x250/8B5CF6/FFFFFF?text=Fesma+2025",
+    date: "2025-07-15",
+    content:
+      "Dinas Komunikasi dan Informatika Kota Bogor mengumumkan pembukaan Passion X Fesma 2025 bertema 'A Voyage Through the Echoes of Sweet's Life'.",
+    author: "Tim Diskominfo",
+    tags: ["Festival", "Seni", "Musik"],
   },
   {
     id: 2,
-    title: 'KOMISI III DPRD KOTA BOGOR KUNJUNGI DISKOMINFO KOTA BOGOR',
-    image: 'https://via.placeholder.com/400x250/3B82F6/FFFFFF?text=Kunjungan+DPRD',
-    date: '2025-07-20',
-    excerpt: 'Kunjungan kerja Komisi III DPRD Kota Bogor ke Dinas Komunikasi dan Informatika dalam rangka pembahasan program kerja.',
-    content: 'Komisi III DPRD Kota Bogor melakukan kunjungan kerja ke Dinas Komunikasi dan Informatika (Diskominfo) Kota Bogor untuk membahas sinergi dalam penyelenggaraan layanan informasi publik dan pemanfaatan teknologi informasi di lingkungan Pemerintahan Kota Bogor. Dalam kunjungan tersebut, anggota Komisi III berdiskusi dengan jajaran Diskominfo terkait sejumlah program prioritas.',
-
-    author: 'Redaksi Diskominfo',
-    tags: ['DPRD', 'Kunjungan', 'Kolaborasi'],
-    highlights: [
-      'Diskusi program prioritas IT Kota Bogor.',
-      'Sinergi peningkatan layanan publik.',
-      'Peningkatan keterbukaan informasi.'
-    ],
-    gallery: [
-      'https://via.placeholder.com/300x200/3B82F6/FFFFFF?text=Diskusi',
-      'https://via.placeholder.com/300x200/6366F1/FFFFFF?text=Foto+Bersama',
-    ],
-    quote: '“Kami berharap kerjasama ini bisa memperkuat pelayanan publik berbasis digital.” – Ketua Komisi III',
-    source: 'https://dprd.bogorkota.go.id/kunjungan-komisi-iii'
+    title: "Komisi III DPRD Kunjungi Diskominfo",
+    image: "https://via.placeholder.com/400x250/3B82F6/FFFFFF?text=Kunjungan+DPRD",
+    date: "2025-07-20",
+    content:
+      "Komisi III DPRD Kota Bogor melakukan kunjungan kerja ke Diskominfo Kota Bogor untuk membahas sinergi dalam penyelenggaraan layanan publik.",
+    author: "Redaksi Diskominfo",
+    tags: ["DPRD", "Kolaborasi"],
   },
   {
     id: 3,
-    title: 'KOMISI III DPRD KOTA BOGOR KUNJUNGI DISKOMINFO KOTA BOGOR',
-    image: 'https://via.placeholder.com/400x250/3B82F6/FFFFFF?text=Kunjungan+DPRD',
-    date: '2025-07-20',
-    excerpt: 'Kunjungan kerja Komisi III DPRD Kota Bogor ke Dinas Komunikasi dan Informatika dalam rangka pembahasan program kerja.',
-    content: 'Komisi III DPRD Kota Bogor melakukan kunjungan kerja ke Dinas Komunikasi dan Informatika (Diskominfo) Kota Bogor untuk membahas sinergi dalam penyelenggaraan layanan informasi publik dan pemanfaatan teknologi informasi di lingkungan Pemerintahan Kota Bogor. Dalam kunjungan tersebut, anggota Komisi III berdiskusi dengan jajaran Diskominfo terkait sejumlah program prioritas.',
-
-    author: 'Redaksi Diskominfo',
-    tags: ['DPRD', 'Kunjungan', 'Kolaborasi'],
-    highlights: [
-      'Diskusi program prioritas IT Kota Bogor.',
-      'Sinergi peningkatan layanan publik.',
-      'Peningkatan keterbukaan informasi.'
-    ],
-    gallery: [
-      'https://via.placeholder.com/300x200/3B82F6/FFFFFF?text=Diskusi',
-      'https://via.placeholder.com/300x200/6366F1/FFFFFF?text=Foto+Bersama',
-    ],
-    quote: '“Kami berharap kerjasama ini bisa memperkuat pelayanan publik berbasis digital.” – Ketua Komisi III',
-    source: 'https://dprd.bogorkota.go.id/kunjungan-komisi-iii'
-  }
+    title: "Peningkatan Layanan Publik Digital",
+    image: "https://via.placeholder.com/400x250/10B981/FFFFFF?text=Layanan+Digital",
+    date: "2025-08-05",
+    content:
+      "Diskominfo Kota Bogor terus berupaya meningkatkan layanan publik berbasis digital untuk mempermudah akses masyarakat.",
+    author: "Tim Redaksi",
+    tags: ["Digital", "Layanan"],
+  },
 ];
+
 
 export const agendaData = [
   {

@@ -2,23 +2,23 @@ import { Link } from "react-router-dom";
 
 export default function Struktural() {
   return (
-    <section className="flex flex-col items-center py-12 px-4">
+    <section className="flex flex-col items-center px-4 py-12">
       {/* Title */}
-      <div className="text-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+      <div className="mb-8 text-center">
+        <h1 className="text-2xl font-bold text-gray-800 md:text-3xl">
           Pejabat Diskominfo
         </h1>
-        <p className="text-sm md:text-base text-gray-600">
+        <p className="text-sm text-gray-600 md:text-base">
           Struktur Organisasi Dinas Komunikasi Dan Informatika Kota Bogor
         </p>
       </div>
 
       {/* Struktur Organisasi */}
-      <div className="w-full flex justify-center">
+      <div className="flex justify-center w-full">
         <img
-          src="/struktural.png"
+          src="/src/assets/struktural/bannner6.png"
           alt="Struktur Organisasi Diskominfo"
-          className="w-full max-w-5xl h-auto"
+          className="w-full h-auto max-w-5xl"
         />
       </div>
 
@@ -26,7 +26,7 @@ export default function Struktural() {
       <div>
         <Link
           to="/struktur"
-          className="mt-8 inline-block bg-[#3C7A94] text-white px-5 py-2 rounded-full shadow hover:bg-orange-600 transition"
+          className="mt-8 inline-block bg-[#3C7A94] text-white px-5 py-2 rounded-full shadow hover:bg-[#de8b43] transition"
         >
           DATA SELENGKAPNYA
         </Link>

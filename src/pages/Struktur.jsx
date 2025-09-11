@@ -1,7 +1,6 @@
 import React from "react";
 import SecondaryPageTemplate from "../ui/PageLayout";
 
-
 const PersonCard = ({ foto, nama, jabatan, size = "md" }) => {
   const sizeClasses = {
     lg: "w-40 h-52",
@@ -10,23 +9,23 @@ const PersonCard = ({ foto, nama, jabatan, size = "md" }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center border">
+    <article className="flex flex-col items-center p-6 bg-white border border-gray-200 rounded-lg shadow-lg">
       <div
-        className={`${sizeClasses[size]} bg-gray-100 rounded-md mb-3 flex items-center justify-center overflow-hidden`}
+        className={`${sizeClasses[size]} bg-gray-100 rounded-md mb-4 flex items-center justify-center overflow-hidden`}
       >
         {foto ? (
           <img
             src={foto}
-            alt={nama}
-            className="w-full h-full object-cover rounded-md"
+            alt={`Foto ${nama}`}
+            className="object-cover w-full h-full rounded-md"
           />
         ) : (
-          <span className="text-gray-500">Foto</span>
+          <span className="italic text-gray-400">Foto tidak tersedia</span>
         )}
       </div>
-      <p className="font-semibold text-center">{nama}</p>
-      <p className="text-gray-600 text-center text-sm">{jabatan}</p>
-    </div>
+      <h3 className="text-lg font-semibold text-center text-gray-900">{nama}</h3>
+      <p className="mt-1 text-sm text-center text-gray-600">{jabatan}</p>
+    </article>
   );
 };
 
@@ -80,41 +79,50 @@ export default function Struktur() {
 
   return (
     <SecondaryPageTemplate title="Struktur Organisasi" breadcrumb={breadcrumb}>
-      <div className="space-y-12">
+      <section className="space-y-16">
         {/* Kepala Dinas */}
-        <div className="flex flex-col items-center">
+        <section className="flex justify-center">
           <PersonCard
             foto={strukturData.kepalaDinas.foto}
             nama={strukturData.kepalaDinas.nama}
             jabatan={strukturData.kepalaDinas.jabatan}
             size="lg"
           />
-        </div>
+        </section>
 
-        {/* Sekretariat */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">
-            Bidang Sekretariat
+        {/* Sekretariat & Sub Bagian */}
+        <section>
+          <h2 className="mb-8 text-2xl font-bold text-center text-gray-900">
+            Sekretariat & Sub Bagian
           </h2>
-          <div className="flex justify-center">
+          <div className="flex flex-wrap justify-center gap-8">
             <PersonCard
               foto={strukturData.sekretariat.foto}
               nama={strukturData.sekretariat.nama}
               jabatan={strukturData.sekretariat.jabatan}
               size="md"
             />
+            {strukturData.subBagian.map((item, index) => (
+              <PersonCard
+                key={index}
+                foto={item.foto}
+                nama={item.nama}
+                jabatan={item.jabatan}
+                size="md"
+              />
+            ))}
           </div>
-        </div>
+        </section>
 
         {/* Kepala Bidang */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">
+        <section>
+          <h2 className="mb-8 text-2xl font-bold text-center text-gray-900">
             Kepala Bidang
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {strukturData.bidang.map((item, i) => (
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
+            {strukturData.bidang.map((item, index) => (
               <PersonCard
-                key={i}
+                key={index}
                 foto={item.foto}
                 nama={item.nama}
                 jabatan={item.jabatan}
@@ -122,26 +130,8 @@ export default function Struktur() {
               />
             ))}
           </div>
-        </div>
-
-        {/* Kepala Sub Bagian */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">
-            Kepala Sub Bagian
-          </h2>
-          <div className="flex justify-center">
-            {strukturData.subBagian.map((item, i) => (
-              <PersonCard
-                key={i}
-                foto={item.foto}
-                nama={item.nama}
-                jabatan={item.jabatan}
-                size="md"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+        </section>
+      </section>
     </SecondaryPageTemplate>
   );
 }

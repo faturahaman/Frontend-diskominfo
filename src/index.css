@@ -131,3 +131,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Sembunyikan tombol default Sienna karena kita menggunakan floating icons */
+.asw-menu-btn {
+  display: none !important;
+}
+
+/* Styling untuk panel accessibility widget tetap terlihat */
+.asw-menu {
+  z-index: 9997 !important;
+}
+
+/* Optional: Jika ingin tombol Sienna tetap ada tapi tersembunyi untuk fallback */
+.asw-menu-btn.hidden {
+  position: fixed !important;
+  top: 50% !important;
+  right: -100px !important; /* Pindahkan keluar viewport */
+  left: auto !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+@import "@fortawesome/fontawesome-free/css/all.min.css";

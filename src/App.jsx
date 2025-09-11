@@ -1,5 +1,8 @@
 // App.jsx
 import { Routes, Route } from "react-router-dom";
+import AccessibilityWidget from "./ui/AccessibilityWidget";
+import FloatingIconBar from "./components/FloatinIcons";
+
 
 // Import halaman
 import HomePage from "./pages/home";
@@ -18,73 +21,71 @@ import DokumenPage from "./pages/DokumenPage";
 
 export default function App() {
   return (
-    <Routes>
-      {/* Halaman Utama */}
-      <Route path="/" element={<HomePage />} />
+    <>
+           <AccessibilityWidget />
+      <FloatingIconBar />
 
-      {/* Halaman Kalender Agenda */}
-      <Route path="/agenda" element={<CalendarPage />} />
+      <Routes>
+        {/* Halaman Utama */}
+        <Route path="/" element={<HomePage />} />
 
-      {/* Halaman Berita */}
-      <Route path="/berita" element={<NewsList />} />
-      <Route path="/berita/:id" element={<NewsDetail />} />
+        {/* Halaman Kalender Agenda */}
+        <Route path="/agenda" element={<CalendarPage />} />
 
-      {/* Halaman Sambutan */}
-      <Route path="/sambutan-full" element={<SambutanFull />} />
+        {/* Halaman Berita */}
+        <Route path="/berita" element={<NewsList />} />
+        <Route path="/berita/:id" element={<NewsDetail />} />
 
-      {/* Halaman Visi-Misi */}
-      <Route path="/visi-misi" element={<VisiMisi />} />
+        {/* Halaman Sambutan */}
+        <Route path="/sambutan-full" element={<SambutanFull />} />
 
-      {/* Halaman Sejarah */}
-      <Route path="/sejarah" element={<Sejarah />} />
+        {/* Halaman Visi-Misi */}
+        <Route path="/visi-misi" element={<VisiMisi />} />
 
-      {/* Halaman Struktur */}
-      <Route path="/struktur" element={<Struktur />} />
+        {/* Halaman Sejarah */}
+        <Route path="/sejarah" element={<Sejarah />} />
 
-      {/* Halaman Kontak */}
-      <Route path="/kontak" element={<Kontak />} />
+        {/* Halaman Struktur */}
+        <Route path="/struktur" element={<Struktur />} />
 
-      {/* Halaman Galeri */}
-      <Route path="/galeri" element={<GaleriPage />} />
+        {/* Halaman Kontak */}
+        <Route path="/kontak" element={<Kontak />} />
 
-      {/* Halaman Foto */}
-      <Route path="/galeri/foto" element={<FotoPage />} />
+        {/* Halaman Galeri */}
+        <Route path="/galeri" element={<GaleriPage />} />
 
-      {/* Halaman Video */}
-      <Route path="/galeri/video" element={<VideoPage />} />
+        {/* Halaman Foto */}
+        <Route path="/galeri/foto" element={<FotoPage />} />
 
-      {/* Halaman Dokumen */}
-      <Route path="/dokumen" element={<DokumenPage />} />
+        {/* Halaman Video */}
+        <Route path="/galeri/video" element={<VideoPage />} />
 
-      {/* Halaman 404 */}
-      <Route
-        path="*"
-        element={
-          <div className="flex flex-col items-center justify-center h-screen px-4 bg-gray-50">
-            {/* Ikon / Ilustrasi */}
-            <div className="mb-4 text-6xl">🚫</div>
+        {/* Halaman Dokumen */}
+        <Route path="/dokumen" element={<DokumenPage />} />
 
-            {/* Judul */}
-            <h1 className="mb-2 text-4xl font-extrabold text-gray-800">
-              404
-            </h1>
-
-            {/* Subjudul */}
-            <p className="mb-6 text-lg text-center text-gray-600">
-              Oops! Halaman yang kamu cari tidak ditemukan.  
-              Mungkin alamat salah atau sudah dipindahkan.
-            </p>
-
-            {/* Tombol kembali */}
-            <a
-              href="/"
-              className="px-6 py-3 rounded-full bg-[#3f7d9a] text-white font-semibold shadow-md hover:bg-[#dd8c43] transition"
-            >
-              Kembali ke Beranda
-            </a>
-          </div>
-        }
-      />
-    </Routes>
+        {/* Halaman 404 */}
+        <Route
+          path="*"
+          element={
+            <div className="flex flex-col items-center justify-center h-screen px-4 bg-gray-50">
+              <div className="mb-4 text-6xl">🚫</div>
+              <h1 className="mb-2 text-4xl font-extrabold text-gray-800">
+                404
+              </h1>
+              <p className="mb-6 text-lg text-center text-gray-600">
+                Oops! Halaman yang kamu cari tidak ditemukan.  
+                Mungkin alamat salah atau sudah dipindahkan.
+              </p>
+              <a
+                href="/"
+                className="px-6 py-3 rounded-full bg-[#3f7d9a] text-white font-semibold shadow-md hover:bg-[#dd8c43] transition"
+              >
+                Kembali ke Beranda
+              </a>
+            </div>
+          }
+        />
+      </Routes>
+    </>
   );
 }

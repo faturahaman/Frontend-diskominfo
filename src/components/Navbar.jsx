@@ -69,20 +69,19 @@ export default function Navbar() {
   const closeMobileMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav ref={navRef} className="fixed top-0 z-50 w-full text-black border-b border-gray-200 shadow-lg bg-cyan-800 sm:bg-white sm:text-white">
+    <nav
+      ref={navRef}
+      className="fixed top-0 z-50 w-full text-black border-b border-gray-200 shadow-lg bg-cyan-800 sm:bg-white sm:text-white"
+    >
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center h-full px-4 text-white p-auto bg-cyan-800">
-            <Link
-              to="/"
-              className="p-3"
-              onClick={closeMobileMenu}
-            >
-              <img 
-                src="/kominfologo.png" 
-                alt="Kominfo Logo" 
-                className="w-auto h-10" 
+            <Link to="/" className="p-3" onClick={closeMobileMenu}>
+              <img
+                src="/kominfologo.png"
+                alt="Kominfo Logo"
+                className="w-auto h-10"
               />
             </Link>
           </div>
@@ -99,22 +98,32 @@ export default function Navbar() {
                 {link.submenu ? (
                   <button
                     className={clsx(
-                      "px-3 py-2 text-sm font-medium rounded hover:bg-gray-100 flex items-center",
+                      "px-3 py-2 text-sm font-bold rounded hover:bg-gray-100 flex items-center",
                       link.submenu.some((sub) => location.pathname === sub.href)
                         ? "text-orange-600 bg-orange-50"
                         : "text-gray-700"
                     )}
                   >
                     {link.label}
-                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg
+                      className="w-4 h-4 ml-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </button>
                 ) : (
                   <Link
                     to={link.href}
                     className={clsx(
-                      "px-3 py-2 text-sm font-medium rounded hover:bg-gray-100",
+                      "px-3 py-2 text-sm font-bold rounded hover:bg-gray-100",
                       location.pathname === link.href
                         ? "text-orange-600 bg-orange-50"
                         : "text-gray-700"
@@ -153,11 +162,26 @@ export default function Navbar() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 text-white rounded hover:bg-gray-300"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
@@ -175,18 +199,30 @@ export default function Navbar() {
                       <button
                         onClick={() => handleMobileSubmenuToggle(index)}
                         className={clsx(
-                          "w-full text-left px-3 py-2 text-sm font-medium rounded flex items-center justify-between",
-                          link.submenu.some((sub) => location.pathname === sub.href)
+                          "w-full text-left px-3 py-2 text-sm font-bold rounded flex items-center justify-between",
+                          link.submenu.some(
+                            (sub) => location.pathname === sub.href
+                          )
                             ? "text-orange-600 bg-orange-50"
                             : "text-gray-700 hover:bg-gray-100"
                         )}
                       >
                         {link.label}
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
                         </svg>
                       </button>
-                      
+
                       {activeSubmenu === index && (
                         <div className="mt-1 ml-4 space-y-1">
                           {link.submenu.map((subItem) => (
@@ -212,7 +248,7 @@ export default function Navbar() {
                       to={link.href}
                       onClick={closeMobileMenu}
                       className={clsx(
-                        "block px-3 py-2 text-sm font-medium rounded",
+                        "block px-3 py-2 text-sm font-bold rounded",
                         location.pathname === link.href
                           ? "text-orange-600 bg-orange-50"
                           : "text-gray-700 hover:bg-gray-100"

@@ -1,76 +1,43 @@
 import { Link } from "react-router-dom";
 
+const banners = [
+  { href: "https://bpbd.jabarprov.go.id/", img: "/bpbd.png", alt: "BPBD" },
+  { href: "https://bsw.kotabogor.go.id/", img: "/bsw.png", alt: "BSW" },
+  { href: "https://kotabogor.go.id/", img: "/kotabogor.png", alt: "Kota Bogor" },
+  { href: "https://perkawis.kotabogor.go.id/", img: "/perkawis.png", alt: "Perkawis" },
+];
+
 export default function BannerLink() {
   return (
-    <section className="flex flex-col items-center py-12 px-4">
+    <section className="flex flex-col items-center px-4 py-12 bg-gray-50">
       {/* Title */}
-      <div className="text-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+      <div className="mb-10 text-center">
+        <h1 className="text-2xl font-bold text-gray-800 md:text-3xl">
           BANNER LINK TERKAIT
         </h1>
-        <p className="text-sm md:text-base text-gray-600">
+        <p className="mt-2 text-sm text-gray-600 md:text-base">
           Situs yang terkait dengan Dinas Komunikasi dan Informatika, Kota Bogor
         </p>
       </div>
 
       {/* Banner Links Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-20 max-w-5xl w-full">
-        {/* Banner Item */}
-        <Link
-          to="https://bpbd.jabarprov.go.id/"
-          target="_blank"
-          className="hover:opacity-80 transition-opacity"
-        >
-          <div className="w-full aspect-square flex items-center justify-center bg-white shadow rounded-lg p-4">
-            <img
-              src="/bpbd.png"
-              alt="Banner 1"
-              className="w-full h-full object-contain"
-            />
-          </div>
-        </Link>
-
-        <Link
-          to="https://bsw.kotabogor.go.id/"
-          target="_blank"
-          className="hover:opacity-80 transition-opacity"
-        >
-          <div className="w-full aspect-square flex items-center justify-center bg-white shadow rounded-lg p-4">
-            <img
-              src="/bsw.png"
-              alt="Banner 2"
-              className="w-full h-full object-contain"
-            />
-          </div>
-        </Link>
-
-        <Link
-          to="https://kotabogor.go.id/"
-          target="_blank"
-          className="hover:opacity-80 transition-opacity"
-        >
-          <div className="w-full aspect-square flex items-center justify-center bg-white shadow rounded-lg p-4">
-            <img
-              src="/kotabogor.png"
-              alt="Banner 3"
-              className="w-full h-full object-contain"
-            />
-          </div>
-        </Link>
-
-        <Link
-          to="https://perkawis.kotabogor.go.id/"
-          target="_blank"
-          className="hover:opacity-80 transition-opacity"
-        >
-          <div className="w-full aspect-square flex items-center justify-center bg-white shadow rounded-lg p-4">
-            <img
-              src="/perkawis.png"
-              alt="Banner 4"
-              className="w-full h-full object-contain"
-            />
-          </div>
-        </Link>
+      <div className="grid w-full max-w-5xl grid-cols-2 gap-6 md:grid-cols-4 md:gap-10">
+        {banners.map((banner, i) => (
+          <Link
+            key={i}
+            to={banner.href}
+            target="_blank"
+            className="transition-transform duration-300 transform hover:scale-105 hover:shadow-lg"
+          >
+            <div className="flex items-center justify-center w-full p-4 bg-white rounded-lg shadow aspect-square">
+              <img
+                src={banner.img}
+                alt={banner.alt}
+                className="object-contain w-full h-full"
+              />
+            </div>
+          </Link>
+        ))}
       </div>
     </section>
   );

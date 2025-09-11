@@ -1,3 +1,5 @@
+import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
+
 export default function Footer() {
   return (
     <footer className="bg-[#141426] text-white py-10 px-6 md:px-16">
@@ -42,16 +44,16 @@ export default function Footer() {
           {/* Sosmed */}
           <div className="flex gap-4 mt-2">
             <a href="#" className="hover:text-blue-400">
-              <i className="fab fa-instagram"></i>
+              <Instagram />
             </a>
             <a href="#" className="hover:text-blue-400">
-              <i className="fab fa-facebook"></i>
+              <Facebook />
             </a>
             <a href="#" className="hover:text-blue-400">
-              <i className="fab fa-twitter"></i>
+              <Twitter />
             </a>
             <a href="#" className="hover:text-blue-400">
-              <i className="fab fa-youtube"></i>
+              <Youtube />
             </a>
           </div>
         </div>

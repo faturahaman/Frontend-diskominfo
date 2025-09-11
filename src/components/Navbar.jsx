@@ -151,7 +151,7 @@ export default function Navbar() {
           <div className="pr-4 md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-gray-700 rounded hover:bg-gray-100"
+              className="p-2 text-white rounded hover:bg-gray-300"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMenuOpen ? (

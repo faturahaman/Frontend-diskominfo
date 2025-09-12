@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 
 const banners = [
-  { href: "https://bpbd.jabarprov.go.id/", img: "/bpbd.png", alt: "BPBD" },
-  { href: "https://bsw.kotabogor.go.id/", img: "/bsw.png", alt: "BSW" },
-  { href: "https://kotabogor.go.id/", img: "/kotabogor.png", alt: "Kota Bogor" },
-  { href: "https://perkawis.kotabogor.go.id/", img: "/perkawis.png", alt: "Perkawis" },
+  { href: "https://bpbd.jabarprov.go.id/", img: "/src/assets/BannerLink/bpbd.webp", alt: "BPBD" },
+  { href: "https://bsw.kotabogor.go.id/", img: "/src/assets/BannerLink/bsw.webp", alt: "BSW" },
+  { href: "https://kotabogor.go.id/", img: "/src/assets/BannerLink/kotabogor.webp", alt: "Kota Bogor" },
+  { href: "https://perkawis.kotabogor.go.id/", img: "/src/assets/BannerLink/perkawis.webp", alt: "Perkawis" },
 ];
 
 export default function BannerLink() {

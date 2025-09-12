@@ -1,6 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const AccessibilityWidget = () => {
+  const [siennaLoading, setSiennaLoading] = useState(true);
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://website-widgets.pages.dev/dist/sienna.min.js";
@@ -10,10 +12,9 @@ const AccessibilityWidget = () => {
     const observer = new MutationObserver((mutations, obs) => {
       const btn = document.querySelector(".asw-menu-btn");
       if (btn) {
-        // Sembunyikan tombol default Sienna karena kita akan menggunakan floating icons
+        // tombol Sienna ditemukan → sembunyikan tombol default
         btn.style.display = "none";
 
-        // Setup event listener untuk floating icon accessibility button
         const setupFloatingIconListener = () => {
           const floatingAccessibilityBtn = document.querySelector("#openAccessibilityMenuButton");
           if (floatingAccessibilityBtn && !floatingAccessibilityBtn.hasAttribute('data-sienna-connected')) {
@@ -21,17 +22,16 @@ const AccessibilityWidget = () => {
             
             floatingAccessibilityBtn.addEventListener('click', (e) => {
               e.preventDefault();
-              // Trigger klik pada tombol Sienna yang tersembunyi
               btn.click();
             });
           }
         };
 
-        // Setup listener segera
         setupFloatingIconListener();
-        
-        // Setup listener lagi setelah delay untuk memastikan floating icons sudah ter-render
         setTimeout(setupFloatingIconListener, 500);
+
+        // matikan loading karena Sienna siap
+        setSiennaLoading(false);
 
         // Stop observer setelah tombol Sienna ditemukan
         obs.disconnect();
@@ -48,7 +48,18 @@ const AccessibilityWidget = () => {
     };
   }, []);
 
-  return null;
+  return (
+    <>
+      {siennaLoading && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/30">
+          <div className="flex flex-col items-center gap-2 p-4 bg-white rounded-lg shadow-lg">
+            <div className="w-12 h-12 mb-2 ease-linear border-4 border-t-4 border-gray-200 rounded-full loader animate-spin"></div>
+            <span>Memuat aksesibilitas...</span>
+          </div>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default AccessibilityWidget;

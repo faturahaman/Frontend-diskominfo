@@ -1,8 +1,8 @@
-// src/components/FloatingIconBar.jsx
+// src/components/FloatingAccessibilityBar.jsx
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // ✅ untuk cek route
+import { useLocation } from "react-router-dom";
 
-const FloatingIconBar = () => {
+const FloatingAccessibilityBar = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [formData, setFormData] = useState({
     kepuasan: "",
@@ -10,32 +10,28 @@ const FloatingIconBar = () => {
     kritikSaran: "",
   });
   const [loading, setLoading] = useState(false);
+  const [siennaLoading, setSiennaLoading] = useState(true);
 
-  const location = useLocation(); // ✅ ambil route sekarang
-  const isHome = location.pathname === "/"; // cek apakah home
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
-  // handle input perubahan
+  // Handle input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // handle submit form
+  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       const res = await fetch("http://localhost:8000/api/penilaian", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       if (!res.ok) throw new Error("Gagal mengirim penilaian");
-
       alert("✅ Terima kasih, penilaian Anda berhasil dikirim!");
       setFormData({ kepuasan: "", dapatMenemukan: "", kritikSaran: "" });
       setActiveModal(null);
@@ -46,7 +42,50 @@ const FloatingIconBar = () => {
     }
   };
 
-  // Daftar tombol
+  // Load Sienna
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://website-widgets.pages.dev/dist/sienna.min.js";
+    script.defer = true;
+    document.body.appendChild(script);
+
+    const observer = new MutationObserver((mutations, obs) => {
+      const btn = document.querySelector(".asw-menu-btn");
+      if (btn) {
+        btn.style.display = "none"; // sembunyikan tombol default
+
+        const floatingBtn = document.querySelector("#openAccessibilityMenuButton");
+        if (floatingBtn && !floatingBtn.hasAttribute("data-sienna-connected")) {
+          floatingBtn.setAttribute("data-sienna-connected", "true");
+          floatingBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            btn.click(); // trigger Sienna
+          });
+        }
+
+        // Styling Sienna agar selalu di atas
+        const style = document.createElement("style");
+        style.innerHTML = `
+          .asw-menu { z-index: 100000 !important; }
+          .asw-close { z-index: 100001 !important; cursor: pointer; }
+        `;
+        document.head.appendChild(style);
+
+        // Sienna siap → stop loading
+        setSiennaLoading(false);
+        obs.disconnect();
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      if (document.body.contains(script)) document.body.removeChild(script);
+      observer.disconnect();
+    };
+  }, []);
+
+  // Floating buttons
   const buttons = [
     {
       id: "tombolBeriPenilaian",
@@ -73,13 +112,7 @@ const FloatingIconBar = () => {
       bg: "bg-[#2f6175]",
       hover: "hover:bg-[#de8b43]",
       icon: "fas fa-child",
-      onClick: (e) => {
-        e.preventDefault();
-        const siennaBtn = document.querySelector(".asw-menu-btn");
-        if (siennaBtn) siennaBtn.click();
-      },
     },
-    // ✅ tombol Akses Cepat hanya muncul kalau bukan di home
     !isHome && {
       title: "Akses Cepat",
       bg: "bg-[#2f6175]",
@@ -90,42 +123,20 @@ const FloatingIconBar = () => {
         setActiveModal("aksesCepat");
       },
     },
-  ].filter(Boolean); // buang false/null
-
-  // Accessibility handler (sienna widget)
-  useEffect(() => {
-    const setupAccessibilityHandler = () => {
-      const accessibilityBtn = document.querySelector(
-        "#openAccessibilityMenuButton"
-      );
-      const siennaBtn = document.querySelector(".asw-menu-btn");
-
-      if (
-        accessibilityBtn &&
-        siennaBtn &&
-        !accessibilityBtn.hasAttribute("data-handler-set")
-      ) {
-        accessibilityBtn.setAttribute("data-handler-set", "true");
-        accessibilityBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          siennaBtn.click();
-        });
-      }
-    };
-
-    setupAccessibilityHandler();
-    [100, 500, 1000, 2000].forEach((delay) =>
-      setTimeout(setupAccessibilityHandler, delay)
-    );
-  }, []);
+  ].filter(Boolean);
 
   return (
     <>
+      {/* Loading kecil di tombol */}
+      {siennaLoading && (
+        <div className="fixed top-6 right-6 p-2 bg-white shadow rounded flex items-center gap-2 z-[9999]">
+          <div className="w-5 h-5 border-4 border-t-4 border-gray-200 rounded-full loader animate-spin"></div>
+          <span>Memuat aksesibilitas...</span>
+        </div>
+      )}
+
       {/* Floating Buttons */}
-      <div
-        className="fixed flex flex-col gap-4 transform -translate-y-1/2 top-1/2 right-6"
-        style={{ zIndex: 9999 }}
-      >
+      <div className="fixed flex flex-col gap-4 transform -translate-y-1/2 top-1/2 right-6 floating-buttons">
         {buttons.map((btn, i) => (
           <a
             key={i}
@@ -138,7 +149,6 @@ const FloatingIconBar = () => {
             className={`${btn.bg} ${btn.hover} w-14 h-14 text-white flex items-center justify-center rounded-lg shadow-lg transition relative group cursor-pointer`}
           >
             <i className={btn.icon}></i>
-            {/* Tooltip */}
             <span className="absolute px-2 py-1 mr-3 text-xs text-white -translate-y-1/2 bg-gray-900 rounded opacity-0 pointer-events-none right-full top-1/2 group-hover:opacity-100 whitespace-nowrap">
               {btn.title}
             </span>
@@ -149,14 +159,15 @@ const FloatingIconBar = () => {
       {/* Modal */}
       {activeModal && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black/50 z-[10000]"
+          className="fixed inset-0 flex items-center justify-center modal-overlay"
+          style={{ zIndex: 9998 }}
           onClick={() => setActiveModal(null)}
         >
           <div
-            className="w-full max-w-lg max-h-[90vh] bg-white shadow-lg rounded-xl flex flex-col" // Tambah max-h dan flex
+            className="w-full max-w-lg max-h-[90vh] bg-white shadow-lg rounded-xl flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header dengan position sticky */}
+            {/* Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between p-6 pb-2 mb-4 bg-white border-b rounded-t-xl">
               <h2 className="text-lg font-semibold">
                 {activeModal === "penilaian" ? "Beri Penilaian" : "Akses Cepat"}
@@ -169,15 +180,12 @@ const FloatingIconBar = () => {
               </button>
             </div>
 
-            {/* Body dengan overflow scroll */}
+            {/* Body */}
             <div className="flex-1 p-6 pt-0 overflow-y-auto">
               {activeModal === "penilaian" && (
                 <form className="space-y-4" onSubmit={handleSubmit}>
-                  {/* Kepuasan */}
                   <div>
-                    <label className="block mb-2 font-medium">
-                      Tingkat Kepuasan Anda
-                    </label>
+                    <label className="block mb-2 font-medium">Tingkat Kepuasan Anda</label>
                     <div className="flex gap-4 text-2xl">
                       {[
                         { val: "sangat_puas", emoji: "😄" },
@@ -194,19 +202,15 @@ const FloatingIconBar = () => {
                             onChange={handleChange}
                             className="hidden peer"
                           />
-                          <span className="transition peer-checked:scale-125">
-                            {opt.emoji}
-                          </span>
+                          <span className="transition peer-checked:scale-125">{opt.emoji}</span>
                         </label>
                       ))}
                     </div>
                   </div>
 
-                  {/* Pertanyaan Ya/Tidak */}
                   <div>
                     <label className="block mb-2 font-medium">
-                      Apakah Anda dapat menemukan berita/informasi layanan
-                      publik/agenda yang Anda cari?
+                      Apakah Anda dapat menemukan berita/informasi layanan publik/agenda yang Anda cari?
                     </label>
                     <div className="flex gap-6">
                       <label className="flex items-center gap-2">
@@ -232,10 +236,9 @@ const FloatingIconBar = () => {
                     </div>
                   </div>
 
-                  {/* Kritik & Saran */}
                   <div>
                     <label className="block mb-2 font-medium">
-                      Kritik dan saran Anda untuk Website Diskominfo Kota Bogor
+                      Kritik dan saran Anda
                     </label>
                     <textarea
                       name="kritikSaran"
@@ -246,95 +249,23 @@ const FloatingIconBar = () => {
                       placeholder="Tulis kritik & saran Anda..."
                     ></textarea>
                   </div>
+
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+                    disabled={loading}
+                  >
+                    {loading ? "Mengirim..." : "Kirim"}
+                  </button>
                 </form>
               )}
 
               {activeModal === "aksesCepat" && (
                 <div>
                   <p className="mb-4 text-gray-600">
-                    Dapatkan kemudahan akses ke beberapa layanan Pemerintah
-                    Diskominfo Kota Bogor.
+                    Dapatkan kemudahan akses ke beberapa layanan Pemerintah Diskominfo Kota Bogor.
                   </p>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <a
-                      href="https://docs.google.com/forms/d/e/1FAIpQLSdH4_yWT-6GeCr5zz_NJMRxuCOJeUcKfDo52lqnaOCR4qNerg/viewform"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-4 transition-all border rounded-lg hover:shadow-md"
-                    >
-                      <h6 className="mb-2 font-bold">Pengajuan TTE</h6>
-                      <p className="text-sm text-gray-600">
-                        Tanda tangan elektronik ini digunakan sebagai alat untuk
-                        mengesahkan dokumen atau transaksi elektronik,
-                        menggantikan tanda tangan manual pada dokumen fisik
-                      </p>
-                    </a>
-
-                    <a
-                      href="https://wa.me/6281122882233"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-4 transition-all border rounded-lg hover:shadow-md"
-                    >
-                      <h6 className="mb-2 font-bold">
-                        Chat Bogor Citizen Support
-                      </h6>
-                      <p className="text-sm text-gray-600">
-                        Fitur layanan membantu warga Kota Bogor yang dapat
-                        dihubungi melalui chat atau obrolan untuk berkomunikasi
-                        dengan pihak berwenang atau staf Bogor Citizen Support.
-                      </p>
-                    </a>
-
-                    <a
-                      href="#"
-                      className="p-4 transition-all border rounded-lg hover:shadow-md"
-                    >
-                      <h6 className="mb-2 font-bold">Pembuatan Email Dinas</h6>
-                      <p className="text-sm text-gray-600">
-                        Pembuatan email dinas adalah proses membuat alamat email
-                        resmi yang digunakan untuk kepentingan instansi
-                        pemerintah, lembaga, sekolah, atau organisasi resmi
-                        lainnya.
-                      </p>
-                    </a>
-
-                    <a
-                      href="https://ppid.kotabogor.go.id/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-4 transition-all border rounded-lg hover:shadow-md"
-                    >
-                      <h6 className="mb-2 font-bold">PPID</h6>
-                      <p className="text-sm text-gray-600">
-                        Pejabat Pengelola Informasi Dan Dokumentasi Kota Bogor
-                      </p>
-                    </a>
-
-                    <a
-                      href="https://inspektorat.kotabogor.go.id/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-4 transition-all border rounded-lg hover:shadow-md"
-                    >
-                      <h6 className="mb-2 font-bold">Inspektorat</h6>
-                      <p className="text-sm text-gray-600">
-                        Layanan Inspektorat Kota Bogor
-                      </p>
-                    </a>
-
-                    <a
-                      href="https://diskominfo.kotabogor.go.id/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-4 transition-all border rounded-lg hover:shadow-md"
-                    >
-                      <h6 className="mb-2 font-bold">Diskominfo</h6>
-                      <p className="text-sm text-gray-600">
-                        Dinas Komunikasi dan Informatika Kota Bogor
-                      </p>
-                    </a>
-                  </div>
+                  {/* Tambahkan konten akses cepat di sini */}
                 </div>
               )}
             </div>
@@ -345,4 +276,4 @@ const FloatingIconBar = () => {
   );
 };
 
-export default FloatingIconBar;
+export default FloatingAccessibilityBar;

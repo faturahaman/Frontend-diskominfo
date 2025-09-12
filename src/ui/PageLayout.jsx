@@ -17,7 +17,7 @@ const SecondaryPageTemplate = ({ title, breadcrumb = [], children }) => {
     style={{ backgroundImage: `url('/bgkominfo.jpg')` }}
   >
     {/* Overlay gelap dengan gradient halus */}
-    <div className="absolute inset-0 bg-gradient-to-r from-[#0b0b29] via-[#0b0b29dd] to-transparent"></div>
+    <div className="absolute inset-0 bg-[#090937e1]"></div>
   </div>
 
   {/* Konten header */}

@@ -16,7 +16,7 @@ export default function Struktural() {
       {/* Struktur Organisasi */}
       <div className="flex justify-center w-full">
         <img
-          src="/src/assets/struktural/bannner6.png"
+          src="/src/assets/struktural/bannner6.webp"
           alt="Struktur Organisasi Diskominfo"
           className="w-full h-auto max-w-5xl"
         />

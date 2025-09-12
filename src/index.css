@@ -142,6 +142,8 @@
   z-index: 9997 !important;
 }
 
+
+
 /* Optional: Jika ingin tombol Sienna tetap ada tapi tersembunyi untuk fallback */
 .asw-menu-btn.hidden {
   position: fixed !important;
@@ -156,4 +158,16 @@
   z-index: -1 !important;
 }
 
+.floating-buttons { z-index: 9999; }
+.modal-overlay { z-index: 9998; }
+
 @import "@fortawesome/fontawesome-free/css/all.min.css";
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

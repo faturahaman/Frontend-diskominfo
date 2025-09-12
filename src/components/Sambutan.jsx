@@ -46,7 +46,7 @@ export default function Sambutan() {
 
           <Link
             to="/sambutan-full"
-            className="mt-6 px-6 py-2 border-2 border-[#1B4B73] text-[#1B4B73] rounded-md hover:bg-[#de8b43] hover:text-white hover:border-[#de8b43] transition-colors"
+            className="mt-6 px-6 py-2 border-2 border-[#1B4B73] text-[#1B4B73] rounded-md hover:bg-[#1B4B73] hover:text-white hover:border-[#1B4B73] transition-colors"
           >
             Lihat Selengkapnya
           </Link>

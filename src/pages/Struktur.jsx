@@ -39,40 +39,40 @@ export default function Struktur() {
     kepalaDinas: {
       nama: "Rudiyana S.STP.M.Sc",
       jabatan: "Kepala Dinas Komunikasi dan Informatika Kota Bogor",
-      foto: "src/assets/struktural/rudiyana.jpg",
+      foto: "src/assets/struktural/rudiyana.webp",
     },
     sekretariat: {
       nama: "Oki Tri Fasiasta Nurmala Alam S.STP",
       jabatan: "Sekretaris Dinas",
-      foto: "src/assets/struktural/oki.jpg",
+      foto: "src/assets/struktural/oki.webp",
     },
     bidang: [
       {
         nama: "Junenti Kolbert Nadeak, ST. ME",
         jabatan: "Kepala Bidang APTIKA",
-        foto: "src/assets/struktural/junenti.jpg",
+        foto: "src/assets/struktural/junenti.webp",
       },
       {
         nama: "Dian Intannia Lesmana S.Sos. ME",
         jabatan: "Kepala Bidang Informasi dan Komunikasi Publik",
-        foto: "src/assets/struktural/dian.jpg",
+        foto: "src/assets/struktural/dian.webp",
       },
       {
         nama: "Arofa Abdilla Rahman ST.MT",
         jabatan: "Kepala Bidang Persandian dan Keamanan Informasi",
-        foto: "src/assets/struktural/arofa.jpg",
+        foto: "src/assets/struktural/arofa.webp",
       },
       {
         nama: "Tosan Wiar Ramadhani, S.Kom., M.TI",
         jabatan: "Kepala Bidang Statistik Sektoral",
-        foto: "src/assets/struktural/tosan.jpg",
+        foto: "src/assets/struktural/tosan.webp",
       },
     ],
     subBagian: [
       {
         nama: "Susilawaty Syariefah, S.Sos. MA",
         jabatan: "Kasubag Umum dan Kepegawaian",
-        foto: "src/assets/struktural/susi.jpg",
+        foto: "src/assets/struktural/susi.webp",
       },
     ],
   };

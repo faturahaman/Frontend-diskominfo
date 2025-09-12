@@ -71,12 +71,12 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 z-50 w-full text-black border-b border-gray-200 shadow-lg bg-cyan-800 sm:bg-white sm:text-white"
+      className="fixed top-0 z-50 w-full text-white border-b border-gray-200 shadow-lg bg-cyan-800 sm:bg-white sm:text-black"
     >
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center h-full px-4 text-white p-auto bg-cyan-800">
+          <div className="flex items-center h-full px-4 bg-cyan-800">
             <Link to="/" className="p-3" onClick={closeMobileMenu}>
               <img
                 src="/kominfologo.png"
@@ -98,9 +98,9 @@ export default function Navbar() {
                 {link.submenu ? (
                   <button
                     className={clsx(
-                      "px-3 py-2 text-sm font-bold rounded hover:bg-gray-100 flex items-center",
+                      "flex items-center rounded px-3 py-2 text-sm font-bold hover:bg-gray-100",
                       link.submenu.some((sub) => location.pathname === sub.href)
-                        ? "text-orange-600 bg-orange-50"
+                        ? "bg-orange-50 text-orange-600"
                         : "text-gray-700"
                     )}
                   >
@@ -123,9 +123,9 @@ export default function Navbar() {
                   <Link
                     to={link.href}
                     className={clsx(
-                      "px-3 py-2 text-sm font-bold rounded hover:bg-gray-100",
+                      "rounded px-3 py-2 text-sm font-bold hover:bg-gray-100",
                       location.pathname === link.href
-                        ? "text-orange-600 bg-orange-50"
+                        ? "bg-orange-50 text-orange-600"
                         : "text-gray-700"
                     )}
                   >
@@ -143,7 +143,7 @@ export default function Navbar() {
                         className={clsx(
                           "block px-4 py-2 text-sm hover:bg-gray-50",
                           location.pathname === subItem.href
-                            ? "text-orange-600 bg-orange-50"
+                            ? "bg-orange-50 text-orange-600"
                             : "text-gray-700"
                         )}
                       >
@@ -199,11 +199,11 @@ export default function Navbar() {
                       <button
                         onClick={() => handleMobileSubmenuToggle(index)}
                         className={clsx(
-                          "w-full text-left px-3 py-2 text-sm font-bold rounded flex items-center justify-between",
+                          "flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm font-bold",
                           link.submenu.some(
                             (sub) => location.pathname === sub.href
                           )
-                            ? "text-orange-600 bg-orange-50"
+                            ? "bg-orange-50 text-orange-600"
                             : "text-gray-700 hover:bg-gray-100"
                         )}
                       >
@@ -231,9 +231,9 @@ export default function Navbar() {
                               to={subItem.href}
                               onClick={closeMobileMenu}
                               className={clsx(
-                                "block px-3 py-2 text-sm rounded",
+                                "block rounded px-3 py-2 text-sm",
                                 location.pathname === subItem.href
-                                  ? "text-orange-600 bg-orange-50"
+                                  ? "bg-orange-50 text-orange-600"
                                   : "text-gray-600 hover:bg-gray-50"
                               )}
                             >
@@ -248,9 +248,9 @@ export default function Navbar() {
                       to={link.href}
                       onClick={closeMobileMenu}
                       className={clsx(
-                        "block px-3 py-2 text-sm font-bold rounded",
+                        "block rounded px-3 py-2 text-sm font-bold",
                         location.pathname === link.href
-                          ? "text-orange-600 bg-orange-50"
+                          ? "bg-orange-50 text-orange-600"
                           : "text-gray-700 hover:bg-gray-100"
                       )}
                     >

@@ -36,13 +36,7 @@ const DetailNewsPage = () => {
       ]}
     >
       <div className="max-w-4xl px-4 py-6 mx-auto space-y-6">
-        {/* Tombol Kembali */}
-        <button
-          onClick={() => navigate("/berita")}
-          className="text-sm text-blue-600 hover:text-blue-800"
-        >
-          ← Kembali ke Daftar Berita
-        </button>
+       
 
         {/* Meta Info */}
         <div className="flex justify-between text-sm text-gray-600">

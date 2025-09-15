@@ -2,7 +2,6 @@ import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 
-// Data navigasi
 const navLinks = [
   { label: "Beranda", href: "/" },
   {
@@ -31,7 +30,7 @@ export default function Navbar() {
   const location = useLocation();
   const navRef = useRef(null);
 
-  // Tutup menu saat klik di luar navbar
+  // Tutup menu saat klik di luar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
@@ -71,42 +70,49 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 z-50 w-full text-white border-b border-gray-200 shadow-lg bg-cyan-800 sm:bg-white sm:text-black"
+      className="fixed top-0 z-50 w-full transition-all duration-300 ease-in-out shadow-lg text-cyan-700"
+      style={{
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        boxShadow: "0 4px 20px rgba(0, 119, 182, 0.1)",
+      }}
     >
       <div className="mx-auto max-w-7xl">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 px-4 md:px-6">
           {/* Logo */}
-          <div className="flex items-center h-full px-4 bg-cyan-800">
-            <Link to="/" className="p-3" onClick={closeMobileMenu}>
+          <div className="flex items-center h-full bg-cyan-800">
+            <Link to="/" onClick={closeMobileMenu} className="block p-1 md:p-2">
               <img
                 src="/kominfologo.png"
-                alt="Kominfo Logo"
-                className="w-auto h-10"
+                alt="Logo Kominfo"
+                className="w-auto h-10 transition-transform md:h-12 hover:scale-105"
               />
             </Link>
           </div>
 
           {/* Desktop Menu */}
-          <div className="items-center hidden pr-4 space-x-4 md:flex">
+          <div className="items-center hidden space-x-1 md:flex">
             {navLinks.map((link, index) => (
               <div
                 key={index}
-                className="relative"
+                className="relative group"
                 onMouseEnter={() => handleMouseEnter(index)}
                 onMouseLeave={handleMouseLeave}
               >
                 {link.submenu ? (
                   <button
                     className={clsx(
-                      "flex items-center rounded px-3 py-2 text-sm font-bold hover:bg-gray-100",
+                      "flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200",
                       link.submenu.some((sub) => location.pathname === sub.href)
-                        ? "bg-orange-50 text-orange-600"
-                        : "text-gray-700"
+                        ? "bg-cyan-100 text-cyan-900"
+                        : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
                     )}
                   >
                     {link.label}
                     <svg
-                      className="w-4 h-4 ml-1"
+                      className={clsx(
+                        "w-4 h-4 transform transition-transform duration-200",
+                        activeSubmenu === index && "rotate-180"
+                      )}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -122,11 +128,12 @@ export default function Navbar() {
                 ) : (
                   <Link
                     to={link.href}
+                    onClick={closeMobileMenu}
                     className={clsx(
-                      "rounded px-3 py-2 text-sm font-bold hover:bg-gray-100",
+                      "rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200",
                       location.pathname === link.href
-                        ? "bg-orange-50 text-orange-600"
-                        : "text-gray-700"
+                        ? "bg-cyan-100 text-cyan-900"
+                        : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
                     )}
                   >
                     {link.label}
@@ -135,16 +142,17 @@ export default function Navbar() {
 
                 {/* Desktop Submenu */}
                 {link.submenu && activeSubmenu === index && (
-                  <div className="absolute left-0 z-50 w-48 mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <div className="absolute left-0 z-50 w-48 mt-2 overflow-hidden origin-top bg-white rounded-lg shadow-xl ring-1 ring-black/5 animate-fadeIn">
                     {link.submenu.map((subItem) => (
                       <Link
                         key={subItem.href}
                         to={subItem.href}
+                        onClick={closeMobileMenu}
                         className={clsx(
-                          "block px-4 py-2 text-sm hover:bg-gray-50",
+                          "block px-4 py-2.5 text-sm rounded-lg transition-colors duration-150",
                           location.pathname === subItem.href
-                            ? "bg-orange-50 text-orange-600"
-                            : "text-gray-700"
+                            ? "bg-cyan-100 text-cyan-900 font-medium"
+                            : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
                         )}
                       >
                         {subItem.label}
@@ -157,10 +165,11 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="pr-4 md:hidden">
+          <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-white rounded hover:bg-gray-300"
+              className="p-2 transition-colors rounded-lg hover:bg-cyan-100 text-cyan-700"
+              aria-label="Toggle menu"
             >
               <svg
                 className="w-6 h-6"
@@ -190,8 +199,8 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="bg-white border-t border-gray-200 md:hidden">
-            <div className="px-4 py-2 space-y-1">
+          <div className="bg-white border-t border-gray-200 shadow-lg md:hidden animate-slideDown">
+            <div className="px-4 py-3 space-y-2">
               {navLinks.map((link, index) => (
                 <div key={index}>
                   {link.submenu ? (
@@ -199,17 +208,20 @@ export default function Navbar() {
                       <button
                         onClick={() => handleMobileSubmenuToggle(index)}
                         className={clsx(
-                          "flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm font-bold",
+                          "flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-semibold transition-colors",
                           link.submenu.some(
                             (sub) => location.pathname === sub.href
                           )
-                            ? "bg-orange-50 text-orange-600"
-                            : "text-gray-700 hover:bg-gray-100"
+                            ? "bg-cyan-100 text-cyan-900"
+                            : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
                         )}
                       >
                         {link.label}
                         <svg
-                          className="w-4 h-4"
+                          className={clsx(
+                            "w-4 h-4 transform transition-transform duration-200",
+                            activeSubmenu === index && "rotate-180"
+                          )}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -224,17 +236,17 @@ export default function Navbar() {
                       </button>
 
                       {activeSubmenu === index && (
-                        <div className="mt-1 ml-4 space-y-1">
+                        <div className="mt-2 ml-4 space-y-1 animate-fadeIn">
                           {link.submenu.map((subItem) => (
                             <Link
                               key={subItem.href}
                               to={subItem.href}
                               onClick={closeMobileMenu}
                               className={clsx(
-                                "block rounded px-3 py-2 text-sm",
+                                "block rounded-lg px-3 py-2.5 text-sm transition-colors",
                                 location.pathname === subItem.href
-                                  ? "bg-orange-50 text-orange-600"
-                                  : "text-gray-600 hover:bg-gray-50"
+                                  ? "bg-cyan-100 text-cyan-900 font-medium"
+                                  : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
                               )}
                             >
                               {subItem.label}
@@ -248,10 +260,10 @@ export default function Navbar() {
                       to={link.href}
                       onClick={closeMobileMenu}
                       className={clsx(
-                        "block rounded px-3 py-2 text-sm font-bold",
+                        "block rounded-lg px-3 py-3 text-sm font-semibold transition-colors",
                         location.pathname === link.href
-                          ? "bg-orange-50 text-orange-600"
-                          : "text-gray-700 hover:bg-gray-100"
+                          ? "bg-cyan-100 text-cyan-900"
+                          : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
                       )}
                     >
                       {link.label}
@@ -263,6 +275,36 @@ export default function Navbar() {
           </div>
         )}
       </div>
+
+      {/* Animations */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-5px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out forwards;
+        }
+        .animate-slideDown {
+          animation: slideDown 0.3s ease-out forwards;
+        }
+      `}</style>
     </nav>
   );
 }

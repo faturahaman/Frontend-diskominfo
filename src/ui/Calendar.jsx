@@ -1,14 +1,22 @@
-import React from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+// src/ui/Calendar.jsx
+import React from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
-const Calendar = ({ currentMonth, monthNames, dayNames, agendaData, selectedDate, onSelectDate, navigateMonth }) => {
+const Calendar = ({
+  currentMonth,
+  monthNames,
+  dayNames,
+  agendaData,
+  selectedDate,
+  onSelectDate,
+  navigateMonth,
+}) => {
   const generateCalendarDays = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
-
     const days = [];
     const current = new Date(startDate);
     for (let i = 0; i < 42; i++) {
@@ -21,37 +29,41 @@ const Calendar = ({ currentMonth, monthNames, dayNames, agendaData, selectedDate
   const calendarDays = generateCalendarDays(currentMonth);
 
   const hasAgenda = (date) => {
-    const dateString = date.toISOString().split('T')[0];
-    return agendaData.some((agenda) => agenda.date === dateString);
+    const dateString = date.toISOString().split("T")[0];
+    return agendaData.some((agenda) => agenda.tanggal === dateString);
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md lg:col-span-2">
-      {/* Header bulan */}
-      <div className="flex items-center justify-between mb-4">
+    <div className="p-6 transition-all duration-300 bg-white border border-gray-100 shadow-lg rounded-2xl lg:col-span-2 hover:shadow-xl">
+      {/* Header kalender */}
+      <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigateMonth(-1)}
-          className="p-2 rounded hover:bg-cyan-50"
+          className="p-3 transition-all duration-300 rounded-full shadow-sm bg-cyan-50 text-cyan-700 hover:bg-cyan-100 hover:scale-110 hover:shadow-md"
         >
           <ArrowLeft size={20} />
         </button>
-        <h3 className="text-xl font-semibold text-cyan-800">
+        <h3 className="px-4 py-2 text-lg font-bold tracking-wide text-white shadow-md rounded-xl bg-gradient-to-r from-cyan-600 to-cyan-800">
           {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
         </h3>
         <button
           onClick={() => navigateMonth(1)}
-          className="p-2 rounded hover:bg-cyan-50"
+          className="p-3 transition-all duration-300 rounded-full shadow-sm bg-cyan-50 text-cyan-700 hover:bg-cyan-100 hover:scale-110 hover:shadow-md"
         >
           <ArrowRight size={20} />
         </button>
       </div>
 
       {/* Grid kalender */}
-      <div className="grid grid-cols-7 gap-1 mb-4">
-        {dayNames.map((day) => (
+      <div className="grid grid-cols-7 gap-2">
+        {dayNames.map((day, i) => (
           <div
             key={day}
-            className="p-2 text-sm font-medium text-center text-gray-600"
+            className={`p-2 text-xs font-semibold tracking-wide text-center uppercase rounded-lg ${
+              i === 0 || i === 6
+                ? "text-red-500 bg-red-50"
+                : "text-gray-600 bg-gray-50"
+            }`}
           >
             {day.slice(0, 3)}
           </div>
@@ -60,23 +72,47 @@ const Calendar = ({ currentMonth, monthNames, dayNames, agendaData, selectedDate
         {calendarDays.map((day, index) => {
           const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
           const isToday = day.toDateString() === new Date().toDateString();
-          const dayHasAgenda = hasAgenda(day);
           const isSelected =
             selectedDate && day.toDateString() === selectedDate.toDateString();
+          const dayHasAgenda = hasAgenda(day);
 
           return (
-            <button
-              key={index}
-              onClick={() => onSelectDate(day)}
-              className={`p-2 text-sm border rounded transition-colors 
-                ${isCurrentMonth ? 'text-gray-900' : 'text-gray-400'} 
-                ${isToday ? 'bg-cyan-100 border-cyan-300 text-cyan-900 font-medium' : 'border-gray-200'} 
-                ${dayHasAgenda && isCurrentMonth ? 'bg-cyan-800 text-white hover:bg-cyan-700 border-cyan-800' : ''} 
-                ${isSelected ? 'ring-2 ring-cyan-500' : ''} 
-                hover:bg-cyan-50`}
-            >
-              {day.getDate()}
-            </button>
+            <div key={index} className="relative flex justify-center">
+              <button
+                onClick={() => onSelectDate(day)}
+                className={`h-12 w-12 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-300
+                  ${
+                    isCurrentMonth
+                      ? "text-gray-700"
+                      : "text-gray-300 bg-gray-50"
+                  }
+                  ${
+                    !isSelected && isCurrentMonth
+                      ? "hover:bg-cyan-50 hover:scale-105"
+                      : ""
+                  }
+                  ${
+                    isToday && !isSelected
+                      ? "bg-cyan-100 text-cyan-700 font-bold"
+                      : ""
+                  }
+                  ${
+                    isSelected
+                      ? "bg-gradient-to-br from-cyan-600 to-cyan-800 text-white transform scale-110 shadow-lg"
+                      : ""
+                  }
+                `}
+              >
+                {day.getDate()}
+              </button>
+              {dayHasAgenda && isCurrentMonth && (
+                <div
+                  className={`absolute bottom-1.5 h-2 w-2 rounded-full ${
+                    isSelected ? "bg-white" : "bg-cyan-600"
+                  } ${!isSelected ? "animate-pulse" : ""}`}
+                ></div>
+              )}
+            </div>
           );
         })}
       </div>

@@ -1,10 +1,9 @@
-// NewsAgendaSection.jsx
 import React, { useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import NewsCard from "../ui/NewsCard";
-import AgendaCard from "../ui/AgendaCard";
-import { newsData, agendaData, monthNames } from "../dummy/data";
+import AgendaCard from "../ui/AgendaCard"; // Komponen ini sudah kita perbaiki
+import { newsData, agendaData, monthNames } from "../dummy/data"; // Menggunakan data baru
 
 const getDaysInMonth = (date) => {
   const year = date.getFullYear();
@@ -25,16 +24,33 @@ const AgendaDayButton = ({ day, isSelected, isToday, hasAgenda, onSelectDate }) 
   >
     <span>{day.getDate()}</span>
     {hasAgenda && (
-      <span className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white" : "bg-[#3C7A94]"}`}></span>
+      <span
+        className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${
+          isSelected ? "bg-white" : "bg-[#3C7A94]"
+        }`}
+      ></span>
     )}
   </button>
 );
 
 const NewsAgendaSection = () => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [page, setPage] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const today = useMemo(() => new Date(), []);
+
+  // ✅ Selected otomatis ke hari ini
+  const initialSelectedDate = today;
+
+  // ✅ currentMonth otomatis bulan hari ini
+  const [currentMonth, setCurrentMonth] = useState(
+    new Date(initialSelectedDate.getFullYear(), initialSelectedDate.getMonth(), 1)
+  );
+
+  // ✅ Hitung page berdasarkan hari ini
+  const initialPage = useMemo(() => {
+    return Math.floor((initialSelectedDate.getDate() - 1) / 5);
+  }, [initialSelectedDate]);
+
+  const [page, setPage] = useState(initialPage);
+  const [selectedDate, setSelectedDate] = useState(initialSelectedDate);
 
   const totalDays = useMemo(() => getDaysInMonth(currentMonth), [currentMonth]);
 
@@ -48,15 +64,16 @@ const NewsAgendaSection = () => {
     return days;
   }, [page, totalDays, currentMonth]);
 
-  const getAgendasForDate = useCallback(
-    (date) => {
-      const dateString = date.toISOString().split("T")[0];
-      return agendaData.filter((agenda) => agenda.date === dateString);
-    },
-    []
-  );
+  // ✅ Sesuaikan dengan field `tanggal`
+  const getAgendasForDate = useCallback((date) => {
+    const dateString = date.toISOString().split("T")[0];
+    return agendaData.filter((agenda) => agenda.tanggal === dateString);
+  }, []);
 
-  const agendasToShow = useMemo(() => getAgendasForDate(selectedDate), [selectedDate, getAgendasForDate]);
+  const agendasToShow = useMemo(
+    () => getAgendasForDate(selectedDate),
+    [selectedDate, getAgendasForDate]
+  );
 
   const nextPage = useCallback(() => {
     const maxPage = Math.ceil(totalDays / 5) - 1;
@@ -81,24 +98,32 @@ const NewsAgendaSection = () => {
         newDate.setMonth(newDate.getMonth() - 1);
         return newDate;
       });
-      setPage(Math.ceil(getDaysInMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1)) / 5) - 1);
+      setPage(
+        Math.ceil(
+          getDaysInMonth(
+            new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1)
+          ) / 5
+        ) - 1
+      );
     }
   }, [page, currentMonth]);
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <div className="grid lg:grid-cols-4 gap-8">
-          
+    <div className="min-h-screen py-10 bg-gray-100">
+      <div className="px-4 mx-auto max-w-7xl md:px-6">
+        <div className="grid gap-8 lg:grid-cols-4">
           {/* --- BERITA TERBARU --- */}
           <div className="lg:col-span-3">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">BERITA TERBARU</h1>
-              <p className="text-gray-600 text-sm">
-                Berita atau artikel terbaru dari Dinas Komunikasi dan Informatika Kota Bogor
+              <h1 className="mb-2 text-2xl font-bold text-gray-800">
+                BERITA TERBARU
+              </h1>
+              <p className="text-sm text-gray-600">
+                Berita atau artikel terbaru dari Dinas Komunikasi dan
+                Informatika Kota Bogor
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6 mb-6">
+            <div className="grid gap-6 mb-6 md:grid-cols-3">
               {newsData.slice(0, 3).map((news) => (
                 <NewsCard key={news.id} news={news} />
               ))}
@@ -113,24 +138,31 @@ const NewsAgendaSection = () => {
 
           {/* --- AGENDA --- */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 flex flex-col h-full">
+            <div className="flex flex-col h-full p-6 bg-white border border-gray-200 rounded-lg shadow-md">
               <div className="flex items-center justify-between mb-4">
                 <button
                   onClick={prevPage}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
+                  className="p-2 transition-colors rounded-full hover:bg-gray-100 group"
                   aria-label="Bulan sebelumnya"
                 >
-                  <ChevronLeft size={20} className="text-gray-700 group-hover:text-gray-900" />
+                  <ChevronLeft
+                    size={20}
+                    className="text-gray-700 group-hover:text-gray-900"
+                  />
                 </button>
-                <h3 className="font-semibold text-gray-800 text-sm">
-                  {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                <h3 className="text-sm font-semibold text-gray-800">
+                  {monthNames[currentMonth.getMonth()]}{" "}
+                  {currentMonth.getFullYear()}
                 </h3>
                 <button
                   onClick={nextPage}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
+                  className="p-2 transition-colors rounded-full hover:bg-gray-100 group"
                   aria-label="Bulan berikutnya"
                 >
-                  <ChevronRight size={20} className="text-gray-700 group-hover:text-gray-900" />
+                  <ChevronRight
+                    size={20}
+                    className="text-gray-700 group-hover:text-gray-900"
+                  />
                 </button>
               </div>
 
@@ -139,7 +171,9 @@ const NewsAgendaSection = () => {
                   <AgendaDayButton
                     key={day.toDateString()}
                     day={day}
-                    isSelected={selectedDate.toDateString() === day.toDateString()}
+                    isSelected={
+                      selectedDate.toDateString() === day.toDateString()
+                    }
                     isToday={today.toDateString() === day.toDateString()}
                     hasAgenda={getAgendasForDate(day).length > 0}
                     onSelectDate={setSelectedDate}
@@ -147,30 +181,41 @@ const NewsAgendaSection = () => {
                 ))}
               </div>
 
-              <h4 className="font-semibold text-gray-800 text-sm mb-3">
-                Agenda {selectedDate.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+              <h4 className="mb-3 text-sm font-semibold text-gray-800">
+                Agenda{" "}
+                {selectedDate.toLocaleDateString("id-ID", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
               </h4>
-
-              <div className="space-y-3 max-h-96 overflow-y-auto pr-2 flex-grow">
+              <div className="flex-grow pr-2 space-y-3 overflow-y-auto max-h-96">
                 {agendasToShow.length > 0 ? (
-                  agendasToShow.map((agenda) => <AgendaCard key={agenda.id} agenda={agenda} />)
+                  agendasToShow.map((agenda) => (
+                    <AgendaCard key={agenda.id} agenda={agenda} />
+                  ))
                 ) : (
-                  <p className="text-gray-500 text-xs italic">Tidak ada agenda terjadwal.</p>
+                  <p className="text-xs italic text-gray-500">
+                    Tidak ada agenda terjadwal.
+                  </p>
                 )}
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+              <div className="pt-4 mt-4 text-center border-t border-gray-200">
                 <Link
                   to="/agenda"
                   className="text-sm font-semibold text-[#3C7A94] hover:text-[#2f6175] transition-colors group inline-flex items-center"
                 >
                   Lihat Semua Agenda
-                  <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight
+                    size={16}
+                    className="ml-1 transition-transform group-hover:translate-x-1"
+                  />
                 </Link>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

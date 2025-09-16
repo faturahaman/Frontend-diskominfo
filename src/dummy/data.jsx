@@ -36,43 +36,27 @@ export const newsData = [
 export const agendaData = [
   {
     id: 1,
-    title: 'Sosialisasi kepada masyarakat daerah Jakarta Utara',
-    date: '2025-09-25',
-    time: '08:00 - 12:00 WIB',
-    location: 'Aula Diskominfo',
-    type: 'Offline',
-    category: 'Pimpinan',
-    description: 'Kegiatan sosialisasi program pemerintah kepada masyarakat daerah Jakarta Utara dalam rangka peningkatan pelayanan publik.'
+    agenda: 'Sosialisasi kepada masyarakat daerah Jakarta Utara',
+    tanggal: '2025-09-25',
+    deskripsi: 'Waktu: 08:00 - 12:00 WIB. Lokasi: Aula Diskominfo. Kegiatan sosialisasi program pemerintah kepada masyarakat daerah Jakarta Utara.'
   },
   {
     id: 2,
-    title: 'Rapat Koordinasi Bulanan Tim IT',
-    date: '2025-09-26',
-    time: '09:00 - 11:00 WIB',
-    location: 'Ruang Rapat Lantai 3',
-    type: 'Offline',
-    category: 'Wakil Pimpinan',
-    description: 'Rapat koordinasi rutin bulanan tim IT untuk evaluasi sistem dan perencanaan pengembangan infrastruktur.'
+    agenda: 'Rapat Koordinasi Bulanan Tim IT',
+    tanggal: '2025-09-26',
+    deskripsi: 'Waktu: 09:00 - 11:00 WIB. Lokasi: Ruang Rapat Lantai 3. Rapat koordinasi rutin bulanan tim IT untuk evaluasi sistem.'
   },
   {
     id: 3,
-    title: 'Workshop Digitalisasi Layanan Publik',
-    date: '2025-09-28',
-    time: '13:00 - 17:00 WIB',
-    location: 'Gedung Serbaguna',
-    type: 'Offline',
-    category: 'Sekretaris',
-    description: 'Workshop mengenai digitalisasi layanan publik untuk meningkatkan efisiensi dan transparansi pelayanan.'
+    agenda: 'Workshop Digitalisasi Layanan Publik',
+    tanggal: '2025-09-28',
+    deskripsi: 'Waktu: 13:00 - 17:00 WIB. Lokasi: Gedung Serbaguna. Workshop mengenai digitalisasi layanan publik untuk meningkatkan efisiensi.'
   },
   {
     id: 4,
-    title: 'Pelatihan Media Sosial untuk UMKM',
-    date: '2025-09-30',
-    time: '10:00 - 15:00 WIB',
-    location: 'Balai Kota Bogor',
-    type: 'Offline',
-    category: 'Pimpinan',
-    description: 'Pelatihan penggunaan media sosial yang efektif untuk pelaku UMKM dalam memasarkan produk mereka.'
+    agenda: 'Pelatihan Media Sosial untuk UMKM',
+    tanggal: '2025-09-20',
+    deskripsi: 'Waktu: 10:00 - 15:00 WIB. Lokasi: Balai Kota Bogor. Pelatihan penggunaan media sosial yang efektif untuk pelaku UMKM.'
   }
 ];
 

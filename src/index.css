@@ -157,6 +157,23 @@
   pointer-events: none !important;
   z-index: -1 !important;
 }
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out forwards;
+  }
+}
+
 
 .floating-buttons { z-index: 9999; }
 .modal-overlay { z-index: 9998; }

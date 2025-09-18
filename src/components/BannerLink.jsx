@@ -9,35 +9,39 @@ const banners = [
 
 export default function BannerLink() {
   return (
-    <section className="flex flex-col items-center px-4 py-12 bg-gray-50">
-      {/* Title */}
-      <div className="mb-10 text-center">
-        <h1 className="text-2xl font-bold text-gray-800 md:text-3xl">
-          BANNER LINK TERKAIT
-        </h1>
-        <p className="mt-2 text-sm text-gray-600 md:text-base">
-          Situs yang terkait dengan Dinas Komunikasi dan Informatika, Kota Bogor
-        </p>
-      </div>
+    <section className="bg-gradient-to-br from-cyan-800 to-cyan-900">
+      <div className="container px-4 py-16 mx-auto transition-all duration-300 sm:py-24">
+        {/* Judul */}
+        <div className="mb-12 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Banner Link Terkait
+          </h2>
+          <p className="max-w-2xl mx-auto mt-4 text-lg text-cyan-200">
+            Situs yang terkait dengan Dinas Komunikasi dan Informatika Kota Bogor.
+          </p>
+          <div className="w-20 h-1 mx-auto mt-4 rounded bg-cyan-400"></div>
+        </div>
 
-      {/* Banner Links Grid */}
-      <div className="grid w-full max-w-5xl grid-cols-2 gap-6 md:grid-cols-4 md:gap-10">
-        {banners.map((banner, i) => (
-          <Link
-            key={i}
-            to={banner.href}
-            target="_blank"
-            className="transition-transform duration-300 transform hover:scale-105 hover:shadow-lg"
-          >
-            <div className="flex items-center justify-center w-full p-4 bg-white rounded-lg shadow aspect-square">
-              <img
-                src={banner.img}
-                alt={banner.alt}
-                className="object-contain w-full h-full"
-              />
-            </div>
-          </Link>
-        ))}
+        {/* Banner Links Grid */}
+        <div className="grid w-full max-w-5xl grid-cols-2 gap-6 mx-auto sm:grid-cols-4 sm:gap-8">
+          {banners.map((banner, i) => (
+            <Link
+              key={i}
+              to={banner.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block transition-all duration-300 ease-in-out group"
+            >
+              <div className="flex items-center justify-center p-6 transform bg-white shadow-xl rounded-2xl aspect-square group-hover:scale-105 group-hover:shadow-2xl">
+                <img
+                  src={banner.img}
+                  alt={banner.alt}
+                  className="object-contain w-full h-full"
+                />
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );

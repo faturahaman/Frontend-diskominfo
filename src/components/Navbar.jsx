@@ -1,6 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
+import { Menu, X, ChevronDown } from "lucide-react";
+
+// --- PERSIAPKAN DUA FILE LOGO ---
+// 1. Ganti path ini dengan logo versi berwarna/hitam Anda
+const logoColor = "/src/assets/BannerLink/kominfologo2.webp"; 
+// 2. Ganti path ini dengan logo versi putih Anda
+const logoWhite = "/src/assets/BannerLink/kominfologo.webp";
 
 const navLinks = [
   { label: "Beranda", href: "/" },
@@ -26,11 +33,32 @@ const navLinks = [
 export default function Navbar() {
   const [activeSubmenu, setActiveSubmenu] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const hideTimeout = useRef(null);
   const location = useLocation();
   const navRef = useRef(null);
 
-  // Tutup menu saat klik di luar
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
@@ -42,7 +70,6 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Tutup menu saat navigasi
   useEffect(() => {
     setIsMenuOpen(false);
     setActiveSubmenu(null);
@@ -65,99 +92,68 @@ export default function Navbar() {
     setActiveSubmenu(activeSubmenu === index ? null : index);
   };
 
-  const closeMobileMenu = () => setIsMenuOpen(false);
+  const closeMenu = () => setIsMenuOpen(false);
+
+  const navClasses = clsx(
+    "fixed top-0 z-50 w-full transition-all duration-300",
+    isScrolled || isMenuOpen
+      ? "bg-white shadow-lg"
+      : "bg-transparent text-white"
+  );
+
+  const linkClasses = (isActive, hasSubmenu = false) => {
+    const baseClasses = "rounded-lg px-4 py-2 text-sm font-medium transition-colors";
+    const submenuClasses = hasSubmenu ? "flex items-center gap-1" : "";
+
+    if (isScrolled || isMenuOpen) {
+      return clsx(baseClasses, submenuClasses, isActive ? "bg-cyan-100 text-cyan-900" : "text-gray-700 hover:bg-cyan-100 hover:text-cyan-800");
+    }
+    return clsx(baseClasses, submenuClasses, isActive ? "bg-white/20" : "hover:bg-white/20");
+  };
+
+  const mobileButtonClasses = clsx(
+    "p-2 transition-colors rounded-lg",
+    isScrolled || isMenuOpen
+      ? "text-gray-700 hover:bg-cyan-100"
+      : "text-white hover:bg-white/20"
+  );
 
   return (
-    <nav
-      ref={navRef}
-      className="fixed top-0 z-50 w-full transition-all duration-300 ease-in-out shadow-lg text-cyan-700"
-      style={{
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
-        boxShadow: "0 4px 20px rgba(0, 119, 182, 0.1)",
-      }}
-    >
+    <nav ref={navRef} className={navClasses}>
       <div className="mx-auto max-w-7xl">
-        <div className="flex items-center justify-between h-16 px-4 md:px-6">
-          {/* Logo */}
-          <div className="flex items-center h-full bg-cyan-800">
-            <Link to="/" onClick={closeMobileMenu} className="block p-1 md:p-2">
-              <img
-                src="/kominfologo.png"
-                alt="Logo Kominfo"
-                className="w-auto h-10 transition-transform md:h-12 hover:scale-105"
-              />
-            </Link>
-          </div>
+        <div className="flex items-center justify-between h-20 px-4 md:px-6">
+          <Link to="/" onClick={closeMenu} className="flex-shrink-0 ">
+            <img
+              src={isScrolled || isMenuOpen ? logoColor : logoWhite}
+              alt="Logo Kominfo"
+              className="w-auto h-12 transition-all duration-300 md:h-14 md:pl-[10px] hover:scale-105"
+            />
+          </Link>
 
           {/* Desktop Menu */}
-          <div className="items-center hidden space-x-1 md:flex">
+          <div className="items-center hidden space-x-2 md:flex">
             {navLinks.map((link, index) => (
-              <div
-                key={index}
-                className="relative group"
-                onMouseEnter={() => handleMouseEnter(index)}
-                onMouseLeave={handleMouseLeave}
-              >
+              <div key={index} className="relative" onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave}>
                 {link.submenu ? (
-                  <button
-                    className={clsx(
-                      "flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200",
-                      link.submenu.some((sub) => location.pathname === sub.href)
-                        ? "bg-cyan-100 text-cyan-900"
-                        : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
-                    )}
-                  >
+                  <button className={linkClasses(link.submenu.some(sub => location.pathname === sub.href), true)}>
                     {link.label}
-                    <svg
-                      className={clsx(
-                        "w-4 h-4 transform transition-transform duration-200",
-                        activeSubmenu === index && "rotate-180"
-                      )}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                    <ChevronDown className={clsx("w-4 h-4 transition-transform duration-300", activeSubmenu === index && "rotate-180")} />
                   </button>
                 ) : (
-                  <Link
-                    to={link.href}
-                    onClick={closeMobileMenu}
-                    className={clsx(
-                      "rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200",
-                      location.pathname === link.href
-                        ? "bg-cyan-100 text-cyan-900"
-                        : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
-                    )}
-                  >
+                  <Link to={link.href} className={linkClasses(location.pathname === link.href)}>
                     {link.label}
                   </Link>
                 )}
 
-                {/* Desktop Submenu */}
                 {link.submenu && activeSubmenu === index && (
-                  <div className="absolute left-0 z-50 w-48 mt-2 overflow-hidden origin-top bg-white rounded-lg shadow-xl ring-1 ring-black/5 animate-fadeIn">
-                    {link.submenu.map((subItem) => (
-                      <Link
-                        key={subItem.href}
-                        to={subItem.href}
-                        onClick={closeMobileMenu}
-                        className={clsx(
-                          "block px-4 py-2.5 text-sm rounded-lg transition-colors duration-150",
-                          location.pathname === subItem.href
-                            ? "bg-cyan-100 text-cyan-900 font-medium"
-                            : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
-                        )}
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
+                  <div onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave} className="absolute left-0 w-48 mt-2 origin-top bg-white rounded-lg shadow-xl ring-1 ring-black/5 animate-fade-in-up">
+                    <div className="py-2">
+                      {link.submenu.map((subItem) => (
+                        <Link key={subItem.href} to={subItem.href} onClick={closeMenu} className={clsx("block w-full text-left px-4 py-2 text-sm text-gray-700 transition-colors", location.pathname === subItem.href ? "bg-cyan-100 text-cyan-900 font-semibold" : "hover:bg-cyan-100 hover:text-cyan-800")}>
+                          {subItem.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -168,143 +164,89 @@ export default function Navbar() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 transition-colors rounded-lg hover:bg-cyan-100 text-cyan-700"
+              className={mobileButtonClasses} 
               aria-label="Toggle menu"
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                {isMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="bg-white border-t border-gray-200 shadow-lg md:hidden animate-slideDown">
-            <div className="px-4 py-3 space-y-2">
-              {navLinks.map((link, index) => (
-                <div key={index}>
-                  {link.submenu ? (
-                    <div>
-                      <button
-                        onClick={() => handleMobileSubmenuToggle(index)}
-                        className={clsx(
-                          "flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-semibold transition-colors",
-                          link.submenu.some(
-                            (sub) => location.pathname === sub.href
-                          )
-                            ? "bg-cyan-100 text-cyan-900"
-                            : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
-                        )}
-                      >
-                        {link.label}
-                        <svg
-                          className={clsx(
-                            "w-4 h-4 transform transition-transform duration-200",
-                            activeSubmenu === index && "rotate-180"
-                          )}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </button>
-
-                      {activeSubmenu === index && (
-                        <div className="mt-2 ml-4 space-y-1 animate-fadeIn">
-                          {link.submenu.map((subItem) => (
-                            <Link
-                              key={subItem.href}
-                              to={subItem.href}
-                              onClick={closeMobileMenu}
-                              className={clsx(
-                                "block rounded-lg px-3 py-2.5 text-sm transition-colors",
-                                location.pathname === subItem.href
-                                  ? "bg-cyan-100 text-cyan-900 font-medium"
-                                  : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
-                              )}
-                            >
-                              {subItem.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Link
-                      to={link.href}
-                      onClick={closeMobileMenu}
-                      className={clsx(
-                        "block rounded-lg px-3 py-3 text-sm font-semibold transition-colors",
-                        location.pathname === link.href
-                          ? "bg-cyan-100 text-cyan-900"
-                          : "text-cyan-700 hover:bg-cyan-100 hover:text-cyan-900"
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Animations */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-5px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out forwards;
-        }
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out forwards;
-        }
-      `}</style>
+      {/* Mobile Menu Panel (Fullscreen) */}
+     {/* Mobile Menu Panel (Fullscreen) */}
+{isMenuOpen && (
+  <div className="fixed inset-0 z-40 bg-white md:hidden animate-slide-down-and-fade">
+    {/* Close Button */}
+    <div className="absolute top-4 right-4">
+      <button
+        onClick={closeMenu}
+        className="p-2 text-gray-700 rounded-lg hover:bg-cyan-100"
+        aria-label="Close menu"
+      >
+        <X size={28} />
+      </button>
+    </div>
+
+    <div className="h-screen pt-20 overflow-y-auto">
+      <div className="px-6 py-8 space-y-3">
+        {navLinks.map((link, index) => (
+          <div key={index}>
+            {link.submenu ? (
+              <div>
+                <button
+                  onClick={() => handleMobileSubmenuToggle(index)}
+                  className="flex items-center justify-between w-full px-4 py-3 text-lg font-semibold text-left text-gray-700 transition-colors rounded-lg hover:bg-cyan-100"
+                >
+                  {link.label}
+                  <ChevronDown
+                    className={clsx(
+                      "w-5 h-5 transition-transform duration-300",
+                      activeSubmenu === index && "rotate-180"
+                    )}
+                  />
+                </button>
+                {activeSubmenu === index && (
+                  <div className="pl-4 mt-2 ml-4 space-y-2 border-l-2 border-cyan-200 animate-fade-in-up">
+                    {link.submenu.map((subItem) => (
+                      <Link
+                        key={subItem.href}
+                        to={subItem.href}
+                        onClick={closeMenu}
+                        className={clsx(
+                          "block rounded-lg px-4 py-2.5 text-base transition-colors",
+                          location.pathname === subItem.href
+                            ? "bg-cyan-100 text-cyan-900 font-semibold"
+                            : "text-gray-600 hover:bg-cyan-100"
+                        )}
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to={link.href}
+                onClick={closeMenu}
+                className={clsx(
+                  "block rounded-lg px-4 py-3 font-semibold text-lg transition-colors",
+                  location.pathname === link.href
+                    ? "bg-cyan-100 text-cyan-900"
+                    : "text-gray-700 hover:bg-cyan-100"
+                )}
+              >
+                {link.label}
+              </Link>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
     </nav>
   );
 }

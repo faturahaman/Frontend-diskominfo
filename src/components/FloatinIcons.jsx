@@ -24,7 +24,7 @@ const FloatingAccessibilityBar = () => {
     widgetInitialized: false,
     buttonFound: false,
     configSet: false,
-    errors: []
+    errors: [],
   });
 
   const location = useLocation();
@@ -36,10 +36,10 @@ const FloatingAccessibilityBar = () => {
 
   // Debug helper
   const logDebug = useCallback((message, data = null) => {
-    console.log(`[SIENNA DEBUG] ${message}`, data || '');
-    setSiennaDebug(prev => ({
+    console.log(`[SIENNA DEBUG] ${message}`, data || "");
+    setSiennaDebug((prev) => ({
       ...prev,
-      errors: [...prev.errors, { timestamp: Date.now(), message, data }]
+      errors: [...prev.errors, { timestamp: Date.now(), message, data }],
     }));
   }, []);
 
@@ -67,7 +67,7 @@ const FloatingAccessibilityBar = () => {
   // Enhanced Sienna initialization
   useEffect(() => {
     logDebug("Starting Sienna initialization");
-    
+
     // 1. Check if script already exists
     const existingScript = document.querySelector('script[src*="sienna"]');
     if (existingScript) {
@@ -81,10 +81,10 @@ const FloatingAccessibilityBar = () => {
       window.SIENNA_CONFIG = {
         autoInit: false,
         hideOriginalButton: true,
-        position: 'none',
-        debug: true
+        position: "none",
+        debug: true,
       };
-      setSiennaDebug(prev => ({ ...prev, configSet: true }));
+      setSiennaDebug((prev) => ({ ...prev, configSet: true }));
     } else {
       logDebug("SIENNA_CONFIG already exists", window.SIENNA_CONFIG);
     }
@@ -98,42 +98,47 @@ const FloatingAccessibilityBar = () => {
 
     script.onload = () => {
       logDebug("Sienna script loaded successfully");
-      setSiennaDebug(prev => ({ ...prev, scriptLoaded: true }));
-      
+      setSiennaDebug((prev) => ({ ...prev, scriptLoaded: true }));
+
       const checkSiennaObject = (attempt = 1) => {
         logDebug(`Checking for Sienna object (attempt ${attempt})`);
-        
+
         if (window.Sienna) {
           logDebug("Sienna object found", window.Sienna);
-          setSiennaDebug(prev => ({ ...prev, widgetInitialized: true }));
-          
+          setSiennaDebug((prev) => ({ ...prev, widgetInitialized: true }));
+
           try {
-            if (typeof window.Sienna.init === 'function') {
+            if (typeof window.Sienna.init === "function") {
               logDebug("Initializing Sienna manually");
               window.Sienna.init();
             }
           } catch (error) {
             logDebug("Error initializing Sienna", error);
           }
-        } else if (window.aswWidget || window.ASW || window.AccessibilityWidget) {
-          const altObject = window.aswWidget || window.ASW || window.AccessibilityWidget;
+        } else if (
+          window.aswWidget ||
+          window.ASW ||
+          window.AccessibilityWidget
+        ) {
+          const altObject =
+            window.aswWidget || window.ASW || window.AccessibilityWidget;
           logDebug("Alternative Sienna object found", altObject);
-          setSiennaDebug(prev => ({ ...prev, widgetInitialized: true }));
+          setSiennaDebug((prev) => ({ ...prev, widgetInitialized: true }));
         } else {
           logDebug("Sienna object not found after script load");
-          
-          const widgetExists = document.querySelector('.asw-menu-btn');
+
+          const widgetExists = document.querySelector(".asw-menu-btn");
           if (widgetExists) {
             logDebug("Widget elements found, marking as initialized");
-            setSiennaDebug(prev => ({ ...prev, widgetInitialized: true }));
+            setSiennaDebug((prev) => ({ ...prev, widgetInitialized: true }));
           }
-          
+
           if (attempt < 5) {
             setTimeout(() => checkSiennaObject(attempt + 1), 500);
           }
         }
       };
-      
+
       setTimeout(() => checkSiennaObject(), 300);
     };
 
@@ -148,13 +153,13 @@ const FloatingAccessibilityBar = () => {
     // 4. Set up mutation observer to detect button
     const observer = new MutationObserver((mutations, obs) => {
       logDebug("MutationObserver triggered", mutations.length + " mutations");
-      
+
       const selectors = [
-        '.asw-menu-btn',
-        '.sienna-btn',
-        '.sienna-menu-btn',
+        ".asw-menu-btn",
+        ".sienna-btn",
+        ".sienna-menu-btn",
         '[class*="sienna"]',
-        '[class*="asw"]'
+        '[class*="asw"]',
       ];
 
       let btn = null;
@@ -170,25 +175,25 @@ const FloatingAccessibilityBar = () => {
         logDebug("Sienna button found and hidden", btn);
         btn.style.display = "none";
         setSiennaLoading(false);
-        setSiennaDebug(prev => ({ ...prev, buttonFound: true }));
+        setSiennaDebug((prev) => ({ ...prev, buttonFound: true }));
         siennaBtnRef.current = btn;
         obs.disconnect();
-        
+
         logDebug("Button properties", {
           className: btn.className,
           id: btn.id,
           innerHTML: btn.innerHTML,
-          onclick: btn.onclick?.toString()
+          onclick: btn.onclick?.toString(),
         });
       }
     });
 
     observerRef.current = observer;
-    observer.observe(document.body, { 
-      childList: true, 
+    observer.observe(document.body, {
+      childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['class', 'id']
+      attributeFilter: ["class", "id"],
     });
     logDebug("MutationObserver started");
 
@@ -198,15 +203,17 @@ const FloatingAccessibilityBar = () => {
         logDebug("Fallback timeout reached - checking for buttons manually");
         const allButtons = document.querySelectorAll('button, [role="button"]');
         logDebug("All buttons found", allButtons);
-        
+
         allButtons.forEach((btn, index) => {
-          if (btn.textContent?.toLowerCase().includes('accessibility') ||
-              btn.className?.toLowerCase().includes('sienna') ||
-              btn.className?.toLowerCase().includes('asw')) {
+          if (
+            btn.textContent?.toLowerCase().includes("accessibility") ||
+            btn.className?.toLowerCase().includes("sienna") ||
+            btn.className?.toLowerCase().includes("asw")
+          ) {
             logDebug(`Potential Sienna button found at index ${index}`, btn);
           }
         });
-        
+
         setSiennaLoading(false);
       }
     }, 10000);
@@ -225,179 +232,199 @@ const FloatingAccessibilityBar = () => {
   }, [logDebug]);
 
   // Enhanced Sienna click handler
-  const handleSiennaClick = useCallback((e) => {
-    e.preventDefault();
-    logDebug("Sienna button clicked", { siennaLoading, siennaBtnRef: !!siennaBtnRef.current });
+  const handleSiennaClick = useCallback(
+    (e) => {
+      e.preventDefault();
+      logDebug("Sienna button clicked", {
+        siennaLoading,
+        siennaBtnRef: !!siennaBtnRef.current,
+      });
 
-    if (siennaLoading) {
-      logDebug("Sienna still loading, showing spinner");
-      setSiennaClicking(true);
-      setTimeout(() => setSiennaClicking(false), 1200);
-      return;
-    }
-
-    let success = false;
-
-    // Approach 1: Use stored reference
-    if (siennaBtnRef.current) {
-      try {
-        logDebug("Attempting to click stored button reference");
-        
-        const originalDisplay = siennaBtnRef.current.style.display;
-        siennaBtnRef.current.style.display = 'block';
-        siennaBtnRef.current.style.visibility = 'visible';
-        siennaBtnRef.current.style.pointerEvents = 'auto';
-        
-        if (siennaBtnRef.current.onclick) {
-          siennaBtnRef.current.onclick();
-        } else {
-          siennaBtnRef.current.click();
-        }
-        
-        const clickEvent = new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-          view: window
-        });
-        siennaBtnRef.current.dispatchEvent(clickEvent);
-        
-        setTimeout(() => {
-          siennaBtnRef.current.style.display = originalDisplay;
-        }, 100);
-        
-        success = true;
-        logDebug("Successfully triggered stored button reference");
-      } catch (error) {
-        logDebug("Error clicking stored button reference", error);
+      if (siennaLoading) {
+        logDebug("Sienna still loading, showing spinner");
+        setSiennaClicking(true);
+        setTimeout(() => setSiennaClicking(false), 1200);
+        return;
       }
-    }
 
-    // Approach 2: Query selector fallback
-    if (!success) {
-      const selectors = [
-        '.asw-menu-btn:not([style*="display: none"])',
-        '.asw-menu-btn',
-        '.sienna-btn', 
-        '.sienna-menu-btn',
-        '[class*="sienna"]',
-        '[class*="asw"]:not(.asw-btn)'
-      ];
+      let success = false;
 
-      for (const selector of selectors) {
-        const btns = document.querySelectorAll(selector);
-        logDebug(`Found ${btns.length} elements with selector: ${selector}`);
-        
-        for (const btn of btns) {
-          if (btn.getAttribute('role') === 'button' || btn.tagName === 'BUTTON' || btn.tagName === 'A') {
-            try {
-              logDebug(`Attempting to click button:`, btn);
-              
-              const originalDisplay = btn.style.display;
-              btn.style.display = 'block';
-              btn.style.visibility = 'visible';
-              btn.style.pointerEvents = 'auto';
-              
-              if (btn.onclick) {
-                btn.onclick();
-              } else {
-                btn.click();
-              }
-              
-              const clickEvent = new MouseEvent('click', {
-                bubbles: true,
-                cancelable: true,
-                view: window
-              });
-              btn.dispatchEvent(clickEvent);
-              
-              setTimeout(() => {
-                btn.style.display = originalDisplay;
-              }, 100);
-              
-              success = true;
-              logDebug("Successfully clicked button via selector");
-              break;
-            } catch (error) {
-              logDebug(`Error clicking button with selector ${selector}`, error);
-            }
-          }
-        }
-        if (success) break;
-      }
-    }
-
-    // Approach 3: Try alternative APIs
-    if (!success) {
-      const possibleObjects = [window.Sienna, window.aswWidget, window.ASW, window.AccessibilityWidget];
-      
-      for (const obj of possibleObjects) {
-        if (obj) {
-          try {
-            logDebug("Attempting to use accessibility API", obj);
-            if (typeof obj.toggle === 'function') {
-              obj.toggle();
-              success = true;
-              logDebug("Successfully used toggle() method");
-              break;
-            } else if (typeof obj.show === 'function') {
-              obj.show();
-              success = true;
-              logDebug("Successfully used show() method");
-              break;
-            } else if (typeof obj.open === 'function') {
-              obj.open();
-              success = true;
-              logDebug("Successfully used open() method");
-              break;
-            }
-          } catch (error) {
-            logDebug("Error using accessibility API", error);
-          }
-        }
-      }
-    }
-
-    // Check if menu is visible
-    setTimeout(() => {
-      const menu = document.querySelector('.asw-menu, .sienna-menu, [class*="accessibility-menu"]');
-      if (menu) {
-        logDebug("Accessibility menu found after click", menu);
-        const menuStyle = window.getComputedStyle(menu);
-        logDebug("Menu visibility", {
-          display: menuStyle.display,
-          visibility: menuStyle.visibility,
-          opacity: menuStyle.opacity,
-          zIndex: menuStyle.zIndex,
-          pointerEvents: menuStyle.pointerEvents,
-          position: menuStyle.position
-        });
-        
+      // Approach 1: Use stored reference
+      if (siennaBtnRef.current) {
         try {
-          menu.style.zIndex = '999999';
-          menu.style.pointerEvents = 'auto';
-          menu.style.position = 'fixed';
-          
-          const childElements = menu.querySelectorAll('*');
-          childElements.forEach(child => {
-            child.style.pointerEvents = 'auto';
-          });
-          
-          logDebug("Applied fixes to accessibility menu");
-        } catch (error) {
-          logDebug("Error applying menu fixes", error);
-        }
-      } else {
-        logDebug("No accessibility menu found after click");
-      }
-    }, 500);
+          logDebug("Attempting to click stored button reference");
 
-    if (success) {
-      setTimeout(() => setShowFloating(false), 150);
-      logDebug("Sienna click handled successfully");
-    } else {
-      logDebug("All Sienna trigger methods failed");
-    }
-  }, [siennaLoading, logDebug]);
+          const originalDisplay = siennaBtnRef.current.style.display;
+          siennaBtnRef.current.style.display = "block";
+          siennaBtnRef.current.style.visibility = "visible";
+          siennaBtnRef.current.style.pointerEvents = "auto";
+
+          if (siennaBtnRef.current.onclick) {
+            siennaBtnRef.current.onclick();
+          } else {
+            siennaBtnRef.current.click();
+          }
+
+          const clickEvent = new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          });
+          siennaBtnRef.current.dispatchEvent(clickEvent);
+
+          setTimeout(() => {
+            siennaBtnRef.current.style.display = originalDisplay;
+          }, 100);
+
+          success = true;
+          logDebug("Successfully triggered stored button reference");
+        } catch (error) {
+          logDebug("Error clicking stored button reference", error);
+        }
+      }
+
+      // Approach 2: Query selector fallback
+      if (!success) {
+        const selectors = [
+          '.asw-menu-btn:not([style*="display: none"])',
+          ".asw-menu-btn",
+          ".sienna-btn",
+          ".sienna-menu-btn",
+          '[class*="sienna"]',
+          '[class*="asw"]:not(.asw-btn)',
+        ];
+
+        for (const selector of selectors) {
+          const btns = document.querySelectorAll(selector);
+          logDebug(`Found ${btns.length} elements with selector: ${selector}`);
+
+          for (const btn of btns) {
+            if (
+              btn.getAttribute("role") === "button" ||
+              btn.tagName === "BUTTON" ||
+              btn.tagName === "A"
+            ) {
+              try {
+                logDebug(`Attempting to click button:`, btn);
+
+                const originalDisplay = btn.style.display;
+                btn.style.display = "block";
+                btn.style.visibility = "visible";
+                btn.style.pointerEvents = "auto";
+
+                if (btn.onclick) {
+                  btn.onclick();
+                } else {
+                  btn.click();
+                }
+
+                const clickEvent = new MouseEvent("click", {
+                  bubbles: true,
+                  cancelable: true,
+                  view: window,
+                });
+                btn.dispatchEvent(clickEvent);
+
+                setTimeout(() => {
+                  btn.style.display = originalDisplay;
+                }, 100);
+
+                success = true;
+                logDebug("Successfully clicked button via selector");
+                break;
+              } catch (error) {
+                logDebug(
+                  `Error clicking button with selector ${selector}`,
+                  error
+                );
+              }
+            }
+          }
+          if (success) break;
+        }
+      }
+
+      // Approach 3: Try alternative APIs
+      if (!success) {
+        const possibleObjects = [
+          window.Sienna,
+          window.aswWidget,
+          window.ASW,
+          window.AccessibilityWidget,
+        ];
+
+        for (const obj of possibleObjects) {
+          if (obj) {
+            try {
+              logDebug("Attempting to use accessibility API", obj);
+              if (typeof obj.toggle === "function") {
+                obj.toggle();
+                success = true;
+                logDebug("Successfully used toggle() method");
+                break;
+              } else if (typeof obj.show === "function") {
+                obj.show();
+                success = true;
+                logDebug("Successfully used show() method");
+                break;
+              } else if (typeof obj.open === "function") {
+                obj.open();
+                success = true;
+                logDebug("Successfully used open() method");
+                break;
+              }
+            } catch (error) {
+              logDebug("Error using accessibility API", error);
+            }
+          }
+        }
+      }
+
+      // Check if menu is visible
+      setTimeout(() => {
+        const menu = document.querySelector(
+          '.asw-menu, .sienna-menu, [class*="accessibility-menu"]'
+        );
+        if (menu) {
+          logDebug("Accessibility menu found after click", menu);
+          const menuStyle = window.getComputedStyle(menu);
+          logDebug("Menu visibility", {
+            display: menuStyle.display,
+            visibility: menuStyle.visibility,
+            opacity: menuStyle.opacity,
+            zIndex: menuStyle.zIndex,
+            pointerEvents: menuStyle.pointerEvents,
+            position: menuStyle.position,
+          });
+
+          try {
+            menu.style.zIndex = "999999";
+            menu.style.pointerEvents = "auto";
+            menu.style.position = "fixed";
+
+            const childElements = menu.querySelectorAll("*");
+            childElements.forEach((child) => {
+              child.style.pointerEvents = "auto";
+            });
+
+            logDebug("Applied fixes to accessibility menu");
+          } catch (error) {
+            logDebug("Error applying menu fixes", error);
+          }
+        } else {
+          logDebug("No accessibility menu found after click");
+        }
+      }, 500);
+
+      if (success) {
+        setTimeout(() => setShowFloating(false), 150);
+        logDebug("Sienna click handled successfully");
+      } else {
+        logDebug("All Sienna trigger methods failed");
+      }
+    },
+    [siennaLoading, logDebug]
+  );
 
   // Debug info display - COMMENTED OUT
   // useEffect(() => {
@@ -558,12 +585,14 @@ const FloatingAccessibilityBar = () => {
       `}</style>
 
       {/* Debug Info - REMOVED */}
-      
+
       {/* Loading Sienna */}
       {siennaLoading && (
         <div className="fixed top-6 right-6 p-3 bg-white shadow-lg rounded-lg flex items-center gap-3 z-[9999] animate-pulse">
           <div className="w-5 h-5 border-gray-300 rounded-full border-3 border-t-transparent animate-spin"></div>
-          <span className="text-sm font-medium text-gray-700">Memuat aksesibilitas...</span>
+          <span className="text-sm font-medium text-gray-700">
+            Memuat aksesibilitas...
+          </span>
         </div>
       )}
 
@@ -573,7 +602,11 @@ const FloatingAccessibilityBar = () => {
           <button
             onClick={() => setShowFloating(!showFloating)}
             className="flex items-center justify-center text-2xl text-white transition-transform duration-300 rounded-full shadow-xl w-14 h-14 bg-cyan-800 hover:bg-cyan-900 hover:scale-110"
-            aria-label={showFloating ? "Tutup menu aksesibilitas" : "Buka menu aksesibilitas"}
+            aria-label={
+              showFloating
+                ? "Tutup menu aksesibilitas"
+                : "Buka menu aksesibilitas"
+            }
           >
             <i className={`fas ${showFloating ? "fa-times" : "fa-bars"}`}></i>
           </button>
@@ -584,11 +617,12 @@ const FloatingAccessibilityBar = () => {
       <div
         className={`
           fixed flex flex-col gap-3 top-1/2 -translate-y-1/2 right-6 z-[9999] transition-all duration-300
-          ${isDesktop 
-            ? 'opacity-100 translate-x-0' 
-            : showFloating 
-              ? 'opacity-100 translate-x-0' 
-              : 'opacity-0 translate-x-5 pointer-events-none'
+          ${
+            isDesktop
+              ? "opacity-100 translate-x-0"
+              : showFloating
+              ? "opacity-100 translate-x-0"
+              : "opacity-0 translate-x-5 pointer-events-none"
           }
         `}
       >
@@ -650,39 +684,41 @@ const FloatingAccessibilityBar = () => {
                       😊 Tingkat Kepuasan Anda
                     </label>
                     <div className="flex justify-around p-3 bg-white rounded-lg shadow">
-                      {["sangat_puas", "puas", "cukup", "tidak_puas"].map((val, idx) => (
-                        <label
-                          key={idx}
-                          className="flex flex-col items-center transition-transform cursor-pointer hover:scale-110"
-                        >
-                          <input
-                            type="radio"
-                            name="kepuasan"
-                            value={val}
-                            checked={formData.kepuasan === val}
-                            onChange={handleChange}
-                            className="hidden peer"
-                          />
-                          <span className="mb-1 text-3xl transition-transform peer-checked:scale-125 peer-checked:text-cyan-800">
-                            {val === "sangat_puas"
-                              ? "😄"
-                              : val === "puas"
-                              ? "🙂"
-                              : val === "cukup"
-                              ? "😐"
-                              : "🙁"}
-                          </span>
-                          <span className="text-xs text-gray-600">
-                            {val === "sangat_puas"
-                              ? "Sangat Puas"
-                              : val === "puas"
-                              ? "Puas"
-                              : val === "cukup"
-                              ? "Cukup"
-                              : "Tidak Puas"}
-                          </span>
-                        </label>
-                      ))}
+                      {["sangat_puas", "puas", "cukup", "tidak_puas"].map(
+                        (val, idx) => (
+                          <label
+                            key={idx}
+                            className="flex flex-col items-center transition-transform cursor-pointer hover:scale-110"
+                          >
+                            <input
+                              type="radio"
+                              name="kepuasan"
+                              value={val}
+                              checked={formData.kepuasan === val}
+                              onChange={handleChange}
+                              className="hidden peer"
+                            />
+                            <span className="mb-1 text-3xl transition-transform peer-checked:scale-125 peer-checked:text-cyan-800">
+                              {val === "sangat_puas"
+                                ? "😄"
+                                : val === "puas"
+                                ? "🙂"
+                                : val === "cukup"
+                                ? "😐"
+                                : "🙁"}
+                            </span>
+                            <span className="text-xs text-gray-600">
+                              {val === "sangat_puas"
+                                ? "Sangat Puas"
+                                : val === "puas"
+                                ? "Puas"
+                                : val === "cukup"
+                                ? "Cukup"
+                                : "Tidak Puas"}
+                            </span>
+                          </label>
+                        )
+                      )}
                     </div>
                   </div>
 
@@ -692,7 +728,10 @@ const FloatingAccessibilityBar = () => {
                     </label>
                     <div className="flex gap-8 p-3 bg-white rounded-lg shadow">
                       {["ya", "tidak"].map((val) => (
-                        <label key={val} className="flex items-center gap-2 cursor-pointer">
+                        <label
+                          key={val}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
                           <input
                             type="radio"
                             name="dapatMenemukan"
@@ -708,7 +747,9 @@ const FloatingAccessibilityBar = () => {
                   </div>
 
                   <div>
-                    <label className="block mb-2 font-semibold text-gray-800">💬 Kritik & Saran</label>
+                    <label className="block mb-2 font-semibold text-gray-800">
+                      💬 Kritik & Saran
+                    </label>
                     <textarea
                       name="kritikSaran"
                       value={formData.kritikSaran}
@@ -723,7 +764,9 @@ const FloatingAccessibilityBar = () => {
                     type="submit"
                     disabled={loading}
                     className={`w-full py-3 rounded-lg font-semibold text-white transition-colors ${
-                      loading ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-800 hover:bg-cyan-900"
+                      loading
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-cyan-800 hover:bg-cyan-900"
                     }`}
                   >
                     {loading ? (
@@ -740,37 +783,72 @@ const FloatingAccessibilityBar = () => {
 
               {/* Modal Akses Cepat */}
               {activeModal === "aksesCepat" && (
-                <div className="space-y-4">
-                  <p className="leading-relaxed text-gray-700">
-                    Dapatkan akses cepat ke layanan publik Diskominfo Kota Bogor.
-                  </p>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    {["/layanan", "/agenda", "/kontak", "/faq"].map((href, idx) => (
+                <div className="space-y-6">
+                  <div className="p-4 space-y-2 border rounded-lg bg-cyan-50 border-cyan-100">
+                    <h3 className="font-semibold text-cyan-900">
+                      🏛️ Layanan Diskominfo
+                    </h3>
+                    <p className="text-sm text-cyan-700">
+                      Akses berbagai layanan dan informasi penting dari Dinas
+                      Komunikasi dan Informatika Kota Bogor.
+                    </p>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      {
+                        title: "Pengajuan TTE",
+                        desc: "Tanda tangan elektronik untuk mengesahkan dokumen secara digital",
+                        href: "https://tte.kotabogor.go.id",
+                        icon: "fa-signature",
+                      },
+                      {
+                        title: "Chat Bogor Citizen Support",
+                        desc: "Layanan chat untuk berkomunikasi dengan staf Bogor Citizen Support",
+                        href: "https://bcs.kotabogor.go.id",
+                        icon: "fa-comments",
+                      },
+                      {
+                        title: "Pembuatan Email Dinas",
+                        desc: "Buat email resmi untuk keperluan instansi dan organisasi",
+                        href: "https://email.kotabogor.go.id",
+                        icon: "fa-envelope",
+                      },
+                      {
+                        title: "PPID",
+                        desc: "Pejabat Pengelola Informasi Dan Dokumentasi Kota Bogor",
+                        href: "https://ppid.kotabogor.go.id",
+                        icon: "fa-file-alt",
+                      },
+                      {
+                        title: "Inspektorat Kota Bogor",
+                        desc: "Saluran pengaduan resmi terkait kinerja pemerintah daerah",
+                        href: "https://inspektorat.kotabogor.go.id",
+                        icon: "fa-building",
+                      },
+                    ].map((item, i) => (
                       <a
-                        key={idx}
-                        href={href}
-                        className="p-4 text-center text-white transition rounded-lg shadow bg-cyan-800 hover:bg-cyan-900"
-                        onClick={() => {
-                          setActiveModal(null);
-                          window.scrollTo(0, 0);
-                        }}
+                        key={i}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-4 transition-all bg-white rounded-lg border border-gray-100 hover:border-cyan-300 hover:shadow-lg hover:-translate-y-0.5"
+                        onClick={() => setActiveModal(null)}
                       >
-                        <div className="flex flex-col items-center gap-1">
-                          <i className={`text-lg ${
-                            href === "/layanan" ? "fas fa-concierge-bell" :
-                            href === "/agenda" ? "fas fa-calendar-alt" :
-                            href === "/kontak" ? "fas fa-address-book" :
-                            "fas fa-question-circle"
-                          }`}></i>
-                          <span>
-                            {href === "/layanan"
-                              ? "Layanan Publik"
-                              : href === "/agenda"
-                              ? "Agenda Kegiatan"
-                              : href === "/kontak"
-                              ? "Kontak Instansi"
-                              : "FAQ"}
-                          </span>
+                        <div className="flex items-start gap-4">
+                          <div className="p-3 text-xl text-white rounded-lg bg-cyan-800">
+                            <i className={`fas ${item.icon}`} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <h3 className="font-semibold text-gray-800">
+                                {item.title}
+                              </h3>
+                              <i className="text-sm text-cyan-600 fas fa-external-link-alt" />
+                            </div>
+                            <p className="mt-1 text-sm text-gray-600">
+                              {item.desc}
+                            </p>
+                          </div>
                         </div>
                       </a>
                     ))}
@@ -812,7 +890,9 @@ const FloatingAccessibilityBar = () => {
                     searchQuery && (
                       <div className="p-6 text-center text-gray-500 bg-white rounded-lg shadow">
                         <i className="block mb-2 text-3xl fas fa-search opacity-60"></i>
-                        <p>Tidak ada berita yang cocok dengan "{searchQuery}"</p>
+                        <p>
+                          Tidak ada berita yang cocok dengan "{searchQuery}"
+                        </p>
                       </div>
                     )
                   )}

@@ -5,7 +5,7 @@ import { Menu, X, ChevronDown } from "lucide-react";
 
 // --- PERSIAPKAN DUA FILE LOGO ---
 // 1. Ganti path ini dengan logo versi berwarna/hitam Anda
-const logoColor = "/src/assets/BannerLink/kominfologo2.webp"; 
+const logoColor = "/src/assets/BannerLink/kominfologo2.webp";
 // 2. Ganti path ini dengan logo versi putih Anda
 const logoWhite = "/src/assets/BannerLink/kominfologo.webp";
 
@@ -94,11 +94,12 @@ export default function Navbar() {
 
   const closeMenu = () => setIsMenuOpen(false);
 
+  // --- [UBAH] Logika kelas untuk Navbar diubah di sini ---
   const navClasses = clsx(
     "fixed top-0 z-50 w-full transition-all duration-300",
     isScrolled || isMenuOpen
       ? "bg-white shadow-lg"
-      : "bg-transparent text-white"
+      : "bg-gradient-to-b from-black/60 to-transparent text-white pt-4 pb-10" // Menambahkan gradient dan padding
   );
 
   const linkClasses = (isActive, hasSubmenu = false) => {
@@ -108,7 +109,8 @@ export default function Navbar() {
     if (isScrolled || isMenuOpen) {
       return clsx(baseClasses, submenuClasses, isActive ? "bg-cyan-100 text-cyan-900" : "text-gray-700 hover:bg-cyan-100 hover:text-cyan-800");
     }
-    return clsx(baseClasses, submenuClasses, isActive ? "bg-white/20" : "hover:bg-white/20");
+    // Saat transparan, teks selalu putih
+    return clsx(baseClasses, submenuClasses, "text-white", isActive ? "bg-white/20" : "hover:bg-white/20");
   };
 
   const mobileButtonClasses = clsx(
@@ -120,10 +122,12 @@ export default function Navbar() {
 
   return (
     <nav ref={navRef} className={navClasses}>
+      {/* --- [UBAH] Container diubah untuk mengakomodasi padding baru --- */}
       <div className="mx-auto max-w-7xl">
-        <div className="flex items-center justify-between h-20 px-4 md:px-6">
+        <div className="flex items-center justify-between h-16 px-4 md:px-6">
           <Link to="/" onClick={closeMenu} className="flex-shrink-0 ">
             <img
+              // --- [UBAH] Logo selalu putih saat gradient, kecuali menu mobile terbuka ---
               src={isScrolled || isMenuOpen ? logoColor : logoWhite}
               alt="Logo Kominfo"
               className="w-auto h-12 transition-all duration-300 md:h-14 md:pl-[10px] hover:scale-105"
@@ -164,7 +168,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={mobileButtonClasses} 
+              className={mobileButtonClasses}
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -173,80 +177,76 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Panel (Fullscreen) */}
-     {/* Mobile Menu Panel (Fullscreen) */}
-{isMenuOpen && (
-  <div className="fixed inset-0 z-40 bg-white md:hidden animate-slide-down-and-fade">
-    {/* Close Button */}
-    <div className="absolute top-4 right-4">
-      <button
-        onClick={closeMenu}
-        className="p-2 text-gray-700 rounded-lg hover:bg-cyan-100"
-        aria-label="Close menu"
-      >
-        <X size={28} />
-      </button>
-    </div>
-
-    <div className="h-screen pt-20 overflow-y-auto">
-      <div className="px-6 py-8 space-y-3">
-        {navLinks.map((link, index) => (
-          <div key={index}>
-            {link.submenu ? (
-              <div>
-                <button
-                  onClick={() => handleMobileSubmenuToggle(index)}
-                  className="flex items-center justify-between w-full px-4 py-3 text-lg font-semibold text-left text-gray-700 transition-colors rounded-lg hover:bg-cyan-100"
-                >
-                  {link.label}
-                  <ChevronDown
-                    className={clsx(
-                      "w-5 h-5 transition-transform duration-300",
-                      activeSubmenu === index && "rotate-180"
-                    )}
-                  />
-                </button>
-                {activeSubmenu === index && (
-                  <div className="pl-4 mt-2 ml-4 space-y-2 border-l-2 border-cyan-200 animate-fade-in-up">
-                    {link.submenu.map((subItem) => (
-                      <Link
-                        key={subItem.href}
-                        to={subItem.href}
-                        onClick={closeMenu}
-                        className={clsx(
-                          "block rounded-lg px-4 py-2.5 text-base transition-colors",
-                          location.pathname === subItem.href
-                            ? "bg-cyan-100 text-cyan-900 font-semibold"
-                            : "text-gray-600 hover:bg-cyan-100"
-                        )}
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link
-                to={link.href}
-                onClick={closeMenu}
-                className={clsx(
-                  "block rounded-lg px-4 py-3 font-semibold text-lg transition-colors",
-                  location.pathname === link.href
-                    ? "bg-cyan-100 text-cyan-900"
-                    : "text-gray-700 hover:bg-cyan-100"
-                )}
-              >
-                {link.label}
-              </Link>
-            )}
+      {/* Mobile Menu Panel (Fullscreen) - Tidak ada perubahan di sini */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-white md:hidden animate-slide-down-and-fade">
+          <div className="absolute top-4 right-4">
+            <button
+              onClick={closeMenu}
+              className="p-2 text-gray-700 rounded-lg hover:bg-cyan-100"
+              aria-label="Close menu"
+            >
+              <X size={28} />
+            </button>
           </div>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
-
+          <div className="h-screen pt-20 overflow-y-auto">
+            <div className="px-6 py-8 space-y-3">
+              {navLinks.map((link, index) => (
+                <div key={index}>
+                  {link.submenu ? (
+                    <div>
+                      <button
+                        onClick={() => handleMobileSubmenuToggle(index)}
+                        className="flex items-center justify-between w-full px-4 py-3 text-lg font-semibold text-left text-gray-700 transition-colors rounded-lg hover:bg-cyan-100"
+                      >
+                        {link.label}
+                        <ChevronDown
+                          className={clsx(
+                            "w-5 h-5 transition-transform duration-300",
+                            activeSubmenu === index && "rotate-180"
+                          )}
+                        />
+                      </button>
+                      {activeSubmenu === index && (
+                        <div className="pl-4 mt-2 ml-4 space-y-2 border-l-2 border-cyan-200 animate-fade-in-up">
+                          {link.submenu.map((subItem) => (
+                            <Link
+                              key={subItem.href}
+                              to={subItem.href}
+                              onClick={closeMenu}
+                              className={clsx(
+                                "block rounded-lg px-4 py-2.5 text-base transition-colors",
+                                location.pathname === subItem.href
+                                  ? "bg-cyan-100 text-cyan-900 font-semibold"
+                                  : "text-gray-600 hover:bg-cyan-100"
+                              )}
+                            >
+                              {subItem.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      onClick={closeMenu}
+                      className={clsx(
+                        "block rounded-lg px-4 py-3 font-semibold text-lg transition-colors",
+                        location.pathname === link.href
+                          ? "bg-cyan-100 text-cyan-900"
+                          : "text-gray-700 hover:bg-cyan-100"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

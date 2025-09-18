@@ -14,10 +14,12 @@ import Sejarah from "./pages/Sejarah";
 import Struktur from "./pages/Struktur";
 import Kontak from "./pages/Kontak";
 import SambutanFull from "./pages/SambutanFull";
+
 import GaleriPage  from "./pages/GaleriPage";
 import FotoPage from "./pages/FotoPage";
 import VideoPage from "./pages/VideoPage";
 import DokumenPage from "./pages/DokumenPage";
+import DetailGaleriPage from "./pages/DetailGaleriPage";
 
 export default function App() {
   return (
@@ -51,14 +53,16 @@ export default function App() {
         {/* Halaman Kontak */}
         <Route path="/kontak" element={<Kontak />} />
 
-        {/* Halaman Galeri */}
-        <Route path="/galeri" element={<GaleriPage />} />
 
-        {/* Halaman Foto */}
-        <Route path="/galeri/foto" element={<FotoPage />} />
+  {/* Halaman Galeri */}
+  <Route path="/galeri" element={<GaleriPage />} />
+  <Route path="/galeri/:category" element={<DetailGaleriPage />} />
 
-        {/* Halaman Video */}
-        <Route path="/galeri/video" element={<VideoPage />} />
+  {/* Halaman Foto */}
+  <Route path="/galeri/foto" element={<FotoPage />} />
+
+  {/* Halaman Video */}
+  <Route path="/galeri/video" element={<VideoPage />} />
 
         {/* Halaman Dokumen */}
         <Route path="/dokumen" element={<DokumenPage />} />

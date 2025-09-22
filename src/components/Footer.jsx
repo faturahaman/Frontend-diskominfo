@@ -3,9 +3,9 @@ import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="bg-[#141426] text-white py-10 px-6 md:px-16">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 gap-8 mx-auto md:grid-cols-3 max-w-7xl">
         {/* Map Placeholder */}
-        <div className="w-full h-48 md:h-56 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden">
+        <div className="flex items-center justify-center w-full h-48 overflow-hidden bg-gray-800 rounded-lg md:h-56">
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15853.664411030328!2d106.79366500000002!3d-6.595095!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c5b7d2e12d0d%3A0x9b59e38fc692d9fe!2sKantor%20Kominfo%20Kota%20Bogor!5e0!3m2!1sen!2sid!4v1757298666810!5m2!1sen!2sid"
             className="w-full h-full"
@@ -18,20 +18,20 @@ export default function Footer() {
 
         {/* Kontak Kami */}
         <div>
-          <h3 className="text-lg font-semibold border-l-4 border-blue-500 pl-2 mb-4">
+          <h3 className="pl-2 mb-4 text-lg font-semibold border-l-4 border-blue-500">
             Kontak Kami
           </h3>
-          <p className="text-sm leading-relaxed mb-2">
+          <p className="mb-2 text-sm leading-relaxed">
             Jl. Ir. H. Juanda No.10, RT.01/RW.01, Pabaton,
             <br />
             Kecamatan Bogor Tengah, Kota Bogor,
             <br />
             Jawa Barat 16121
           </p>
-          <p className="text-sm mb-1">
+          <p className="mb-1 text-sm">
             <span className="font-semibold">Telp:</span> +62251-8321075 Ext. 287
           </p>
-          <p className="text-sm mb-3">
+          <p className="mb-3 text-sm">
             <span className="font-semibold">Email:</span>{" "}
             <a
               href="mailto:kominfo@kotabogor.go.id"
@@ -60,23 +60,23 @@ export default function Footer() {
 
         {/* Statistik Pengunjung */}
         <div>
-          <h3 className="text-lg font-semibold border-l-4 border-blue-500 pl-2 mb-4">
+          <h3 className="pl-2 mb-4 text-lg font-semibold border-l-4 border-blue-500">
             Statistika Pengunjung
           </h3>
-          <ul className="text-sm space-y-2">
-            <li className="flex justify-between border-b border-gray-700 pb-1">
+          <ul className="space-y-2 text-sm">
+            <li className="flex justify-between pb-1 border-b border-gray-700">
               <span>Hari ini</span>
               <span>--</span>
             </li>
-            <li className="flex justify-between border-b border-gray-700 pb-1">
+            <li className="flex justify-between pb-1 border-b border-gray-700">
               <span>Bulan ini</span>
               <span>----</span>
             </li>
-            <li className="flex justify-between border-b border-gray-700 pb-1">
+            <li className="flex justify-between pb-1 border-b border-gray-700">
               <span>Tahun ini</span>
               <span>------</span>
             </li>
-            <li className="flex justify-between border-b border-gray-700 pb-1">
+            <li className="flex justify-between pb-1 border-b border-gray-700">
               <span>Total Kunjungan</span>
               <span>-------</span>
             </li>
@@ -85,7 +85,7 @@ export default function Footer() {
       </div>
 
       {/* Copyright */}
-      <div className="text-center text-xs text-gray-400 mt-10 border-t border-gray-800 pt-4">
+      <div className="pt-4 mt-10 text-xs text-center text-gray-400 border-t border-gray-800">
         Copyright © 2025 Dinas Kominfo Kota Bogor. All Right Reserved.
       </div>
     </footer>

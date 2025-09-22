@@ -2,6 +2,19 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { newsData } from "../dummy/data";
+import {
+  Star,
+  MessageSquare,
+  Accessibility,
+  Search,
+  Zap,
+  Home,
+  Newspaper,
+  ExternalLink,
+  Send,
+  AlertCircle,
+  Loader,
+} from "lucide-react";
 
 const FloatingAccessibilityBar = () => {
   const [activeModal, setActiveModal] = useState(null);
@@ -438,9 +451,23 @@ const FloatingAccessibilityBar = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   }, []);
 
+  const [submitStatus, setSubmitStatus] = useState({ show: false, success: false, message: '' });
+
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
+      
+      // Basic validation
+      if (!formData.kepuasan || !formData.dapatMenemukan) {
+        setSubmitStatus({
+          show: true,
+          success: false,
+          message: 'Mohon lengkapi semua penilaian yang diperlukan'
+        });
+        setTimeout(() => setSubmitStatus({ show: false, success: false, message: '' }), 3000);
+        return;
+      }
+
       setLoading(true);
       try {
         const res = await fetch("http://localhost:8000/api/penilaian", {
@@ -448,12 +475,30 @@ const FloatingAccessibilityBar = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
+        
         if (!res.ok) throw new Error("Gagal mengirim penilaian");
-        alert("✅ Terima kasih, penilaian Anda berhasil dikirim!");
+        
+        setSubmitStatus({
+          show: true,
+          success: true,
+          message: '✨ Terima kasih atas penilaian Anda!'
+        });
+        
+        // Reset form after successful submission
         setFormData({ kepuasan: "", dapatMenemukan: "", kritikSaran: "" });
-        setActiveModal(null);
+        
+        // Close modal after a delay
+        setTimeout(() => {
+          setActiveModal(null);
+          setSubmitStatus({ show: false, success: false, message: '' });
+        }, 2000);
       } catch (err) {
-        alert("❌ Terjadi kesalahan: " + err.message);
+        setSubmitStatus({
+          show: true,
+          success: false,
+          message: '❌ Gagal mengirim: ' + err.message
+        });
+        setTimeout(() => setSubmitStatus({ show: false, success: false, message: '' }), 3000);
       } finally {
         setLoading(false);
       }
@@ -482,7 +527,7 @@ const FloatingAccessibilityBar = () => {
       title: "Beri Penilaian",
       bg: "bg-cyan-800",
       hover: "hover:bg-cyan-900",
-      icon: "fas fa-star",
+      icon: Star,
       onClick: (e) => {
         e.preventDefault();
         setActiveModal("penilaian");
@@ -493,8 +538,8 @@ const FloatingAccessibilityBar = () => {
       title: "Aduan Warga",
       bg: "bg-cyan-800",
       hover: "hover:bg-cyan-900",
-      icon: "fas fa-bullhorn",
-      href: "https://sibadra.kotabogor.go.id  ",
+      icon: MessageSquare,
+      href: "https://sibadra.kotabogor.go.id",
       target: "_blank",
     },
     {
@@ -502,9 +547,7 @@ const FloatingAccessibilityBar = () => {
       title: siennaClicking ? "Memuat..." : "Aksesibilitas",
       bg: siennaLoading ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-800",
       hover: siennaLoading ? "" : "hover:bg-cyan-900",
-      icon: siennaClicking
-        ? "fas fa-spinner animate-spin"
-        : "fas fa-universal-access",
+      icon: siennaClicking ? Loader : Accessibility,
       onClick: handleSiennaClick,
     },
     {
@@ -512,7 +555,7 @@ const FloatingAccessibilityBar = () => {
       title: "Cari Berita",
       bg: "bg-cyan-800",
       hover: "hover:bg-cyan-900",
-      icon: "fas fa-search",
+      icon: Search,
       onClick: (e) => {
         e.preventDefault();
         setActiveModal("search");
@@ -523,7 +566,7 @@ const FloatingAccessibilityBar = () => {
       title: "Akses Cepat",
       bg: "bg-cyan-800",
       hover: "hover:bg-cyan-900",
-      icon: "fas fa-bolt",
+      icon: Zap,
       onClick: (e) => {
         e.preventDefault();
         setActiveModal("aksesCepat");
@@ -638,10 +681,13 @@ const FloatingAccessibilityBar = () => {
             className={`${btn.bg} ${btn.hover} w-14 h-14 text-white flex items-center justify-center rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 hover:shadow-xl group cursor-pointer`}
             aria-label={btn.title}
           >
-            <i className={`${btn.icon} text-lg`}></i>
-            <span className="absolute z-50 px-3 py-2 mr-4 text-xs font-medium text-white transition-opacity duration-300 -translate-y-1/2 bg-gray-900 rounded-md opacity-0 pointer-events-none whitespace-nowrap right-full top-1/2 group-hover:opacity-100">
-              {btn.title}
-            </span>
+            <btn.icon className="w-5 h-5 transition-transform group-hover:scale-110" />
+            <div className="absolute z-50 px-3 py-2 mr-4 transition-all duration-300 transform translate-x-2 -translate-y-1/2 rounded-lg shadow-lg opacity-0 pointer-events-none right-full top-1/2 bg-gray-900/95 backdrop-blur-sm group-hover:opacity-100 group-hover:translate-x-0">
+              <span className="block text-xs font-medium text-white whitespace-nowrap">
+                {btn.title}
+              </span>
+              <div className="absolute right-0 w-2 h-2 transform rotate-45 translate-x-1/2 -translate-y-1/2 top-1/2 bg-gray-900/95"></div>
+            </div>
           </a>
         ))}
       </div>
@@ -679,16 +725,30 @@ const FloatingAccessibilityBar = () => {
               {/* Modal Penilaian */}
               {activeModal === "penilaian" && (
                 <form className="space-y-6" onSubmit={handleSubmit}>
+                  {/* Status Message */}
+                  {submitStatus.show && (
+                    <div
+                      className={`p-4 rounded-lg shadow-lg transform transition-all duration-300 ${
+                        submitStatus.success
+                          ? 'bg-green-50 border border-green-200 text-green-700'
+                          : 'bg-red-50 border border-red-200 text-red-700'
+                      } animate-fade-in`}
+                    >
+                      {submitStatus.message}
+                    </div>
+                  )}
+                  
                   <div>
                     <label className="block mb-3 font-semibold text-gray-800">
                       😊 Tingkat Kepuasan Anda
+                      <span className="ml-1 text-red-500">*</span>
                     </label>
-                    <div className="flex justify-around p-3 bg-white rounded-lg shadow">
+                    <div className="flex justify-around p-4 transition-shadow duration-300 bg-white rounded-lg shadow-md hover:shadow-lg">
                       {["sangat_puas", "puas", "cukup", "tidak_puas"].map(
                         (val, idx) => (
                           <label
                             key={idx}
-                            className="flex flex-col items-center transition-transform cursor-pointer hover:scale-110"
+                            className="flex flex-col items-center transition-all duration-300 cursor-pointer hover:scale-110 group"
                           >
                             <input
                               type="radio"
@@ -697,17 +757,26 @@ const FloatingAccessibilityBar = () => {
                               checked={formData.kepuasan === val}
                               onChange={handleChange}
                               className="hidden peer"
+                              required
                             />
-                            <span className="mb-1 text-3xl transition-transform peer-checked:scale-125 peer-checked:text-cyan-800">
-                              {val === "sangat_puas"
-                                ? "😄"
-                                : val === "puas"
-                                ? "🙂"
-                                : val === "cukup"
-                                ? "😐"
-                                : "🙁"}
-                            </span>
-                            <span className="text-xs text-gray-600">
+                            <div className={`
+                              p-3 rounded-full mb-2 transition-all duration-300
+                              ${formData.kepuasan === val ? 'bg-cyan-100 scale-110' : 'bg-gray-50 group-hover:bg-cyan-50'}
+                            `}>
+                              <span className="text-3xl transition-transform duration-300 peer-checked:scale-125">
+                                {val === "sangat_puas"
+                                  ? "😄"
+                                  : val === "puas"
+                                  ? "🙂"
+                                  : val === "cukup"
+                                  ? "😐"
+                                  : "🙁"}
+                              </span>
+                            </div>
+                            <span className={`
+                              text-sm font-medium transition-colors duration-300
+                              ${formData.kepuasan === val ? 'text-cyan-800' : 'text-gray-600 group-hover:text-cyan-700'}
+                            `}>
                               {val === "sangat_puas"
                                 ? "Sangat Puas"
                                 : val === "puas"
@@ -725,12 +794,19 @@ const FloatingAccessibilityBar = () => {
                   <div>
                     <label className="block mb-3 font-semibold text-gray-800">
                       📌 Apakah Anda dapat menemukan berita/informasi?
+                      <span className="ml-1 text-red-500">*</span>
                     </label>
-                    <div className="flex gap-8 p-3 bg-white rounded-lg shadow">
+                    <div className="grid grid-cols-2 gap-4 p-4 transition-shadow duration-300 bg-white rounded-lg shadow-md hover:shadow-lg">
                       {["ya", "tidak"].map((val) => (
                         <label
                           key={val}
-                          className="flex items-center gap-2 cursor-pointer"
+                          className={`
+                            flex items-center justify-center gap-3 p-4 rounded-lg cursor-pointer
+                            transition-all duration-300 hover:scale-105
+                            ${formData.dapatMenemukan === val 
+                              ? 'bg-cyan-100 border-2 border-cyan-300' 
+                              : 'bg-gray-50 border-2 border-transparent hover:bg-cyan-50'}
+                          `}
                         >
                           <input
                             type="radio"
@@ -738,44 +814,63 @@ const FloatingAccessibilityBar = () => {
                             value={val}
                             checked={formData.dapatMenemukan === val}
                             onChange={handleChange}
-                            className="w-4 h-4 text-cyan-800"
+                            className="hidden"
+                            required
                           />
-                          <span>{val === "ya" ? "Ya" : "Tidak"}</span>
+                          <span className={`
+                            text-lg font-medium transition-colors duration-300
+                            ${formData.dapatMenemukan === val ? 'text-cyan-800' : 'text-gray-600'}
+                          `}>
+                            {val === "ya" ? "Ya ✓" : "Tidak ✗"}
+                          </span>
                         </label>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block mb-2 font-semibold text-gray-800">
+                    <label className="block mb-3 font-semibold text-gray-800">
                       💬 Kritik & Saran
+                      <span className="ml-2 text-sm font-normal text-gray-500">(Opsional)</span>
                     </label>
-                    <textarea
-                      name="kritikSaran"
-                      value={formData.kritikSaran}
-                      onChange={handleChange}
-                      className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-cyan-800 focus:border-transparent"
-                      rows="4"
-                      placeholder="Tulis saran atau kritik Anda di sini..."
-                    ></textarea>
+                    <div className="relative">
+                      <textarea
+                        name="kritikSaran"
+                        value={formData.kritikSaran}
+                        onChange={handleChange}
+                        className="w-full p-4 transition-all duration-300 bg-white border-2 border-gray-200 rounded-lg shadow-md resize-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-300 hover:border-cyan-300 hover:shadow-lg"
+                        rows="4"
+                        placeholder="Bagikan pengalaman dan saran Anda untuk membantu kami meningkatkan layanan..."
+                      ></textarea>
+                      <div className="absolute text-sm text-gray-400 bottom-3 right-3">
+                        {formData.kritikSaran.length}/500
+                      </div>
+                    </div>
                   </div>
 
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full py-3 rounded-lg font-semibold text-white transition-colors ${
-                      loading
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-cyan-800 hover:bg-cyan-900"
-                    }`}
+                    className={`
+                      w-full py-4 rounded-lg font-semibold text-white
+                      transition-all duration-300 transform
+                      flex items-center justify-center gap-2
+                      ${loading
+                        ? 'bg-gray-400 cursor-not-allowed opacity-80'
+                        : 'bg-cyan-600 hover:bg-cyan-700 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl'
+                      }
+                    `}
                   >
                     {loading ? (
-                      <span className="flex items-center justify-center">
-                        <i className="mr-2 fas fa-spinner animate-spin"></i>
-                        Mengirim...
-                      </span>
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Mengirim...</span>
+                      </>
                     ) : (
-                      "Kirim Penilaian"
+                      <>
+                        <Send className="w-5 h-5" />
+                        <span>Kirim Penilaian</span>
+                      </>
                     )}
                   </button>
                 </form>

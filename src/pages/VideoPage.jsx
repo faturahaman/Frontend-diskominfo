@@ -9,15 +9,18 @@ const GaleriVideo = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(videoItems.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentItems = videoItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentItems = videoItems.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
 
   return (
     <SecondaryPageTemplate
       title="Galeri Video Diskominfo Kota Bogor"
       breadcrumb={[
         { label: "Beranda", link: "/" },
-        { label: "Galeri    ", link: "/galeri" },
-        { label: "Galeri Video lengkap", link: "/galeri/video" },
+        { label: "Galeri", link: "/galeri" },
+        { label: "Video", link: "/galeri/video" },
       ]}
     >
       <section className="mb-16">
@@ -37,11 +40,17 @@ const GaleriVideo = () => {
                   className="object-cover w-full h-full transition duration-300 group-hover:scale-105"
                 />
               </div>
-              <h5 className="py-3 font-bold text-center text-gray-800">{item.title}</h5>
+              <h5 className="py-3 font-bold text-center text-gray-800">
+                {item.title}
+              </h5>
             </a>
           ))}
         </div>
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </section>
     </SecondaryPageTemplate>
   );

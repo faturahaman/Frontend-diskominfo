@@ -1,24 +1,73 @@
 import React, { useState, useEffect } from "react";
-import SecondaryPageTemplate from "../ui/PageLayout"; // Sesuaikan path
-
-// Import data dari file eksternal
+import { Link } from "react-router-dom";
+import SecondaryPageTemplate from "../ui/PageLayout";
+import { Camera, Video, ArrowRight } from "lucide-react";
 import albumData from "../dummy/albumData";
 import videoItems from "../dummy/videoData";
 
-const GaleriPage = () => {
-  const [itemsToShow, setItemsToShow] = useState(6);
+// ... (Komponen AlbumCard, VideoCard, dan SectionHeader tetap sama)
 
-  // Deteksi ukuran layar
+const AlbumCard = ({ album }) => (
+  <Link
+    to={`/galeri/${album.category}`}
+    className="block w-full max-w-sm overflow-hidden transition-all duration-300 bg-white shadow-lg group rounded-xl hover:shadow-2xl hover:-translate-y-2"
+  >
+    <div className="relative h-56 overflow-hidden">
+      <img
+        src={album.photos[0]?.url || 'https://via.placeholder.com/400x300?text=No+Image'}
+        alt={album.name}
+        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+      <div className="absolute bottom-4 left-4">
+        <h3 className="text-xl font-bold text-white drop-shadow-md">{album.name}</h3>
+        <p className="text-sm text-gray-200">{album.photos.length} Foto</p>
+      </div>
+    </div>
+  </Link>
+);
+
+const VideoCard = ({ item }) => (
+  <a
+    href={item.link}
+    target="_blank"
+    rel="noreferrer"
+    className="block w-full max-w-sm overflow-hidden transition-all duration-300 bg-white shadow-lg group rounded-xl hover:shadow-2xl hover:-translate-y-2"
+  >
+    <div className="relative h-56 overflow-hidden">
+      <img
+        src={item.img}
+        alt={item.title}
+        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+      />
+      <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-0 bg-black/40 group-hover:opacity-100">
+        <Video className="w-16 h-16 text-white opacity-80" />
+      </div>
+    </div>
+    <div className="p-4">
+      <h4 className="font-bold text-gray-800 line-clamp-2">{item.title}</h4>
+      <p className="mt-1 text-xs text-gray-500">{item.date}</p>
+    </div>
+  </a>
+);
+
+const SectionHeader = ({ icon: Icon, title }) => (
+  <div className="flex items-center gap-3 mb-8">
+    <div className="flex items-center justify-center w-12 h-12 bg-cyan-100 text-cyan-700 rounded-xl">
+      <Icon className="w-6 h-6" />
+    </div>
+    <h2 className="text-3xl font-bold text-gray-800">{title}</h2>
+  </div>
+);
+
+
+export default function GaleriPage() {
+  const [itemsToShow, setItemsToShow] = useState(6);
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setItemsToShow(3); // Mobile
-      } else {
-        setItemsToShow(6); // Tablet/Desktop
-      }
+      setItemsToShow(window.innerWidth < 640 ? 3 : 6);
     };
-
-    handleResize(); // jalankan sekali saat mount
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -28,98 +77,44 @@ const GaleriPage = () => {
       title="Galeri Diskominfo Kota Bogor"
       breadcrumb={[
         { label: "Beranda", link: "/" },
-        { label: "Galeri" },
+        { label: "Galeri", link: "/galeri" }, // ✨ PERBAIKAN DI SINI
       ]}
     >
-      {/* Section: Foto Kegiatan */}
-      <section className="mb-16">
-        <h2 className="mb-8 text-2xl font-bold text-left text-gray-800">
-          Album
-        </h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 justify-items-center">
-          {albumData.slice(0, itemsToShow).map((album, index) => (
-            <a
-              key={album.id}
-              href={`/galeri/${album.category}`}
-              className="block w-full max-w-xs transition bg-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 group"
+      <div className="space-y-20">
+        <section>
+          <SectionHeader icon={Camera} title="Album Foto" />
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {albumData.slice(0, itemsToShow).map((album) => (
+              <AlbumCard key={album.id} album={album} />
+            ))}
+          </div>
+          <div className="flex justify-center mt-12">
+            <Link
+              to="/galeri/foto"
+              className="inline-flex items-center gap-2 px-8 py-3 text-sm font-semibold text-white transition-transform duration-200 bg-[#3f7d9a] rounded-full shadow-lg hover:bg-[#dd8c43] hover:scale-105"
             >
-              <div className="overflow-hidden h-52">
-                <img
-                  src={album.photos[0]?.url || 'https://via.placeholder.com/400x300?text=No+Image'}
-                  alt={album.name}
-                  className="object-cover w-full h-full transition duration-300 group-hover:scale-105"
-                />
-              </div>
-              <h5 className="py-3 font-bold text-center text-gray-800">
-                {album.name}
-              </h5>
-            </a>
-          ))}
-        </div>
-        <div className="flex justify-center mt-8">
-          <a
-            href="/galeri/foto"
-            className="bg-[#3f7d9a] text-white px-6 py-2 rounded-full font-bold hover:bg-[#dd8c43] transition"
-          >
-            LIHAT SELENGKAPNYA
-          </a>
-        </div>
-      </section>
+              Lihat Semua Album <ArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
 
-      {/* Section: Video */}
-      <section className="mb-16">
-        <h2 className="mb-8 text-2xl font-bold text-left text-gray-800">
-          Video
-        </h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 justify-items-center">
-          {videoItems.slice(0, itemsToShow).map((item, index) => (
-            <a
-              key={index}
-              href={item.link}
-              target="_blank"
-              rel="noreferrer"
-              className="block w-full max-w-xs transition bg-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 group"
+        <section>
+          <SectionHeader icon={Video} title="Galeri Video" />
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {videoItems.slice(0, itemsToShow).map((item, index) => (
+              <VideoCard key={index} item={item} />
+            ))}
+          </div>
+          <div className="flex justify-center mt-12">
+            <Link
+              to="/galeri/video"
+              className="inline-flex items-center gap-2 px-8 py-3 text-sm font-semibold text-white transition-transform duration-200 bg-[#3f7d9a] rounded-full shadow-lg hover:bg-[#dd8c43] hover:scale-105"
             >
-              <div className="overflow-hidden h-52">
-                <img
-                  src={item.img}
-                  alt={item.title}
-                  className="object-cover w-full h-full transition duration-300 group-hover:scale-105"
-                  onError={e => {
-                    e.target.onerror = null;
-                    const placeholders = [
-                      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
-                      'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
-                      'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
-                      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=400&q=80',
-                      'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80',
-                      'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
-                      'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=400&q=80',
-                      'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80',
-                      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
-                    ];
-                    const random = Math.floor(Math.random() * placeholders.length);
-                    e.target.src = placeholders[random];
-                  }}
-                />
-              </div>
-              <h6 className="px-2 py-3 font-semibold text-center text-gray-800 line-clamp-2">
-                {item.title}
-              </h6>
-            </a>
-          ))}
-        </div>
-        <div className="flex justify-center mt-8">
-          <a
-            href="/galeri/video"
-            className="bg-[#3f7d9a] text-white px-6 py-2 rounded-full font-bold hover:bg-[#dd8c43] transition"
-          >
-            LIHAT SELENGKAPNYA
-          </a>
-        </div>
-      </section>
+              Lihat Semua Video <ArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
+      </div>
     </SecondaryPageTemplate>
   );
 };
-
-export default GaleriPage;

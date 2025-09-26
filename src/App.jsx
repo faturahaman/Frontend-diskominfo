@@ -3,21 +3,21 @@ import { Routes, Route } from "react-router-dom";
 import AccessibilityWidget from "./ui/AccessibilityWidget";
 import FloatingIconBar from "./components/FloatinIcons";
 
-// Import halaman
+// Import halaman-halaman statis yang tetap digunakan
 import HomePage from "./pages/home";
-import CalendarPage from "./pages/AgendaPage";
-import NewsDetail from "./pages/BeritaDetailPage";
-import NewsList from "./pages/BeritaPage";
-import VisiMisi from "./pages/VisiMisi";
-import Sejarah from "./pages/Sejarah";
-import Struktur from "./pages/Struktur";
 import Kontak from "./pages/Kontak";
-import SambutanFull from "./pages/SambutanFull";
-import GaleriPage from "./pages/GaleriPage";
-import FotoPage from "./pages/FotoPage";
-import VideoPage from "./pages/VideoPage";
-import DokumenPage from "./pages/DokumenPage";
-import DetailGaleriPage from "./pages/DetailGaleriPage";
+// Anda bisa menyimpan halaman statis lain jika layout-nya sangat unik
+// import VisiMisi from "./pages/VisiMisi"; 
+
+// Hapus import halaman-halaman lama yang sekarang sudah dinamis
+// import NewsList from "./pages/BeritaPage";
+// import DokumenPage from "./pages/DokumenPage";
+// import FotoPage from "./pages/FotoPage";
+// dan seterusnya...
+
+// Import komponen halaman dinamis yang baru
+import DynamicPage from "./pages/DynamicPage";
+import DynamicDetailPage from "./pages/DynamicDetailPage";
 
 import AOS from 'aos';
 import 'aos/dist/aos.css'; 
@@ -34,31 +34,21 @@ export default function App() {
       <FloatingIconBar />
 
       <Routes>
-        {/* Halaman Utama */}
+        {/* Halaman Statis yang tetap dipertahankan */}
         <Route path="/" element={<HomePage />} />
-
-        {/* Profil */}
-        <Route path="/visi-misi" element={<VisiMisi />} />
-        <Route path="/sejarah" element={<Sejarah />} />
-        <Route path="/struktur" element={<Struktur />} />
-        
-        {/* Publikasi */}
-        <Route path="/berita" element={<NewsList />} />
-        <Route path="/berita/:id" element={<NewsDetail />} />
-
-        {/* --- [PERBAIKAN] Urutan Rute Galeri --- */}
-        <Route path="/galeri" element={<GaleriPage />} />
-        <Route path="/galeri/foto" element={<FotoPage />} /> 
-        <Route path="/galeri/video" element={<VideoPage />} />
-        <Route path="/galeri/:category" element={<DetailGaleriPage />} />
-        
-        {/* Halaman Lainnya */}
-        <Route path="/agenda" element={<CalendarPage />} />
-        <Route path="/sambutan-full" element={<SambutanFull />} />
         <Route path="/kontak" element={<Kontak />} />
-        <Route path="/dokumen" element={<DokumenPage />} />
+        {/* Contoh jika ada halaman statis lain: <Route path="/visi-misi" element={<VisiMisi />} /> */}
 
-        {/* Halaman 404 */}
+        {/* ▼▼▼ ROUTE DINAMIS UTAMA ▼▼▼ */}
+        {/* Route ini akan menangani SEMUA halaman daftar konten */}
+        {/* Contoh: /page/2 (Berita), /page/10 (Dokumen), /page/12 (Galeri Foto) */}
+        <Route path="/page/:menuId" element={<DynamicPage />} />
+        
+        {/* Route ini akan menangani SEMUA halaman detail konten */}
+        {/* Contoh: /page/detail/15 (Membuka detail berita ID 15) */}
+        <Route path="/page/detail/:contentId" element={<DynamicDetailPage />} />
+        
+        {/* Halaman 404 untuk semua route yang tidak cocok */}
         <Route
           path="*"
           element={

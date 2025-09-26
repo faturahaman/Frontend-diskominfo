@@ -2,33 +2,14 @@ import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import { Menu, X, ChevronDown } from "lucide-react";
+import { getMenus } from "../api/menuApi";
 
-// --- PERSIAPKAN DUA FILE LOGO ---
 const logoColor = "/src/assets/BannerLink/kominfologo2.webp";
 const logoWhite = "/src/assets/BannerLink/kominfologo.webp";
 
-const navLinks = [
-  { label: "Beranda", href: "/" },
-  {
-    label: "Profil",
-    submenu: [
-      { label: "Visi Misi", href: "/visi-misi" },
-      { label: "Sejarah", href: "/sejarah" },
-      { label: "Struktur", href: "/struktur" },
-    ],
-  },
-  {
-    label: "Publikasi",
-    submenu: [
-      { label: "Galeri", href: "/galeri" },
-      { label: "Berita", href: "/berita" },
-    ],
-  },
-  { label: "Dokumen", href: "/dokumen" },
-  { label: "Kontak", href: "/kontak" },
-];
-
 export default function Navbar() {
+  const [menuData, setMenuData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeSubmenu, setActiveSubmenu] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -39,18 +20,27 @@ export default function Navbar() {
   const navRef = useRef(null);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    setIsLoading(true);
+    getMenus()
+      .then((data) => {
+        setMenuData(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Gagal mengambil data menu:", error);
+        setIsLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    const checkScreenSize = () => setIsMobile(window.innerWidth < 768);
     checkScreenSize();
     window.addEventListener("resize", checkScreenSize);
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -97,26 +87,42 @@ export default function Navbar() {
 
   const closeMenu = () => setIsMenuOpen(false);
 
-  // [UBAH] Logika kelas untuk transisi yang lebih halus
+  // Fungsi buat path link dinamis
+  const createLink = (menuItem) => {
+    if (menuItem.path_url) return menuItem.path_url;
+    return menuItem.href || "#";
+  };
+
   const navClasses = clsx(
     "fixed top-0 z-50 w-full",
-    // Menentukan properti transisi secara spesifik untuk kontrol lebih baik
-    "transition-[padding,background-color] duration-500 ease-in-out", 
+    "transition-[padding,background-color] duration-500 ease-in-out",
     {
       "bg-white shadow-lg pt-0 pb-0": isScrolled || isMenuOpen || isMobile,
-      "bg-gradient-to-b from-black/60 to-transparent text-white pt-4 pb-10": !isScrolled && !isMenuOpen && !isMobile,
+      "bg-gradient-to-b from-black/60 to-transparent text-white pt-4 pb-10":
+        !isScrolled && !isMenuOpen && !isMobile,
     }
   );
 
   const linkClasses = (isActive, hasSubmenu = false) => {
-    const baseClasses = "rounded-lg px-4 py-2 text-sm font-medium transition-colors";
+    const baseClasses =
+      "rounded-lg px-4 py-2 text-sm font-medium transition-colors";
     const submenuClasses = hasSubmenu ? "flex items-center gap-1" : "";
     const isSolidBg = isScrolled || isMenuOpen || isMobile;
-
     if (isSolidBg) {
-      return clsx(baseClasses, submenuClasses, isActive ? "bg-cyan-100 text-cyan-900" : "text-gray-700 hover:bg-cyan-100 hover:text-cyan-800");
+      return clsx(
+        baseClasses,
+        submenuClasses,
+        isActive
+          ? "bg-cyan-100 text-cyan-900"
+          : "text-gray-700 hover:bg-cyan-100 hover:text-cyan-800"
+      );
     }
-    return clsx(baseClasses, submenuClasses, "text-white", isActive ? "bg-white/20" : "hover:bg-white/20");
+    return clsx(
+      baseClasses,
+      submenuClasses,
+      "text-white",
+      isActive ? "bg-white/20" : "hover:bg-white/20"
+    );
   };
 
   const mobileButtonClasses = clsx(
@@ -140,31 +146,89 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="items-center hidden space-x-2 md:flex">
-            {navLinks.map((link, index) => (
-              <div key={index} className="relative" onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave}>
-                {link.submenu ? (
-                  <button className={linkClasses(link.submenu.some(sub => location.pathname === sub.href), true)}>
-                    {link.label}
-                    <ChevronDown className={clsx("w-4 h-4 transition-transform duration-300", activeSubmenu === index && "rotate-180")} />
-                  </button>
-                ) : (
-                  <Link to={link.href} className={linkClasses(location.pathname === link.href)}>
-                    {link.label}
-                  </Link>
-                )}
-                {link.submenu && activeSubmenu === index && (
-                  <div onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave} className="absolute left-0 w-48 mt-2 origin-top bg-white rounded-lg shadow-xl ring-1 ring-black/5 animate-fade-in-up">
-                    <div className="py-2">
-                      {link.submenu.map((subItem) => (
-                        <Link key={subItem.href} to={subItem.href} onClick={closeMenu} className={clsx("block w-full text-left px-4 py-2 text-sm text-gray-700 transition-colors", location.pathname === subItem.href ? "bg-cyan-100 text-cyan-900 font-semibold" : "hover:bg-cyan-100 hover:text-cyan-800")}>
-                          {subItem.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            <Link to="/" className={linkClasses(location.pathname === "/")}>
+              Beranda
+            </Link>
+
+            {isLoading ? (
+              // Skeleton Loader Desktop
+              <div className="flex space-x-3">
+                {[...Array(4)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-20 h-6 bg-gray-200 rounded-md animate-pulse"
+                  />
+                ))}
               </div>
-            ))}
+            ) : (
+              menuData.map((link, index) => {
+                const hasSubmenu =
+                  link.children && link.children.length > 0;
+                return (
+                  <div
+                    key={link.id}
+                    className="relative"
+                    onMouseEnter={() => handleMouseEnter(index)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    {hasSubmenu ? (
+                      <button
+                        className={linkClasses(
+                          link.children.some(
+                            (sub) =>
+                              location.pathname === createLink(sub)
+                          ),
+                          true
+                        )}
+                      >
+                        {link.label}
+                        <ChevronDown
+                          className={clsx(
+                            "w-4 h-4 transition-transform duration-300",
+                            activeSubmenu === index && "rotate-180"
+                          )}
+                        />
+                      </button>
+                    ) : (
+                      <Link
+                        to={createLink(link)}
+                        className={linkClasses(
+                          location.pathname === createLink(link)
+                        )}
+                      >
+                        {link.label}
+                      </Link>
+                    )}
+
+                    {hasSubmenu && activeSubmenu === index && (
+                      <div
+                        onMouseEnter={() => handleMouseEnter(index)}
+                        onMouseLeave={handleMouseLeave}
+                        className="absolute left-0 w-48 mt-2 origin-top bg-white rounded-lg shadow-xl ring-1 ring-black/5 animate-fade-in-up"
+                      >
+                        <div className="py-2">
+                          {link.children.map((subItem) => (
+                            <Link
+                              key={subItem.id}
+                              to={createLink(subItem)}
+                              onClick={closeMenu}
+                              className={clsx(
+                                "block w-full text-left px-4 py-2 text-sm text-gray-700 transition-colors",
+                                location.pathname === createLink(subItem)
+                                  ? "bg-cyan-100 text-cyan-900 font-semibold"
+                                  : "hover:bg-cyan-100 hover:text-cyan-800"
+                              )}
+                            >
+                              {subItem.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -180,7 +244,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Panel (Fullscreen) */}
+      {/* Mobile Menu Panel */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-40 bg-white md:hidden animate-slide-down-and-fade">
           <div className="absolute top-4 right-4">
@@ -194,58 +258,89 @@ export default function Navbar() {
           </div>
           <div className="h-screen pt-20 overflow-y-auto">
             <div className="px-6 py-8 space-y-3">
-              {navLinks.map((link, index) => (
-                <div key={index}>
-                  {link.submenu ? (
-                    <div>
-                      <button
-                        onClick={() => handleMobileSubmenuToggle(index)}
-                        className="flex items-center justify-between w-full px-4 py-3 text-lg font-semibold text-left text-gray-700 transition-colors rounded-lg hover:bg-cyan-100"
-                      >
-                        {link.label}
-                        <ChevronDown
-                          className={clsx(
-                            "w-5 h-5 transition-transform duration-300",
-                            activeSubmenu === index && "rotate-180"
-                          )}
-                        />
-                      </button>
-                      {activeSubmenu === index && (
-                        <div className="pl-4 mt-2 ml-4 space-y-2 border-l-2 border-cyan-200 animate-fade-in-up">
-                          {link.submenu.map((subItem) => (
-                            <Link
-                              key={subItem.href}
-                              to={subItem.href}
-                              onClick={closeMenu}
+              <Link
+                to="/"
+                onClick={closeMenu}
+                className={clsx(
+                  "block rounded-lg px-4 py-3 font-semibold text-lg transition-colors",
+                  location.pathname === "/"
+                    ? "bg-cyan-100 text-cyan-900"
+                    : "text-gray-700 hover:bg-cyan-100"
+                )}
+              >
+                Beranda
+              </Link>
+
+              {isLoading ? (
+                // Skeleton Loader Mobile
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-full h-10 bg-gray-200 rounded-md animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : (
+                menuData.map((link, index) => {
+                  const hasSubmenu =
+                    link.children && link.children.length > 0;
+                  return (
+                    <div key={link.id}>
+                      {hasSubmenu ? (
+                        <div>
+                          <button
+                            onClick={() =>
+                              handleMobileSubmenuToggle(index)
+                            }
+                            className="flex items-center justify-between w-full px-4 py-3 text-lg font-semibold text-left text-gray-700 transition-colors rounded-lg hover:bg-cyan-100"
+                          >
+                            {link.label}
+                            <ChevronDown
                               className={clsx(
-                                "block rounded-lg px-4 py-2.5 text-base transition-colors",
-                                location.pathname === subItem.href
-                                  ? "bg-cyan-100 text-cyan-900 font-semibold"
-                                  : "text-gray-600 hover:bg-cyan-100"
+                                "w-5 h-5 transition-transform duration-300",
+                                activeSubmenu === index && "rotate-180"
                               )}
-                            >
-                              {subItem.label}
-                            </Link>
-                          ))}
+                            />
+                          </button>
+                          {activeSubmenu === index && (
+                            <div className="pl-4 mt-2 ml-4 space-y-2 border-l-2 border-cyan-200 animate-fade-in-up">
+                              {link.children.map((subItem) => (
+                                <Link
+                                  key={subItem.id}
+                                  to={createLink(subItem)}
+                                  onClick={closeMenu}
+                                  className={clsx(
+                                    "block rounded-lg px-4 py-2.5 text-base transition-colors",
+                                    location.pathname === createLink(subItem)
+                                      ? "bg-cyan-100 text-cyan-900 font-semibold"
+                                      : "text-gray-600 hover:bg-cyan-100"
+                                  )}
+                                >
+                                  {subItem.label}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
                         </div>
+                      ) : (
+                        <Link
+                          to={createLink(link)}
+                          onClick={closeMenu}
+                          className={clsx(
+                            "block rounded-lg px-4 py-3 font-semibold text-lg transition-colors",
+                            location.pathname === createLink(link)
+                              ? "bg-cyan-100 text-cyan-900"
+                              : "text-gray-700 hover:bg-cyan-100"
+                          )}
+                        >
+                          {link.label}
+                        </Link>
                       )}
                     </div>
-                  ) : (
-                    <Link
-                      to={link.href}
-                      onClick={closeMenu}
-                      className={clsx(
-                        "block rounded-lg px-4 py-3 font-semibold text-lg transition-colors",
-                        location.pathname === link.href
-                          ? "bg-cyan-100 text-cyan-900"
-                          : "text-gray-700 hover:bg-cyan-100"
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </div>
-              ))}
+                  );
+                })
+              )}
             </div>
           </div>
         </div>

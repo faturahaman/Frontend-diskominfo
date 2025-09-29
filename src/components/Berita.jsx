@@ -1,9 +1,24 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import NewsCard from "../ui/NewsCard";
-import AgendaCard from "../ui/AgendaCard"; // Komponen ini sudah kita perbaiki
-import { newsData, agendaData, monthNames } from "../dummy/data"; // Menggunakan data baru
+import AgendaCard from "../ui/AgendaCard";
+import { getContentByMenuName, getAgendas } from "../api/menuApi";
+
+const monthNames = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
 
 const getDaysInMonth = (date) => {
   const year = date.getFullYear();
@@ -11,7 +26,13 @@ const getDaysInMonth = (date) => {
   return new Date(year, month + 1, 0).getDate();
 };
 
-const AgendaDayButton = ({ day, isSelected, isToday, hasAgenda, onSelectDate }) => (
+const AgendaDayButton = ({
+  day,
+  isSelected,
+  isToday,
+  hasAgenda,
+  onSelectDate,
+}) => (
   <button
     onClick={() => onSelectDate(day)}
     className={`relative h-10 flex flex-col items-center justify-center text-xs rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 ${
@@ -35,16 +56,43 @@ const AgendaDayButton = ({ day, isSelected, isToday, hasAgenda, onSelectDate }) 
 
 const NewsAgendaSection = () => {
   const today = useMemo(() => new Date(), []);
+  const [agendas, setAgendas] = useState([]);
+  const [newsData, setNewsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // ✅ Selected otomatis ke hari ini
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const [newsResponse, agendasResponse] = await Promise.all([
+          getContentByMenuName("Berita"),
+          getAgendas(),
+        ]);
+
+        setNewsData(newsResponse.data || []);
+        setAgendas(agendasResponse || []);
+      } catch (err) {
+        setError("Gagal memuat data. Silakan coba lagi nanti.");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   const initialSelectedDate = today;
 
-  // ✅ currentMonth otomatis bulan hari ini
   const [currentMonth, setCurrentMonth] = useState(
-    new Date(initialSelectedDate.getFullYear(), initialSelectedDate.getMonth(), 1)
+    new Date(
+      initialSelectedDate.getFullYear(),
+      initialSelectedDate.getMonth(),
+      1
+    )
   );
 
-  // ✅ Hitung page berdasarkan hari ini
   const initialPage = useMemo(() => {
     return Math.floor((initialSelectedDate.getDate() - 1) / 5);
   }, [initialSelectedDate]);
@@ -59,16 +107,20 @@ const NewsAgendaSection = () => {
     const end = Math.min(start + 4, totalDays);
     const days = [];
     for (let d = start; d <= end; d++) {
-      days.push(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d));
+      days.push(
+        new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d)
+      );
     }
     return days;
   }, [page, totalDays, currentMonth]);
 
-  // ✅ Sesuaikan dengan field `tanggal`
-  const getAgendasForDate = useCallback((date) => {
-    const dateString = date.toISOString().split("T")[0];
-    return agendaData.filter((agenda) => agenda.tanggal === dateString);
-  }, []);
+  const getAgendasForDate = useCallback(
+    (date) => {
+      const dateString = date.toISOString().split("T")[0];
+      return agendas.filter((agenda) => agenda.tanggal === dateString);
+    },
+    [agendas]
+  );
 
   const agendasToShow = useMemo(
     () => getAgendasForDate(selectedDate),
@@ -123,11 +175,33 @@ const NewsAgendaSection = () => {
                 Informatika Kota Bogor
               </p>
             </div>
-            <div className="grid gap-6 mb-6 md:grid-cols-3">
-              {newsData.slice(0, 3).map((news) => (
-                <NewsCard key={news.id} news={news} />
-              ))}
-            </div>
+
+            {isLoading ? (
+              <div className="grid gap-6 mb-6 md:grid-cols-3">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-full h-64 bg-gray-200 rounded-lg animate-pulse"
+                  ></div>
+                ))}
+              </div>
+            ) : error ? (
+              <p className="text-red-500">{error}</p>
+            ) : (
+              <div className="grid gap-6 mb-6 md:grid-cols-3">
+                {newsData.slice(0, 3).map((news) => (
+                  <div key={news.id} className="p-4 bg-white rounded-lg shadow">
+                    <img
+                      src={news.gambar_url}
+                      alt={news.judul}
+                      className="object-cover w-full h-40 mb-4 rounded-md"
+                    />
+                    <h3 className="font-bold line-clamp-2">{news.judul}</h3>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <Link
               to="/berita"
               className="inline-block bg-[#3C7A94] text-white px-5 py-2 rounded-full shadow hover:bg-[#2f6175] transition"

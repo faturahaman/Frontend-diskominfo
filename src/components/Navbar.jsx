@@ -88,11 +88,25 @@ export default function Navbar() {
   const closeMenu = () => setIsMenuOpen(false);
 
   // Fungsi buat path link dinamis
-  const createLink = (menuItem) => {
-    if (menuItem.path_url) return menuItem.path_url;
-    return menuItem.href || "#";
-  };
+const createLink = (menuItem) => {
+  // 1. [BARU] Jika kategori 'statis', buat URL dari nama menu
+  if (menuItem.kategori === 'statis') {
+    const slug = menuItem.nama
+      .toLowerCase()              // "visi & misi"
+      .replace(/ & /g, '-')       // "visi-misi"
+      .replace(/ /g, '-')         // Menghilangkan spasi lain jika ada
+      .replace(/[^\w-]+/g, '');   // Menghapus karakter non-alfanumerik
+    return `/${slug}`;            // Menghasilkan "/visi-misi"
+  }
 
+  // 2. Jika menu adalah DINAMIS (logika ini tetap sama)
+  if (menuItem.kategori.startsWith('dinamis')) {
+    return `/page/${menuItem.id}`;
+  }
+  
+  // 3. Default jika tidak ada yang cocok (untuk parent menu)
+  return "#"; 
+};
   const navClasses = clsx(
     "fixed top-0 z-50 w-full",
     "transition-[padding,background-color] duration-500 ease-in-out",
@@ -181,7 +195,7 @@ export default function Navbar() {
                           true
                         )}
                       >
-                        {link.label}
+                        {link.nama}
                         <ChevronDown
                           className={clsx(
                             "w-4 h-4 transition-transform duration-300",
@@ -196,7 +210,7 @@ export default function Navbar() {
                           location.pathname === createLink(link)
                         )}
                       >
-                        {link.label}
+                        {link.nama}
                       </Link>
                     )}
 
@@ -219,7 +233,7 @@ export default function Navbar() {
                                   : "hover:bg-cyan-100 hover:text-cyan-800"
                               )}
                             >
-                              {subItem.label}
+                              {subItem.nama}
                             </Link>
                           ))}
                         </div>
@@ -295,7 +309,7 @@ export default function Navbar() {
                             }
                             className="flex items-center justify-between w-full px-4 py-3 text-lg font-semibold text-left text-gray-700 transition-colors rounded-lg hover:bg-cyan-100"
                           >
-                            {link.label}
+                            {link.nama}
                             <ChevronDown
                               className={clsx(
                                 "w-5 h-5 transition-transform duration-300",
@@ -317,7 +331,7 @@ export default function Navbar() {
                                       : "text-gray-600 hover:bg-cyan-100"
                                   )}
                                 >
-                                  {subItem.label}
+                                  {subItem.nama}
                                 </Link>
                               ))}
                             </div>
@@ -334,7 +348,7 @@ export default function Navbar() {
                               : "text-gray-700 hover:bg-cyan-100"
                           )}
                         >
-                          {link.label}
+                          {link.nama}
                         </Link>
                       )}
                     </div>

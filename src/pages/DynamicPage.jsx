@@ -9,25 +9,24 @@ const API_URL = "http://localhost:8000/api";
 
 // -------- Komponen untuk Tampilan Kartu (Card View) --------
 const CardView = ({ data }) => (
-    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {data.map(item => (
         <Link 
           key={item.id} 
           to={`/page/detail/${item.id}`} 
-          className="block overflow-hidden transition-transform duration-300 bg-white border border-gray-100 shadow-lg rounded-xl hover:-translate-y-2 group hover:border-cyan-200"
+          className="block overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg hover:border-cyan-800 hover:shadow-md group"
         >
-          <div className="relative h-56 overflow-hidden">
+          <div className="relative h-48 overflow-hidden bg-gray-50">
             {item.gambar_url ? (
-              <img src={item.gambar_url} alt={item.judul} className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" />
+              <img src={item.gambar_url} alt={item.judul} className="object-cover w-full h-full" />
             ) : (
-              <div className="flex items-center justify-center w-full h-full bg-gray-100">
-                <ImageIcon className="w-12 h-12 text-gray-300" />
+              <div className="flex items-center justify-center w-full h-full">
+                <ImageIcon className="w-10 h-10 text-gray-300" />
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           </div>
           <div className="p-5">
-            <h3 className="mb-2 text-lg font-bold text-gray-800 transition-colors line-clamp-2 group-hover:text-cyan-600">
+            <h3 className="mb-2 text-base font-semibold text-gray-900 transition-colors line-clamp-2 group-hover:text-cyan-800">
               {item.judul}
             </h3>
             <div
@@ -42,12 +41,12 @@ const CardView = ({ data }) => (
 
 // -------- Komponen untuk Tampilan Tabel (Table View) --------
 const TableView = ({ data }) => (
-  <div className="overflow-x-auto bg-white border rounded-lg shadow-md">
+  <div className="overflow-hidden bg-white border border-gray-200 rounded-lg">
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
-          <th className="px-6 py-4 text-xs font-bold tracking-wider text-left text-gray-600 uppercase">Judul Dokumen</th>
-          <th className="px-6 py-4 text-xs font-bold tracking-wider text-center text-gray-600 uppercase">Aksi</th>
+          <th className="px-6 py-3 text-xs font-semibold tracking-wide text-left text-gray-700 uppercase">Judul Dokumen</th>
+          <th className="px-6 py-3 text-xs font-semibold tracking-wide text-center text-gray-700 uppercase">Aksi</th>
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
@@ -58,7 +57,7 @@ const TableView = ({ data }) => (
             </td>
             <td className="px-6 py-4 text-center">
               {item.dokumen_url ? (
-                <a href={item.dokumen_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-4 py-2 text-sm font-medium transition-all duration-200 transform border border-transparent rounded-md text-cyan-700 bg-cyan-100 hover:bg-cyan-200 hover:scale-105">
+                <a href={item.dokumen_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-4 py-2 text-sm font-medium transition-colors border rounded-md text-cyan-800 border-cyan-800 hover:bg-cyan-800 hover:text-white">
                   <Download className="w-4 h-4 mr-2" /> Unduh
                 </a>
               ) : (
@@ -72,9 +71,9 @@ const TableView = ({ data }) => (
   </div>
 );
 
-// -------- [DIPERBARUI] Komponen untuk Tampilan Daftar (List View) --------
+// -------- Komponen untuk Tampilan Daftar (List View) --------
 const ListView = ({ data }) => (
-    <div className="space-y-6">
+    <div className="space-y-4">
         {data.map(item => {
             // Cek apakah item ini adalah dokumen yang memiliki link unduhan
             const isDocument = !!item.dokumen_url;
@@ -84,29 +83,27 @@ const ListView = ({ data }) => (
                 return (
                     <div 
                         key={item.id}
-                        className="flex flex-col items-center p-6 overflow-hidden bg-white border border-gray-100 shadow-lg md:flex-row rounded-xl"
+                        className="p-6 bg-white border border-gray-200 rounded-lg"
                     >
-                        <div className="w-full">
-                            <h3 className="mb-2 text-xl font-bold text-gray-800">
-                                {item.judul}
-                            </h3>
-                            <div className="flex items-center mb-4 text-sm text-gray-500">
-                                <Calendar size={14} className="mr-2" />
-                                <span>{new Date(item.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
-                            </div>
-                            <div
-                                className="mb-4 prose text-gray-600 max-w-none"
-                                dangerouslySetInnerHTML={{ __html: item.isi_konten }}
-                            />
-                            <a 
-                                href={item.dokumen_url} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="inline-flex items-center px-4 py-2 text-sm font-medium transition-all duration-200 transform border border-transparent rounded-md text-cyan-700 bg-cyan-100 hover:bg-cyan-200 hover:scale-105"
-                            >
-                                <Download className="w-4 h-4 mr-2" /> Unduh Dokumen
-                            </a>
+                        <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                            {item.judul}
+                        </h3>
+                        <div className="flex items-center mb-3 text-sm text-gray-500">
+                            <Calendar size={16} className="mr-2" />
+                            <span>{new Date(item.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
                         </div>
+                        <div
+                            className="mb-4 text-sm text-gray-600"
+                            dangerouslySetInnerHTML={{ __html: item.isi_konten }}
+                        />
+                        <a 
+                            href={item.dokumen_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium transition-colors border rounded-md text-cyan-800 border-cyan-800 hover:bg-cyan-800 hover:text-white"
+                        >
+                            <Download className="w-4 h-4 mr-2" /> Unduh Dokumen
+                        </a>
                     </div>
                 );
             }
@@ -116,31 +113,31 @@ const ListView = ({ data }) => (
                 <Link 
                     key={item.id} 
                     to={`/page/detail/${item.id}`}
-                    className="flex flex-col items-center overflow-hidden transition-all duration-300 bg-white border border-gray-100 shadow-lg md:flex-row rounded-xl hover:shadow-xl hover:-translate-y-1 group"
+                    className="flex flex-col overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg md:flex-row hover:border-cyan-800 hover:shadow-md group"
                 >
-                    <div className="w-full h-56 md:w-1/3 md:h-full">
+                    <div className="w-full h-48 md:w-64 md:h-auto bg-gray-50">
                         {item.gambar_url ? (
                             <img src={item.gambar_url} alt={item.judul} className="object-cover w-full h-full"/>
                         ) : (
-                            <div className="flex items-center justify-center w-full h-full bg-gray-100">
-                                <ImageIcon className="w-12 h-12 text-gray-300" />
+                            <div className="flex items-center justify-center w-full h-full">
+                                <ImageIcon className="w-10 h-10 text-gray-300" />
                             </div>
                         )}
                     </div>
-                    <div className="w-full p-6 md:w-2/3">
-                        <h3 className="mb-2 text-xl font-bold text-gray-800 transition-colors group-hover:text-cyan-600">
+                    <div className="flex-1 p-6">
+                        <h3 className="mb-2 text-lg font-semibold text-gray-900 transition-colors group-hover:text-cyan-800">
                             {item.judul}
                         </h3>
-                        <div className="flex items-center mb-4 text-sm text-gray-500">
-                            <Calendar size={14} className="mr-2" />
+                        <div className="flex items-center mb-3 text-sm text-gray-500">
+                            <Calendar size={16} className="mr-2" />
                             <span>{new Date(item.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
                         </div>
                         <div
-                            className="mb-4 text-gray-600 line-clamp-3"
+                            className="mb-4 text-sm text-gray-600 line-clamp-3"
                             dangerouslySetInnerHTML={{ __html: item.isi_konten }}
                         />
-                        <div className="inline-flex items-center font-semibold text-cyan-600 group-hover:text-cyan-800">
-                            Baca Selengkapnya <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
+                        <div className="inline-flex items-center text-sm font-medium text-cyan-800">
+                            Baca Selengkapnya <ArrowRight size={16} className="ml-2" />
                         </div>
                     </div>
                 </Link>
@@ -148,7 +145,6 @@ const ListView = ({ data }) => (
         })}
     </div>
 );
-
 
 // -------- Komponen Utama Halaman Dinamis --------
 const DynamicPage = () => {
@@ -189,13 +185,13 @@ const DynamicPage = () => {
 
   const renderContent = () => {
     if (loading) {
-      return <div className="flex items-center justify-center py-20"><Loader className="animate-spin text-cyan-500" size={48} /></div>;
+      return <div className="flex items-center justify-center py-20"><Loader className="w-8 h-8 animate-spin text-cyan-800" /></div>;
     }
     if (error && pageData.length === 0) {
-        return <div className="py-20 text-center rounded-lg bg-gray-50"><AlertCircle className="mx-auto text-red-400" size={48} /><p className="mt-4 text-lg text-gray-600">{error}</p></div>;
+        return <div className="py-20 text-center"><AlertCircle className="mx-auto mb-4 text-red-500" size={48} /><p className="text-base text-gray-600">{error}</p></div>;
     }
     if (pageData.length > 0 && filteredData.length === 0) {
-        return <div className="py-20 text-center rounded-lg bg-gray-50"><AlertCircle className="mx-auto text-yellow-500" size={48} /><p className="mt-4 text-lg text-gray-600">Konten yang Anda cari tidak ditemukan.</p></div>;
+        return <div className="py-20 text-center"><Search className="mx-auto mb-4 text-gray-400" size={48} /><p className="text-base text-gray-600">Konten yang Anda cari tidak ditemukan.</p></div>;
     }
     if (!menuInfo) return null;
 
@@ -215,7 +211,7 @@ const DynamicPage = () => {
   return (
     <SecondaryPageTemplate title={menuInfo?.nama || "Memuat..."} breadcrumb={breadcrumb}>
         {!loading && pageData.length > 0 && (
-            <div className="max-w-2xl mx-auto mb-10">
+            <div className="max-w-2xl mx-auto mb-8">
                 <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
                         <Search size={20} />
@@ -225,7 +221,7 @@ const DynamicPage = () => {
                         placeholder={`Cari dalam ${menuInfo?.nama || 'halaman ini'}...`}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full py-3 pl-12 pr-4 text-gray-700 transition bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                        className="w-full py-3 pl-12 pr-4 text-gray-700 transition bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-cyan-800 focus:ring-1 focus:ring-cyan-800"
                     />
                 </div>
             </div>

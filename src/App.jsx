@@ -1,21 +1,31 @@
-// App.jsx
+// src/App.jsx
+
 import { Routes, Route } from "react-router-dom";
 import AccessibilityWidget from "./ui/AccessibilityWidget";
 import FloatingIconBar from "./components/FloatinIcons";
 
-// Import halaman-halaman statis yang tetap digunakan
+// =================================================================
+// 1. KEMBALIKAN SEMUA IMPORT HALAMAN STATIS ANDA
+// =================================================================
 import HomePage from "./pages/home";
+import VisiMisi from "./pages/VisiMisi";
+import Sejarah from "./pages/Sejarah";
+import Struktur from "./pages/Struktur";
+import NewsList from "./pages/BeritaPage";
+import NewsDetail from "./pages/BeritaDetailPage";
+import GaleriPage from "./pages/GaleriPage";
+import FotoPage from "./pages/FotoPage";
+import VideoPage from "./pages/VideoPage";
+import DetailGaleriPage from "./pages/DetailGaleriPage";
+import CalendarPage from "./pages/AgendaPage";
+import SambutanFull from "./pages/SambutanFull";
 import Kontak from "./pages/Kontak";
-// Anda bisa menyimpan halaman statis lain jika layout-nya sangat unik
-// import VisiMisi from "./pages/VisiMisi"; 
+import DokumenPage from "./pages/DokumenPage";
+import NotFound from "./pages/NotFound"; // Pastikan Anda punya komponen 404
 
-// Hapus import halaman-halaman lama yang sekarang sudah dinamis
-// import NewsList from "./pages/BeritaPage";
-// import DokumenPage from "./pages/DokumenPage";
-// import FotoPage from "./pages/FotoPage";
-// dan seterusnya...
-
-// Import komponen halaman dinamis yang baru
+// =================================================================
+// 2. TETAP IMPORT HALAMAN DINAMIS
+// =================================================================
 import DynamicPage from "./pages/DynamicPage";
 import DynamicDetailPage from "./pages/DynamicDetailPage";
 
@@ -34,39 +44,44 @@ export default function App() {
       <FloatingIconBar />
 
       <Routes>
-        {/* Halaman Statis yang tetap dipertahankan */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/kontak" element={<Kontak />} />
-        {/* Contoh jika ada halaman statis lain: <Route path="/visi-misi" element={<VisiMisi />} /> */}
-
-        {/* ▼▼▼ ROUTE DINAMIS UTAMA ▼▼▼ */}
-        {/* Route ini akan menangani SEMUA halaman daftar konten */}
-        {/* Contoh: /page/2 (Berita), /page/10 (Dokumen), /page/12 (Galeri Foto) */}
-        <Route path="/page/:menuId" element={<DynamicPage />} />
+        {/* ================================================================= */}
+        {/* 3. KEMBALIKAN SEMUA ROUTE HALAMAN STATIS ANDA                 */}
+        {/* Navbar akan mengarahkan link seperti /kontak ke sini          */}
+        {/* ================================================================= */}
         
-        {/* Route ini akan menangani SEMUA halaman detail konten */}
-        {/* Contoh: /page/detail/15 (Membuka detail berita ID 15) */}
+        {/* Halaman Utama */}
+        <Route path="/" element={<HomePage />} />
+
+        {/* Profil */}
+        <Route path="/visi-misi" element={<VisiMisi />} />
+        <Route path="/sejarah" element={<Sejarah />} />
+        <Route path="/struktur" element={<Struktur />} />
+
+        {/* Publikasi */}
+        <Route path="/berita" element={<NewsList />} />
+        <Route path="/berita/:id" element={<NewsDetail />} />
+
+        {/* Galeri */}
+        <Route path="/galeri" element={<GaleriPage />} />
+        <Route path="/galeri/foto" element={<FotoPage />} /> 
+        <Route path="/galeri/video" element={<VideoPage />} />
+        <Route path="/galeri/:category" element={<DetailGaleriPage />} />
+
+        {/* Halaman Lainnya */}
+        <Route path="/agenda" element={<CalendarPage />} />
+        <Route path="/sambutan-full" element={<SambutanFull />} />
+        <Route path="/kontak" element={<Kontak />} />
+        <Route path="/dokumen" element={<DokumenPage />} />
+
+        {/* ================================================================= */}
+        {/* 4. TETAP SIMPAN ROUTE DINAMIS INI                              */}
+        {/* Navbar akan mengarahkan link seperti /page/15 ke sini        */}
+        {/* ================================================================= */}
+        <Route path="/page/:menuId" element={<DynamicPage />} />
         <Route path="/page/detail/:contentId" element={<DynamicDetailPage />} />
         
-        {/* Halaman 404 untuk semua route yang tidak cocok */}
-        <Route
-          path="*"
-          element={
-            <div className="flex flex-col items-center justify-center h-screen px-4 bg-gray-50">
-              <div className="mb-4 text-6xl">🚫</div>
-              <h1 className="mb-2 text-4xl font-extrabold text-gray-800">404</h1>
-              <p className="mb-6 text-lg text-center text-gray-600">
-                Oops! Halaman yang kamu cari tidak ditemukan.
-              </p>
-              <a
-                href="/"
-                className="px-6 py-3 rounded-full bg-[#3f7d9a] text-white font-semibold shadow-md hover:bg-[#dd8c43] transition"
-              >
-                Kembali ke Beranda
-              </a>
-            </div>
-          }
-        />
+        {/* Halaman 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

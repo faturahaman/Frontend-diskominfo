@@ -60,3 +60,42 @@ export const getAgendas = () => {
       return []; // Kembalikan array kosong jika error
     });
 };
+
+export const getAlbums = () => {
+  return fetch(`${API_BASE_URL}/albums`)
+    .then((response) => {
+      if (!response.ok) throw new Error("Gagal mengambil data album.");
+      return response.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching albums:", error);
+      return [];
+    });
+};
+
+/**
+ * [BARU] Mengambil detail satu album beserta foto-fotonya.
+ */
+export const getAlbumDetails = (albumId) => {
+  return fetch(`${API_BASE_URL}/albums/${albumId}`)
+    .then((response) => {
+      if (!response.ok) throw new Error("Gagal mengambil detail album.");
+      return response.json();
+    })
+    .catch((error) => {
+      console.error(`Error fetching details for album ${albumId}:`, error);
+      return null;
+    });
+};
+
+export const getVideos = () => {
+  return fetch(`${API_BASE_URL}/videos`)
+    .then((response) => {
+      if (!response.ok) throw new Error("Gagal mengambil data video.");
+      return response.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching videos:", error);
+      return [];
+    });
+};

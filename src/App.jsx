@@ -1,8 +1,8 @@
-// src/App.jsx
 
 import { Routes, Route } from "react-router-dom";
 import AccessibilityWidget from "./ui/AccessibilityWidget";
 import FloatingIconBar from "./components/FloatinIcons";
+import { BrowserRouter} from 'react-router-dom';
 
 // =================================================================
 // 1. KEMBALIKAN SEMUA IMPORT HALAMAN STATIS ANDA
@@ -22,6 +22,10 @@ import SambutanFull from "./pages/SambutanFull";
 import Kontak from "./pages/Kontak";
 import DokumenPage from "./pages/DokumenPage";
 import NotFound from "./pages/NotFound"; // Pastikan Anda punya komponen 404
+import GalleryPage from './pages/GaleriPage'; // Asumsi file ada di src/pages/
+import DetailGalleryPage from './pages/DetailGaleriPage';
+import DetailAlbumPage from './pages/DetailAlbumPage';
+import PhotoPage from './pages/fotoPage';
 
 // =================================================================
 // 2. TETAP IMPORT HALAMAN DINAMIS
@@ -37,19 +41,15 @@ AOS.init({
   once: true,
 });
 
-export default function App() {
+function App() {
   return (
     <>
       <AccessibilityWidget />
       <FloatingIconBar />
-
       <Routes>
         {/* ================================================================= */}
-        {/* 3. KEMBALIKAN SEMUA ROUTE HALAMAN STATIS ANDA                 */}
-        {/* Navbar akan mengarahkan link seperti /kontak ke sini          */}
+        {/* 3. TETAP SIMPAN SEMUA ROUTE STATIS ANDA                           */}
         {/* ================================================================= */}
-        
-        {/* Halaman Utama */}
         <Route path="/" element={<HomePage />} />
 
         {/* Profil */}
@@ -61,11 +61,13 @@ export default function App() {
         <Route path="/berita" element={<NewsList />} />
         <Route path="/berita/:id" element={<NewsDetail />} />
 
-        {/* Galeri */}
+        {/* Galeri - PERUBAHAN DI SINI */}
         <Route path="/galeri" element={<GaleriPage />} />
         <Route path="/galeri/foto" element={<FotoPage />} /> 
         <Route path="/galeri/video" element={<VideoPage />} />
-        <Route path="/galeri/:category" element={<DetailGaleriPage />} />
+        {/* [SEBELUMNYA]: <Route path="/galeri/:category" element={<DetailGaleriPage />} /> */}
+        {/* [SESUDAHNYA]: Menggunakan ID untuk detail album */}
+        <Route path="/galeri/album/:id" element={<DetailGaleriPage />} />
 
         {/* Halaman Lainnya */}
         <Route path="/agenda" element={<CalendarPage />} />
@@ -82,7 +84,25 @@ export default function App() {
         
         {/* Halaman 404 */}
         <Route path="*" element={<NotFound />} />
+
+        {/* galeri */}
+          {/* Halaman Utama */}
+        <Route path="/" element={<GalleryPage />} />
+
+        {/* Halaman yang menampilkan SEMUA album */}
+        <Route path="/albums" element={<DetailGalleryPage />} />
+
+        {/* Halaman yang menampilkan ISI dari satu album spesifik */}
+        <Route path="/album/:id" element={<DetailAlbumPage />} />
+
+        {/* Halaman yang menampilkan SEMUA foto */}
+        <Route path="/photos" element={<PhotoPage />} />
+
+        {/* Halaman yang menampilkan SEMUA video */}
+        <Route path="/videos" element={<VideoPage />} />
       </Routes>
     </>
   );
 }
+
+export default App;

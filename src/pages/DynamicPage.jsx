@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Download, Image as ImageIcon, Loader, AlertCircle, Calendar, ArrowRight, Search } from 'lucide-react';
+import { 
+  Download, 
+  Image as ImageIcon, 
+  Loader, 
+  AlertCircle, 
+  Calendar, 
+  ArrowRight, 
+  Search,
+  Frown // ✅ Tambahan ikon sedih
+} from 'lucide-react';
 import SecondaryPageTemplate from '../ui/PageLayout'; 
 
 // Ganti dengan URL API backend Anda
@@ -75,11 +84,9 @@ const TableView = ({ data }) => (
 const ListView = ({ data }) => (
     <div className="space-y-4">
         {data.map(item => {
-            // Cek apakah item ini adalah dokumen yang memiliki link unduhan
             const isDocument = !!item.dokumen_url;
 
             if (isDocument) {
-                // Tampilan khusus untuk dokumen: tidak bisa diklik, ada tombol unduh
                 return (
                     <div 
                         key={item.id}
@@ -108,7 +115,6 @@ const ListView = ({ data }) => (
                 );
             }
 
-            // Tampilan default untuk item yang mengarah ke halaman detail
             return (
                 <Link 
                     key={item.id} 
@@ -167,7 +173,7 @@ const DynamicPage = () => {
         if (response.data.data.length > 0) {
           setMenuInfo(response.data.data[0].menu);
         } else {
-            setError("Tidak ada konten untuk ditampilkan di halaman ini.");
+          setError(null); // ✅ Jangan set error, karena bukan error tapi kosong
         }
       } catch (err) {
         setError("Gagal memuat konten. Silakan coba lagi nanti.");
@@ -185,14 +191,49 @@ const DynamicPage = () => {
 
   const renderContent = () => {
     if (loading) {
-      return <div className="flex items-center justify-center py-20"><Loader className="w-8 h-8 animate-spin text-cyan-800" /></div>;
+      return (
+        <div className="flex items-center justify-center py-20">
+          <Loader className="w-8 h-8 animate-spin text-cyan-800" />
+        </div>
+      );
     }
+
     if (error && pageData.length === 0) {
-        return <div className="py-20 text-center"><AlertCircle className="mx-auto mb-4 text-red-500" size={48} /><p className="text-base text-gray-600">{error}</p></div>;
+      return (
+        <div className="py-20 text-center">
+          <AlertCircle className="mx-auto mb-4 text-red-500" size={48} />
+          <p className="text-base text-gray-600">{error}</p>
+        </div>
+      );
     }
+
+    // ✅ Jika tidak ada data sama sekali
+    if (!loading && pageData.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <Frown className="w-16 h-16 mb-4 text-gray-400" />
+          <p className="text-lg font-medium text-gray-700">
+            Yah menu yang Anda cari tidak ada..
+          </p>
+          <p className="mt-1 text-sm text-gray-500">
+            Silahkan kembali lain kalii :)
+          </p>
+        </div>
+      );
+    }
+
+    // ✅ Jika ada data tapi hasil pencarian kosong
     if (pageData.length > 0 && filteredData.length === 0) {
-        return <div className="py-20 text-center"><Search className="mx-auto mb-4 text-gray-400" size={48} /><p className="text-base text-gray-600">Konten yang Anda cari tidak ditemukan.</p></div>;
+      return (
+        <div className="py-20 text-center">
+          <Search className="mx-auto mb-4 text-gray-400" size={48} />
+          <p className="text-base text-gray-600">
+            Konten yang Anda cari tidak ditemukan.
+          </p>
+        </div>
+      );
     }
+
     if (!menuInfo) return null;
 
     switch (menuInfo.tipe_tampilan) {

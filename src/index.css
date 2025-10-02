@@ -50,22 +50,26 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
-
 @keyframes wave {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-.animate-wave {
-  animation: wave 8s linear infinite;
-}
 .animate-wave-slow {
-  animation: wave 12s linear infinite;
-}
-.animate-wave-slower {
-  animation: wave 16s linear infinite;
+  animation: wave 15s linear infinite;
 }
 
+.animate-wave-medium {
+  animation: wave 10s linear infinite;
+}
+
+.animate-wave-fast {
+  animation: wave 6s linear infinite;
+}
 
 
 :root {

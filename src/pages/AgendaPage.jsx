@@ -1,5 +1,4 @@
-// pages/AgendaPage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import SecondaryPageTemplate from "./../ui/PageLayout";
 import Calendar from "../ui/Calendar";
 import { getAgendas } from "../api/menuApi"; // Import API
@@ -48,40 +47,48 @@ const AgendaPage = () => {
   };
 
   const handleDateSelect = (date) => {
+    // [PERBAIKAN] Saat tanggal dipilih, hapus istilah pencarian
+    // agar fokus kembali ke filter tanggal.
+    setSearchTerm("");
     setSelectedDate(selectedDate?.toDateString() === date.toDateString() ? null : date);
   };
 
-  const filteredAgendas = agendas.filter(
-    (agenda) =>
-      (agenda.agenda || agenda.judul || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (agenda.deskripsi || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // --- [PERBAIKAN UTAMA] Logika filter digabungkan di sini ---
+  const displayedAgendas = useMemo(() => {
+    // 1. Jika ada istilah pencarian, filter berdasarkan itu saja, abaikan tanggal.
+    if (searchTerm) {
+      return agendas.filter(
+        (agenda) =>
+          (agenda.agenda || agenda.judul || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (agenda.deskripsi || '').toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
 
-  const getAgendaForView = () => {
-    // --- [PERBAIKAN UTAMA DI SINI] ---
+    // 2. Jika tidak ada pencarian, filter berdasarkan tanggal yang dipilih.
     if (selectedDate) {
-      // Membuat string YYYY-MM-DD secara manual untuk menghindari masalah timezone
       const year = selectedDate.getFullYear();
-      const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // getMonth() dimulai dari 0 (Januari=0)
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
       const day = String(selectedDate.getDate()).padStart(2, '0');
       const dateStr = `${year}-${month}-${day}`;
-      
-      // Filter berdasarkan string tanggal yang sudah benar
-      return filteredAgendas.filter((a) => a.tanggal && a.tanggal.startsWith(dateStr));
+      return agendas.filter((a) => a.tanggal && a.tanggal.startsWith(dateStr));
     }
-    // --- Akhir Perbaikan ---
-
-    // Logika untuk tampilan per bulan (tidak diubah)
+    
+    // 3. Jika tidak ada pencarian & tidak ada tanggal dipilih, filter berdasarkan bulan saat ini.
     const yearStr = currentMonth.getFullYear();
     const monthStr = String(currentMonth.getMonth() + 1).padStart(2, "0");
-    return filteredAgendas.filter((a) => a.tanggal && a.tanggal.startsWith(`${yearStr}-${monthStr}`));
-  };
+    return agendas.filter((a) => a.tanggal && a.tanggal.startsWith(`${yearStr}-${monthStr}`));
+  }, [agendas, searchTerm, selectedDate, currentMonth]); // Dependensi untuk kalkulasi ulang
 
-  const agendaToShow = getAgendaForView();
-
-  const sidebarTitle = selectedDate
-    ? `Agenda ${selectedDate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`
-    : `Agenda Bulan ${monthNames[currentMonth.getMonth()]}`;
+  // Judul sidebar yang dinamis berdasarkan filter yang aktif
+  const sidebarTitle = useMemo(() => {
+    if (searchTerm) {
+      return `Hasil Pencarian`;
+    }
+    if (selectedDate) {
+      return `Agenda ${selectedDate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`;
+    }
+    return `Agenda Bulan ${monthNames[currentMonth.getMonth()]}`;
+  }, [searchTerm, selectedDate, currentMonth]);
 
   return (
     <SecondaryPageTemplate
@@ -93,9 +100,13 @@ const AgendaPage = () => {
           <Search className="absolute text-gray-400 transition-colors -translate-y-1/2 left-4 top-1/2 group-focus-within:text-cyan-600" size={20} />
           <input
             type="text"
-            placeholder="Cari agenda..."
+            placeholder="Cari semua agenda..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              // [PERBAIKAN] Hapus pilihan tanggal saat mulai mencari
+              setSelectedDate(null);
+            }}
             className="w-full py-3 pl-12 pr-4 transition-all duration-300 border border-gray-300 rounded-full shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent hover:shadow-md"
           />
         </div>
@@ -133,9 +144,9 @@ const AgendaPage = () => {
                 <div className="space-y-4">
                   {[...Array(5)].map((_, i) => <div key={i} className="w-full h-16 bg-gray-200 rounded-lg animate-pulse"></div>)}
                 </div>
-              ) : agendaToShow.length > 0 ? (
+              ) : displayedAgendas.length > 0 ? (
                 <ul className="space-y-4">
-                  {agendaToShow.map((a) => (
+                  {displayedAgendas.map((a) => (
                     <li key={a.id} className="p-4 transition-all duration-300 border-l-4 rounded-lg border-cyan-500 bg-slate-50 hover:shadow-lg hover:-translate-y-1 group">
                       <h4 className="font-semibold text-gray-800 transition-colors duration-300 group-hover:text-cyan-700">
                         {a.agenda || a.judul}
@@ -149,9 +160,12 @@ const AgendaPage = () => {
               ) : (
                 <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                   <CalendarIcon size={32} className="mb-4 text-cyan-300" />
-                  <p className="font-semibold text-gray-700">Tidak Ada Agenda</p>
+                  <p className="font-semibold text-gray-700">Tidak Ada Agenda Ditemukan</p>
                   <p className="max-w-xs mt-1 text-sm text-gray-500">
-                    {selectedDate ? "Tidak ada jadwal untuk tanggal ini." : "Tidak ada jadwal untuk bulan ini."}
+                    {searchTerm 
+                      ? `Tidak ada hasil untuk "${searchTerm}".`
+                      : "Tidak ada jadwal untuk periode ini."
+                    }
                   </p>
                 </div>
               )}
@@ -164,3 +178,4 @@ const AgendaPage = () => {
 };
 
 export default AgendaPage;
+

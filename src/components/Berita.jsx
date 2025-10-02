@@ -1,31 +1,31 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-import NewsCard from "../ui/NewsCard";
-import AgendaCard from "../ui/AgendaCard";
-import { getContentByMenuName, getAgendas } from "../api/menuApi";
+import { ChevronLeft, ChevronRight, ArrowRight, AlertCircle, Calendar, Clock } from "lucide-react";
+import NewsCard from "../ui/NewsCard"; // Pastikan path benar
+import AgendaCard from "../ui/AgendaCard"; // Pastikan path benar
+import { getContentByMenuName, getAgendas } from "../api/menuApi"; // Pastikan path API benar
 
-const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+const monthNames = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const dayNames = ["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
 
 const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
-// [DIUBAH] Desain Tombol Hari Agenda
+// Komponen Tombol Tanggal yang didesain ulang
 const AgendaDayButton = ({ day, isSelected, isToday, hasAgenda, onSelectDate }) => (
   <button
     onClick={() => onSelectDate(day)}
-    className={`relative flex flex-col items-center justify-center w-12 h-16 text-sm rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 ${
-      isSelected
-        ? "bg-cyan-700 text-white font-bold shadow-lg scale-105"
+    className={`relative flex flex-col items-center justify-center w-full h-20 rounded-xl transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-sky-400
+      ${isSelected
+        ? "bg-sky-700 text-white font-bold shadow-lg scale-110"
         : isToday
-        ? "bg-cyan-50 text-cyan-600 font-bold"
-        : "text-gray-600 hover:bg-gray-100"
-    }`}
+        ? "bg-sky-100 text-sky-800 font-bold ring-2 ring-sky-200"
+        : "text-slate-600 bg-slate-100 hover:bg-slate-200"
+      }`}
   >
-    <span className="text-xs text-gray-500 group-hover:text-gray-700">{dayNames[day.getDay()]}</span>
-    <span className="mt-1 font-bold">{day.getDate()}</span>
+    <span className={`text-xs ${isSelected ? 'text-sky-200' : 'text-slate-500'}`}>{dayNames[day.getDay()]}</span>
+    <span className="text-xl font-bold">{day.getDate()}</span>
     {hasAgenda && (
-      <span className={`absolute bottom-1.5 w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white" : "bg-cyan-700"}`}></span>
+      <span className={`absolute bottom-2 w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white" : "bg-sky-600"}`} />
     )}
   </button>
 );
@@ -37,9 +37,14 @@ const NewsAgendaSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Inisialisasi tanggal hari ini sebagai tanggal yang dipilih
+  const [selectedDate, setSelectedDate] = useState(today);
+
+  // State untuk bulan yang ditampilkan di kalender
+  const [currentDisplayMonth, setCurrentDisplayMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+
   useEffect(() => {
     const fetchData = async () => {
-      // ... (Logika fetch data tetap sama)
       setIsLoading(true);
       setError(null);
       try {
@@ -51,7 +56,6 @@ const NewsAgendaSection = () => {
         setAgendas(agendasResponse || []);
       } catch (err) {
         setError("Gagal memuat data. Silakan coba lagi nanti.");
-        console.error(err);
       } finally {
         setIsLoading(false);
       }
@@ -59,92 +63,116 @@ const NewsAgendaSection = () => {
     fetchData();
   }, []);
 
-  // ... (Sisa state dan logika kalender Anda tetap sama)
-  const [currentMonth, setCurrentMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
-  const [page, setPage] = useState(Math.floor((today.getDate() - 1) / 5));
-  const [selectedDate, setSelectedDate] = useState(today);
-  const totalDays = useMemo(() => getDaysInMonth(currentMonth), [currentMonth]);
-  const currentDays = useMemo(() => {
-    const start = page * 5 + 1;
-    const end = Math.min(start + 4, totalDays);
+  // Logika untuk menampilkan tanggal di kalender (misal: 7 hari per view)
+  const daysPerPage = 7;
+  const totalDaysInMonth = useMemo(() => getDaysInMonth(currentDisplayMonth), [currentDisplayMonth]);
+  const [currentPage, setCurrentPage] = useState(Math.floor((selectedDate.getDate() - 1) / daysPerPage));
+
+  const visibleDays = useMemo(() => {
+    const start = currentPage * daysPerPage + 1;
+    const end = Math.min(start + daysPerPage - 1, totalDaysInMonth);
     const days = [];
     for (let d = start; d <= end; d++) {
-      days.push(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d));
+      days.push(new Date(currentDisplayMonth.getFullYear(), currentDisplayMonth.getMonth(), d));
     }
     return days;
-  }, [page, totalDays, currentMonth]);
-  const getAgendasForDate = useCallback((date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const dateString = `${year}-${month}-${day}`;
-    return agendas.filter((agenda) => agenda.tanggal && agenda.tanggal.startsWith(dateString));
-  }, [agendas]);
-  const agendasToShow = useMemo(() => getAgendasForDate(selectedDate), [selectedDate, getAgendasForDate]);
-  const nextPage = useCallback(() => { /* ...logika sama... */ }, [page, totalDays]);
-  const prevPage = useCallback(() => { /* ...logika sama... */ }, [page, currentMonth]);
+  }, [currentPage, totalDaysInMonth, currentDisplayMonth]);
 
+  const goToNextPage = () => { if ((currentPage + 1) * daysPerPage < totalDaysInMonth) setCurrentPage(currentPage + 1); };
+  const goToPrevPage = () => { if (currentPage > 0) setCurrentPage(currentPage - 1); };
+
+// Di dalam file NewsAgendaSection.jsx
+
+  const getAgendasForDate = useCallback((date) => {
+    // 'date' adalah objek tanggal lokal dari kalender yang dipilih
+    const selectedYear = date.getFullYear();
+    const selectedMonth = date.getMonth();
+    const selectedDay = date.getDate();
+
+    return agendas.filter((agenda) => {
+      if (!agenda.tanggal) return false;
+
+      // SOLUSI: Parse string 'YYYY-MM-DD' secara manual untuk menghindari masalah timezone.
+      // Ini akan membuat objek tanggal baru dalam zona waktu lokal pengguna.
+      const parts = agenda.tanggal.split('T')[0].split('-'); // Mengambil 'YYYY-MM-DD'
+      if (parts.length < 3) return false;
+
+      const agendaDate = new Date(parts[0], parts[1] - 1, parts[2]); // new Date(year, monthIndex, day)
+
+      // Sekarang bandingkan komponen tanggalnya. Ini 100% aman dari timezone.
+      return agendaDate.getFullYear() === selectedYear &&
+             agendaDate.getMonth() === selectedMonth &&
+             agendaDate.getDate() === selectedDay;
+    });
+  }, [agendas]);
+
+  const agendasToShow = useMemo(() => getAgendasForDate(selectedDate), [selectedDate, getAgendasForDate]);
 
   return (
-    <div className="py-20 bg-slate-50 sm:py-24">
-      <div className="px-4 mx-auto max-w-7xl md:px-6">
-        <div className="grid gap-12 lg:grid-cols-12">
-          {/* --- [DIUBAH] Seksi Berita --- */}
+    <div className="relative py-20 overflow-hidden bg-slate-50/50 sm:py-24">
+       {/* Latar Belakang Dekoratif */}
+      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-sky-100/50 to-transparent"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 -mt-24 -mr-24 rounded-full bg-sky-200/50 blur-3xl opacity-60"></div>
+      <div className="absolute bottom-0 left-0 -mb-32 -ml-32 rounded-full opacity-50 w-80 h-80 bg-slate-300/50 blur-3xl"></div>
+
+      <div className="container relative px-4 mx-auto max-w-7xl md:px-6">
+        <div className="grid gap-16 lg:grid-cols-12 lg:gap-12">
+          
+          {/* --- Seksi Berita --- */}
           <div className="lg:col-span-8">
-            <div className="mb-8 text-center lg:text-left">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Berita Terkini
+            <div className="mb-10 text-center lg:text-left">
+              <span className="inline-block px-3 py-1 mb-2 text-sm font-semibold rounded-full text-sky-800 bg-sky-200/80">Informasi Publik</span>
+              <h2 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+                Berita & Inovasi
               </h2>
-              <p className="max-w-2xl mx-auto mt-4 text-lg text-gray-600 lg:mx-0">
-                Informasi dan kegiatan terkini dari Diskominfo Kota Bogor.
+              <p className="max-w-2xl mx-auto mt-4 text-lg text-slate-600 lg:mx-0">
+                Kumpulan informasi, kegiatan, dan inovasi terbaru dari Diskominfo Kota Bogor.
               </p>
             </div>
             {isLoading ? (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="w-full h-80 bg-gray-200 rounded-lg animate-pulse"></div>
-                ))}
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {[...Array(3)].map((_, i) => <div key={i} className="w-full bg-slate-200 h-96 rounded-2xl animate-pulse" />)}
               </div>
             ) : error ? (
-              <div className="flex items-center justify-center h-64 p-4 text-center text-red-600 rounded-lg bg-red-50">
-                <p>{error}</p>
+              <div className="flex flex-col items-center justify-center h-64 p-4 text-center text-red-700 border border-red-200 rounded-2xl bg-red-100/80">
+                <AlertCircle className="w-12 h-12 mb-4 text-red-500" />
+                <p className="font-semibold">{error}</p>
               </div>
             ) : (
-              <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
-                {newsData.slice(0, 3).map((news) => (
-                  <NewsCard key={news.id} news={news} />
+              // Parent untuk stagger animation
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3" style={{ '--stagger-delay': '100ms' }}>
+                {newsData.slice(0, 3).map((news, index) => (
+                  <NewsCard key={news.id} news={news} style={{ animationDelay: `${index * 100}ms` }} />
                 ))}
               </div>
             )}
-            <div className="mt-10 text-center lg:text-left">
-              <Link
-                to="/berita"
-                className="inline-flex items-center gap-2 px-6 py-3 font-semibold text-white transition-all duration-300 ease-in-out transform bg-cyan-700 rounded-full shadow-lg shadow-cyan-500/30 hover:bg-cyan-800 hover:scale-105"
-              >
-                Lihat Semua Berita <ArrowRight size={16} />
+            <div className="mt-12 text-center lg:text-left">
+              <Link to="/berita" className="inline-flex items-center gap-2 px-8 py-3 font-semibold text-white transition duration-300 transform rounded-full shadow-lg bg-sky-700 group hover:bg-sky-800 hover:shadow-xl hover:-translate-y-1">
+                <span>Lihat Semua Berita</span>
+                <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </div>
           </div>
 
-          {/* --- [DIUBAH] Seksi Agenda --- */}
+          {/* --- Seksi Agenda --- */}
           <div className="lg:col-span-4">
-            <div className="flex flex-col h-full p-6 bg-white border border-gray-200 shadow-xl rounded-2xl">
-              <h3 className="mb-4 text-xl font-bold text-gray-800">Agenda</h3>
+            <div className="flex flex-col h-full p-6 border shadow-2xl bg-gradient-to-br from-white to-slate-50 border-slate-200/80 shadow-sky-500/5 rounded-2xl">
+              <h3 className="mb-4 text-2xl font-bold text-slate-800">Agenda Kegiatan</h3>
               <div className="flex items-center justify-between mb-4">
-                <button onClick={prevPage} className="p-2 transition-colors rounded-full hover:bg-gray-100 group" aria-label="Bulan sebelumnya">
-                  <ChevronLeft size={20} className="text-gray-700 group-hover:text-gray-900" />
+                <button onClick={goToPrevPage} disabled={currentPage === 0} className="p-2 rounded-full text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed" aria-label="Sebelumnya">
+                  <ChevronLeft size={20} />
                 </button>
-                <h4 className="text-sm font-semibold text-gray-800">
-                  {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                <h4 className="font-semibold text-slate-800 text-md">
+                  {monthNames[currentDisplayMonth.getMonth()]} {currentDisplayMonth.getFullYear()}
                 </h4>
-                <button onClick={nextPage} className="p-2 transition-colors rounded-full hover:bg-gray-100 group" aria-label="Bulan berikutnya">
-                  <ChevronRight size={20} className="text-gray-700 group-hover:text-gray-900" />
+                <button onClick={goToNextPage} disabled={(currentPage + 1) * daysPerPage >= totalDaysInMonth} className="p-2 rounded-full text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed" aria-label="Berikutnya">
+                  <ChevronRight size={20} />
                 </button>
               </div>
-              <div className="grid grid-cols-5 gap-2 mb-4">
-                {currentDays.map((day) => (
+              <div className={`grid grid-cols-${daysPerPage} gap-2 mb-5`}>
+                {visibleDays.map((day) => (
                   <AgendaDayButton
-                    key={day.toDateString()}
+                    key={day.toISOString()}
                     day={day}
                     isSelected={selectedDate.toDateString() === day.toDateString()}
                     isToday={today.toDateString() === day.toDateString()}
@@ -153,23 +181,21 @@ const NewsAgendaSection = () => {
                   />
                 ))}
               </div>
-              <div className="flex-grow pr-2 -mr-2 space-y-2 overflow-y-auto max-h-80">
+              <div className="flex-grow pr-2 -mr-3 space-y-3 overflow-y-auto max-h-96 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
                 {isLoading ? (
-                  <div className="flex items-center justify-center h-full"><div className="w-8 h-8 border-4 border-gray-200 rounded-full animate-spin border-t-cyan-600"></div></div>
+                  <div className="flex items-center justify-center h-full"><div className="w-8 h-8 border-4 rounded-full border-slate-200 animate-spin border-t-sky-600"></div></div>
                 ) : agendasToShow.length > 0 ? (
-                  agendasToShow.map((agenda) => (
-                    <AgendaCard key={agenda.id} agenda={agenda} />
-                  ))
+                  agendasToShow.map((agenda, index) => <AgendaCard key={agenda.id} agenda={agenda} style={{ animationDelay: `${index * 100}ms` }} />)
                 ) : (
-                  <div className="flex items-center justify-center h-full text-center">
-                    <p className="text-sm italic text-gray-500">Tidak ada agenda.</p>
+                  <div className="flex flex-col items-center justify-center h-full text-center">
+                    <Calendar className="w-16 h-16 text-slate-300" />
+                    <p className="mt-2 text-sm italic text-slate-500">Tidak ada agenda pada tanggal ini.</p>
                   </div>
                 )}
               </div>
-              <div className="pt-4 mt-auto text-center border-t border-gray-200">
-                <Link to="/agenda" className="inline-flex items-center text-sm font-semibold transition-colors text-cyan-700 hover:text-cyan-800 group">
-                  Lihat Semua Agenda
-                  <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
+               <div className="pt-5 mt-auto text-center border-t border-slate-200/80">
+                <Link to="/agenda" className="inline-flex items-center text-sm font-semibold transition text-sky-700 group hover:text-sky-800">
+                  <span>Lihat Semua Agenda</span> <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>

@@ -15,7 +15,7 @@ export default function HomePage() {
       <Sambutan />
       <Layanan />
       <Berita />
-      <Struktural />
+      {/* <Struktural /> */}
       <BannerLink />
       <Footer />
     </>

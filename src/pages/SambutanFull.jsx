@@ -14,26 +14,26 @@ export default function SambutanFull() {
       title="Sambutan Kepala Dinas"
       breadcrumb={breadcrumb}
     >
-      <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
+      <div className="flex flex-col items-start gap-12 lg:flex-row lg:gap-16">
 
         {/* --- Kolom Profil Kepala Dinas (Sticky) --- */}
-        <aside className="w-full lg:w-1/3 flex-shrink-0">
+        <aside className="flex-shrink-0 w-full lg:w-1/3">
           <div className="sticky top-28">
-            <div className="p-6 bg-white rounded-2xl shadow-xl text-center border border-gray-200">
+            <div className="p-6 text-center bg-white border border-gray-200 shadow-xl rounded-2xl">
               <img
                 src="/rudiyana.jpg"
                 alt="Rudiyana, S.STP., M.Sc"
-                className="w-48 h-48 mx-auto rounded-full object-cover mb-6 ring-4 ring-cyan-500 p-1"
+                className="object-cover w-48 h-48 p-1 mx-auto mb-6 rounded-full ring-4 ring-cyan-500"
               />
               <h2 className="text-2xl font-bold text-gray-900">Rudiyana, S.STP., M.Sc.</h2>
-              <p className="mt-1 text-md text-cyan-700 font-semibold">Kepala Dinas Komunikasi dan Informatika Kota Bogor</p>
+              <p className="mt-1 font-semibold text-md text-cyan-700">Kepala Dinas Komunikasi dan Informatika Kota Bogor</p>
             </div>
           </div>
         </aside>
 
         {/* --- Kolom Konten Sambutan --- */}
         <article className="w-full lg:w-2/3">
-          <div className="space-y-6 text-gray-700 text-justify leading-relaxed">
+          <div className="space-y-6 leading-relaxed text-justify text-gray-700">
             <p className="text-lg">Assalamu'alaikum warahmatullahi wabarakatuh,</p>
             <p className="text-lg">Salam sejahtera untuk kita semua.</p>
 
@@ -42,8 +42,8 @@ export default function SambutanFull() {
             </p>
 
             {/* --- Blok Kutipan untuk menyorot pesan penting --- */}
-            <blockquote className="relative p-6 my-8 text-xl font-semibold leading-8 text-gray-900 bg-cyan-50 border-l-4 border-cyan-600 rounded-r-lg">
-              <Quote className="absolute top-4 left-4 w-10 h-10 text-cyan-200" />
+            <blockquote className="relative p-6 my-8 text-xl font-semibold leading-8 text-gray-900 border-l-4 rounded-r-lg bg-cyan-50 border-cyan-600">
+              <Quote className="absolute w-10 h-10 top-4 left-4 text-cyan-200" />
               <p className="relative z-10">
                 Sebagai garda terdepan dalam pengelolaan informasi dan teknologi, Diskominfo berkomitmen untuk mendukung pembangunan Kota Bogor melalui layanan yang inovatif, transparan, dan berbasis digital.
               </p>

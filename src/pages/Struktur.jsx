@@ -1,19 +1,21 @@
 import React from "react";
-import SecondaryPageTemplate from "../ui/PageLayout"; // Pastikan path ini benar
+import SecondaryPageTemplate from "../ui/PageLayout";
+import { User } from "lucide-react";
 
-// --- [DESAIN BARU] Komponen Kartu Profil yang lebih modern ---
+// --- Komponen Kartu Profil ---
 const PersonCard = ({ foto, nama, jabatan, size = "md", highlight = false }) => {
-  // Ukuran foto disesuaikan untuk responsivitas
   const sizeClasses = {
-    lg: "w-44 h-44", // Kepala Dinas
-    md: "w-36 h-36", // Pejabat lain
+    lg: "w-44 h-44",
+    md: "w-36 h-36",
   };
 
   return (
-    <article className="flex flex-col items-center w-full max-w-xs p-6 text-center transition-all duration-300 bg-white shadow-lg group rounded-xl hover:shadow-2xl hover:-translate-y-2">
-      <div className="relative">
+    <article className="flex flex-col items-center w-full max-w-sm p-8 text-center transition-all duration-200 bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-lg hover:border-cyan-800 group">
+      <div className="relative mb-5">
         <div
-          className={`${sizeClasses[size]} mb-4 flex items-center justify-center overflow-hidden rounded-full bg-slate-200 ring-4 ring-white shadow-md`}
+          className={`${sizeClasses[size]} flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-gray-50 to-gray-100 ${
+            highlight ? "ring-4 ring-cyan-800 ring-offset-4" : "ring-2 ring-gray-200"
+          } transition-all duration-200 group-hover:ring-cyan-800`}
         >
           {foto ? (
             <img
@@ -22,43 +24,39 @@ const PersonCard = ({ foto, nama, jabatan, size = "md", highlight = false }) => 
               className="object-cover w-full h-full"
             />
           ) : (
-            // Ikon placeholder jika foto tidak ada
-            <svg className="w-1/2 h-1/2 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 20.993V24H0v-2.997A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
+            <User className="w-1/2 text-gray-300 h-1/2" strokeWidth={1.5} />
           )}
         </div>
-        {/* Efek cincin saat di-hover */}
-        <div
-          className={`absolute inset-0 rounded-full ring-4 transition-all duration-300 group-hover:ring-cyan-500/50 ${
-            highlight ? "ring-cyan-500" : "ring-transparent"
-          }`}
-        ></div>
       </div>
-      <div className="flex flex-col flex-grow">
-        <h3 className="text-lg font-bold text-gray-900">{nama}</h3>
-        <p className="flex-grow mt-1 text-sm text-cyan-800">{jabatan}</p>
+      <div className="flex flex-col flex-grow space-y-2">
+        <h3 className="text-lg font-semibold leading-tight text-gray-900 transition-colors group-hover:text-cyan-800">
+          {nama}
+        </h3>
+        <p className="flex-grow text-sm leading-relaxed text-gray-600">
+          {jabatan}
+        </p>
       </div>
     </article>
   );
 };
 
-// --- [BARU] Komponen Judul Seksi untuk konsistensi ---
-const SectionTitle = ({ title }) => (
-  <div className="relative mb-10 text-center">
-    <h2 className="text-3xl font-bold text-gray-800">{title}</h2>
-    <div className="w-16 h-1 mx-auto mt-3 rounded-full bg-cyan-500"></div>
+// --- Komponen Judul Seksi ---
+const SectionTitle = ({ title, subtitle }) => (
+  <div className="mb-12 text-center">
+    <h2 className="mb-2 text-3xl font-bold text-gray-900">{title}</h2>
+    {subtitle && (
+      <p className="max-w-2xl mx-auto text-base text-gray-600">{subtitle}</p>
+    )}
+    <div className="w-16 h-1.5 mx-auto mt-4 rounded-full bg-gradient-to-r from-cyan-800 to-cyan-600"></div>
   </div>
 );
-
 
 export default function Struktur() {
   const breadcrumb = [
     { label: "Beranda", link: "/" },
-    { label: "Struktur Organisasi", link: "/struktur" },
+    { label: "Struktur Organisasi" },
   ];
 
-  // Data tetap sama, tidak perlu diubah
   const strukturData = {
     kepalaDinas: {
       nama: "Rudiyana S.STP.M.Sc",
@@ -71,34 +69,60 @@ export default function Struktur() {
       foto: "src/assets/struktural/oki.webp",
     },
     bidang: [
-      { nama: "Junenti Kolbert Nadeak, ST. ME", jabatan: "Kepala Bidang APTIKA", foto: "src/assets/struktural/junenti.webp" },
-      { nama: "Dian Intannia Lesmana S.Sos. ME", jabatan: "Kepala Bidang Informasi dan Komunikasi Publik", foto: "src/assets/struktural/dian.webp" },
-      { nama: "Arofa Abdilla Rahman ST.MT", jabatan: "Kepala Bidang Persandian dan Keamanan Informasi", foto: "src/assets/struktural/arofa.webp" },
-      { nama: "Tosan Wiar Ramadhani, S.Kom., M.TI", jabatan: "Kepala Bidang Statistik Sektoral", foto: "src/assets/struktural/tosan.webp" },
+      { 
+        nama: "Junenti Kolbert Nadeak, ST. ME", 
+        jabatan: "Kepala Bidang APTIKA", 
+        foto: "src/assets/struktural/junenti.webp" 
+      },
+      { 
+        nama: "Dian Intannia Lesmana S.Sos. ME", 
+        jabatan: "Kepala Bidang Informasi dan Komunikasi Publik", 
+        foto: "src/assets/struktural/dian.webp" 
+      },
+      { 
+        nama: "Arofa Abdilla Rahman ST.MT", 
+        jabatan: "Kepala Bidang Persandian dan Keamanan Informasi", 
+        foto: "src/assets/struktural/arofa.webp" 
+      },
+      { 
+        nama: "Tosan Wiar Ramadhani, S.Kom., M.TI", 
+        jabatan: "Kepala Bidang Statistik Sektoral", 
+        foto: "src/assets/struktural/tosan.webp" 
+      },
     ],
     subBagian: [
-      { nama: "Susilawaty Syariefah, S.Sos. MA", jabatan: "Kasubag Umum dan Kepegawaian", foto: "src/assets/struktural/susi.webp" },
+      { 
+        nama: "Susilawaty Syariefah, S.Sos. MA", 
+        jabatan: "Kasubag Umum dan Kepegawaian", 
+        foto: "src/assets/struktural/susi.webp" 
+      },
     ],
   };
 
   return (
     <SecondaryPageTemplate title="Struktur Organisasi" breadcrumb={breadcrumb}>
       <div className="space-y-20">
-        
+         <SectionTitle 
+            title="Kepala Dinas" 
+            subtitle="Pemimpin tertinggi di Dinas Komunikasi dan Informatika"
+          />
         {/* Kepala Dinas */}
-        <section className="flex justify-center">
+        <section className="flex justify-center py-8">
           <PersonCard
             foto={strukturData.kepalaDinas.foto}
             nama={strukturData.kepalaDinas.nama}
             jabatan={strukturData.kepalaDinas.jabatan}
             size="lg"
-            highlight // Memberi highlight visual pada Kepala Dinas
+            highlight
           />
         </section>
 
         {/* Sekretariat & Sub Bagian */}
-        <section>
-          <SectionTitle title="Sekretariat" />
+        <section className="px-8 py-12 -mx-8 bg-gradient-to-b from-gray-50 to-white rounded-2xl">
+          <SectionTitle 
+            title="Sekretariat" 
+            subtitle="Koordinator dan pengelola administrasi dinas"
+          />
           <div className="flex flex-wrap items-stretch justify-center gap-8">
             <PersonCard
               foto={strukturData.sekretariat.foto}
@@ -117,8 +141,11 @@ export default function Struktur() {
         </section>
 
         {/* Kepala Bidang */}
-        <section>
-          <SectionTitle title="Kepala Bidang" />
+        <section className="py-8">
+          <SectionTitle 
+            title="Kepala Bidang" 
+            subtitle="Tim inti yang mengelola berbagai bidang strategis"
+          />
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {strukturData.bidang.map((item, index) => (
               <PersonCard

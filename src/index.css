@@ -51,6 +51,23 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@keyframes wave {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-wave {
+  animation: wave 8s linear infinite;
+}
+.animate-wave-slow {
+  animation: wave 12s linear infinite;
+}
+.animate-wave-slower {
+  animation: wave 16s linear infinite;
+}
+
+
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

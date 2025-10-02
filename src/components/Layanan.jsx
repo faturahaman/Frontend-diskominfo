@@ -1,86 +1,129 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Tambahkan useEffect
-import { 
-  ChevronDown, 
-  Globe, 
-  FileText, 
-  MessagesSquare, 
-  Landmark, 
-  Building,
-  ArrowUpRight
-} from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios"; // Pastikan sudah install: npm install axios
+import {
+  ChevronDown,
+  Globe,
+  FileText,
+  MessagesSquare,
+  Landmark,
+  Building,
+  ArrowRight
+} from "lucide-react";
 
-const ServiceCard = ({ icon: Icon, title, description, link, index }) => {
-  const animationDelay = `${index * 100}ms`;
+// Mapping nama icon dari string ke komponen React
+const iconMap = {
+  Building,
+  Landmark,
+  Globe,
+  FileText,
+  MessagesSquare,
+};
+
+const ServiceCard = ({ iconName, title, description, link, index, bgImage, pattern }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => {
+      if (cardRef.current) observer.unobserve(cardRef.current);
+    };
+  }, []);
+
+  const isExternal = link.startsWith('http');
+  const LinkComponent = isExternal ? 'a' : Link;
+  const linkProps = isExternal
+    ? { href: link, target: "_blank", rel: "noopener noreferrer" }
+    : { to: link };
+
+  const Icon = iconMap[iconName] || Globe; // Default icon jika tidak ditemukan
 
   return (
-    <div 
-      className="w-full max-w-sm animate-fade-in-up" 
-      style={{ animationDelay }}
+    <LinkComponent
+      ref={cardRef}
+      {...linkProps}
+      className={`
+        group relative h-full overflow-hidden bg-gray-100 p-8 rounded-2xl
+        transition-all duration-500 ease-out
+        ${pattern}
+        ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+      `}
+      style={{ animationDelay: `${index * 100}ms` }}
     >
-      <div className="flex flex-col h-full transition-all duration-300 bg-white shadow-lg group rounded-2xl hover:shadow-2xl hover:-translate-y-2">
-        <div className="flex-grow p-8">
-          <div className="flex items-center justify-center w-16 h-16 mb-6 transition-all duration-300 bg-cyan-100 rounded-xl group-hover:bg-cyan-600">
-            <Icon className="w-8 h-8 transition-all duration-300 text-cyan-700 group-hover:text-white group-hover:scale-110" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900">{title}</h3>
-          <p className="mt-2 text-sm leading-relaxed text-gray-600">{description}</p>
-        </div>
-        <Link 
-          to={link}
-          target={link.startsWith('http') ? '_blank' : '_self'}
-          rel="noopener noreferrer"
-          className="flex items-center justify-between p-6 transition-colors duration-300 bg-gray-50 rounded-b-2xl group-hover:bg-cyan-50"
-        >
-          <span className="font-semibold text-cyan-800">Kunjungi Situs</span>
-          <ArrowUpRight className="w-5 h-5 transition-transform duration-300 text-cyan-800 group-hover:rotate-45" />
-        </Link>
+      <div className="absolute top-0 left-0 z-0 w-full h-full transition-all duration-500 ease-in-out -translate-x-full group-hover:translate-x-0">
+        <img src={bgImage} alt={`${title} background`} className="object-cover w-full h-full" />
+        <div className="absolute inset-0 bg-cyan-800/70"></div>
       </div>
-    </div>
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="flex justify-between">
+          <h3 className="text-2xl font-bold text-gray-800 transition-colors duration-300 group-hover:text-white">
+            {title}
+          </h3>
+          <Icon className="w-8 h-8 transition-colors duration-300 text-cyan-600 group-hover:text-white" />
+        </div>
+        <p className="mt-2 text-gray-600 transition-colors duration-300 group-hover:text-cyan-100">
+          {description}
+        </p>
+        <div className="mt-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-2 mt-6 font-semibold transition-all duration-300 bg-white rounded-full shadow-sm text-cyan-700 group-hover:bg-white/90 group-hover:text-cyan-800">
+            <span>Kunjungi Situs</span>
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </div>
+        </div>
+      </div>
+    </LinkComponent>
   );
 };
 
 export default function ServicesSection() {
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showMore, setShowMore] = useState(false);
-  // --- [BARU] State untuk mendeteksi ukuran layar mobile ---
   const [isMobile, setIsMobile] = useState(false);
 
-  // --- [BARU] useEffect untuk mengecek ukuran layar saat komponen dimuat & di-resize ---
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768); // breakpoint 'md' di Tailwind adalah 768px
-    };
-
-    // Cek saat pertama kali komponen render di browser
+    const checkScreenSize = () => setIsMobile(window.innerWidth < 768);
     checkScreenSize();
-
-    // Tambahkan listener untuk event resize
     window.addEventListener('resize', checkScreenSize);
-
-    // Cleanup listener saat komponen di-unmount
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, []); // Array kosong berarti efek ini hanya berjalan sekali saat mount dan cleanup saat unmount
+  }, []);
 
-  const services = [
-    { icon: Building, title: "Kecamatan Bogor Selatan", description: "Portal resmi layanan dan informasi publik untuk wilayah Kecamatan Bogor Selatan.", link: "https://kecbogorselatan.kotabogor.go.id/" },
-    { icon: Building, title: "Kecamatan Bogor Barat", description: "Akses informasi terkini dan layanan pemerintahan di Kecamatan Bogor Barat.", link: "https://kecbogorbarat.kotabogor.go.id/" },
-    { icon: Landmark, title: "Kecamatan Bogor Tengah", description: "Pusat informasi dan layanan publik untuk jantung Kota Bogor, Kecamatan Bogor Tengah.", link: "https://kecbogortengah.kotabogor.go.id/" },
-    { icon: Building, title: "Kecamatan Bogor Timur", description: "Informasi dan layanan pemerintahan terpadu untuk masyarakat Kecamatan Bogor Timur.", link: "https://kecbogortimur.kotabogor.go.id/" },
-    { icon: Globe, title: "Kecamatan Bogor Utara", description: "Jelajahi layanan dan berita terbaru dari wilayah Kecamatan Bogor Utara.", link: "https://kecbogorutara.kotabogor.go.id/" },
-    { icon: FileText, title: "PPID Kota Bogor", description: "Pusat layanan Pejabat Pengelola Informasi dan Dokumentasi resmi Kota Bogor.", link: "https://ppid.kotabogor.go.id/" },
-    { icon: MessagesSquare, title: "Bogor Citizen Support", description: "Hubungi kami melalui kanal dukungan warga untuk bantuan dan informasi.", link: "https://wa.me/628112233445" },
-  ];
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        // Ganti URL ini dengan URL API Laravel Anda
+        const response = await axios.get('http://127.0.0.1:8000/api/services');
+        setServices(response.data.data);
+      } catch (err) {
+        setError("Gagal memuat data layanan. Silakan coba lagi nanti.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
 
-  // --- [BARU] Logika untuk menentukan jumlah kartu awal ---
   const initialCount = isMobile ? 3 : 4;
   const displayedServices = showMore ? services : services.slice(0, initialCount);
 
   return (
     <section className="bg-slate-50">
       <div className="container px-4 py-20 mx-auto sm:py-24">
-        {/* Judul */}
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Layanan Digital Terpadu
@@ -88,41 +131,52 @@ export default function ServicesSection() {
           <p className="max-w-2xl mx-auto mt-4 text-lg text-gray-600">
             Akses berbagai portal layanan publik dan informasi resmi dari Pemerintah Kota Bogor di satu tempat.
           </p>
+          <div className="w-20 h-1 mx-auto mt-4 rounded-full bg-cyan-500"></div>
         </div>
 
-        {/* Grid Layanan */}
-        <div className="grid w-full max-w-6xl grid-cols-1 gap-8 mx-auto sm:grid-cols-2 lg:grid-cols-4">
-          {displayedServices.map((service, index) => (
-            <ServiceCard
-              key={index}
-              icon={service.icon}
-              title={service.title}
-              description={service.description}
-              link={service.link}
-              index={index}
-            />
-          ))}
-        </div>
+        {loading && <div className="text-center">Memuat layanan...</div>}
+        {error && <div className="text-center text-red-500">{error}</div>}
 
-        {/* Tombol Tampilkan Lebih Banyak */}
-        {/* --- [BARU] Logika tombol disesuaikan dengan initialCount --- */}
-        {services.length > initialCount && (
-          <div className="mt-16 text-center">
-            <button
-              onClick={() => setShowMore(!showMore)}
-              className="inline-flex items-center gap-3 px-8 py-3 font-semibold text-white transition-all duration-300 ease-in-out bg-[#3C7A94] rounded-full shadow-lg hover:bg-[#2f6175] hover:scale-105"
-              aria-label={showMore ? "Tampilkan lebih sedikit" : "Tampilkan semua layanan"}
-            >
-              <span>{showMore ? "Tampilkan Lebih Sedikit" : "Tampilkan Semua Layanan"}</span>
-              <ChevronDown
-                className={`w-5 h-5 transition-transform duration-300 ${
-                  showMore ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-          </div>
+        {!loading && !error && (
+          <>
+            <div className="grid w-full max-w-6xl grid-cols-1 gap-6 mx-auto sm:grid-cols-2 lg:grid-cols-4">
+              {displayedServices.map((service, index) => (
+                <ServiceCard
+                  key={service.id}
+                  index={index}
+                  iconName={service.icon}
+                  {...service}
+                />
+              ))}
+            </div>
+
+            {services.length > initialCount && (
+              <div className="mt-16 text-center">
+                <button
+                  onClick={() => setShowMore(!showMore)}
+                  className="inline-flex items-center gap-3 px-8 py-3 font-semibold text-white transition-all duration-300 ease-in-out rounded-full shadow-lg bg-cyan-700 hover:bg-cyan-800 hover:scale-105"
+                >
+                  <span>{showMore ? "Tampilkan Lebih Sedikit" : "Tampilkan Semua"}</span>
+                  <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${showMore ? "rotate-180" : ""}`} />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
+
+      <style jsx global>{`
+        .pattern-dots {
+          background-image: radial-gradient(circle at 1px 1px, #d1d5db 1px, transparent 0);
+          background-size: 20px 20px;
+        }
+        .pattern-lines {
+            background-color: #f3f4f6;
+            background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%, #e5e7eb),
+                              linear-gradient(-45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%, #e5e7eb);
+            background-size: 20px 20px;
+        }
+      `}</style>
     </section>
   );
 }

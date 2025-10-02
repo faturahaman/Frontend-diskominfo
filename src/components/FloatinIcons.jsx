@@ -451,20 +451,27 @@ const FloatingAccessibilityBar = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   }, []);
 
-  const [submitStatus, setSubmitStatus] = useState({ show: false, success: false, message: '' });
+  const [submitStatus, setSubmitStatus] = useState({
+    show: false,
+    success: false,
+    message: "",
+  });
 
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
-      
+
       // Basic validation
       if (!formData.kepuasan || !formData.dapatMenemukan) {
         setSubmitStatus({
           show: true,
           success: false,
-          message: 'Mohon lengkapi semua penilaian yang diperlukan'
+          message: "Mohon lengkapi semua penilaian yang diperlukan",
         });
-        setTimeout(() => setSubmitStatus({ show: false, success: false, message: '' }), 3000);
+        setTimeout(
+          () => setSubmitStatus({ show: false, success: false, message: "" }),
+          3000
+        );
         return;
       }
 
@@ -475,30 +482,33 @@ const FloatingAccessibilityBar = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-        
+
         if (!res.ok) throw new Error("Gagal mengirim penilaian");
-        
+
         setSubmitStatus({
           show: true,
           success: true,
-          message: '✨ Terima kasih atas penilaian Anda!'
+          message: "✨ Terima kasih atas penilaian Anda!",
         });
-        
+
         // Reset form after successful submission
         setFormData({ kepuasan: "", dapatMenemukan: "", kritikSaran: "" });
-        
+
         // Close modal after a delay
         setTimeout(() => {
           setActiveModal(null);
-          setSubmitStatus({ show: false, success: false, message: '' });
+          setSubmitStatus({ show: false, success: false, message: "" });
         }, 2000);
       } catch (err) {
         setSubmitStatus({
           show: true,
           success: false,
-          message: '❌ Gagal mengirim: ' + err.message
+          message: "❌ Gagal mengirim: " + err.message,
         });
-        setTimeout(() => setSubmitStatus({ show: false, success: false, message: '' }), 3000);
+        setTimeout(
+          () => setSubmitStatus({ show: false, success: false, message: "" }),
+          3000
+        );
       } finally {
         setLoading(false);
       }
@@ -722,129 +732,72 @@ const FloatingAccessibilityBar = () => {
             </div>
 
             <div className="flex-1 p-5 space-y-5 overflow-y-auto bg-gray-50">
-              {/* Modal Penilaian */}
               {activeModal === "penilaian" && (
-                <form className="space-y-6" onSubmit={handleSubmit}>
-                  {/* Status Message */}
-                  {submitStatus.show && (
-                    <div
-                      className={`p-4 rounded-lg shadow-lg transform transition-all duration-300 ${
-                        submitStatus.success
-                          ? 'bg-green-50 border border-green-200 text-green-700'
-                          : 'bg-red-50 border border-red-200 text-red-700'
-                      } animate-fade-in`}
-                    >
-                      {submitStatus.message}
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Apakah Anda puas dengan layanan kami?
+                      </label>
+                      <div className="mt-2 space-y-2">
+                        {["Sangat Puas", "Puas", "Cukup", "Kurang Puas"].map(
+                          (option) => (
+                            <label
+                              key={option}
+                              className="flex items-center space-x-3"
+                            >
+                              <input
+                                type="radio"
+                                name="kepuasan"
+                                value={option}
+                                onChange={handleChange}
+                                className="w-4 h-4 border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                              />
+                              <span className="text-sm text-gray-700">
+                                {option}
+                              </span>
+                            </label>
+                          )
+                        )}
+                      </div>
                     </div>
-                  )}
-                  
-                  <div>
-                    <label className="block mb-3 font-semibold text-gray-800">
-                      😊 Tingkat Kepuasan Anda
-                      <span className="ml-1 text-red-500">*</span>
-                    </label>
-                    <div className="flex justify-around p-4 transition-shadow duration-300 bg-white rounded-lg shadow-md hover:shadow-lg">
-                      {["sangat_puas", "puas", "cukup", "tidak_puas"].map(
-                        (val, idx) => (
+
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Apakah informasi yang Anda cari mudah ditemukan?
+                      </label>
+                      <div className="mt-2 space-x-4">
+                        {["Ya", "Tidak"].map((option) => (
                           <label
-                            key={idx}
-                            className="flex flex-col items-center transition-all duration-300 cursor-pointer hover:scale-110 group"
+                            key={option}
+                            className="inline-flex items-center space-x-2"
                           >
                             <input
                               type="radio"
-                              name="kepuasan"
-                              value={val}
-                              checked={formData.kepuasan === val}
+                              name="dapatMenemukan"
+                              value={option}
                               onChange={handleChange}
-                              className="hidden peer"
-                              required
+                              className="w-4 h-4 border-gray-300 text-cyan-600 focus:ring-cyan-500"
                             />
-                            <div className={`
-                              p-3 rounded-full mb-2 transition-all duration-300
-                              ${formData.kepuasan === val ? 'bg-cyan-100 scale-110' : 'bg-gray-50 group-hover:bg-cyan-50'}
-                            `}>
-                              <span className="text-3xl transition-transform duration-300 peer-checked:scale-125">
-                                {val === "sangat_puas"
-                                  ? "😄"
-                                  : val === "puas"
-                                  ? "🙂"
-                                  : val === "cukup"
-                                  ? "😐"
-                                  : "🙁"}
-                              </span>
-                            </div>
-                            <span className={`
-                              text-sm font-medium transition-colors duration-300
-                              ${formData.kepuasan === val ? 'text-cyan-800' : 'text-gray-600 group-hover:text-cyan-700'}
-                            `}>
-                              {val === "sangat_puas"
-                                ? "Sangat Puas"
-                                : val === "puas"
-                                ? "Puas"
-                                : val === "cukup"
-                                ? "Cukup"
-                                : "Tidak Puas"}
+                            <span className="text-sm text-gray-700">
+                              {option}
                             </span>
                           </label>
-                        )
-                      )}
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block mb-3 font-semibold text-gray-800">
-                      📌 Apakah Anda dapat menemukan berita/informasi?
-                      <span className="ml-1 text-red-500">*</span>
-                    </label>
-                    <div className="grid grid-cols-2 gap-4 p-4 transition-shadow duration-300 bg-white rounded-lg shadow-md hover:shadow-lg">
-                      {["ya", "tidak"].map((val) => (
-                        <label
-                          key={val}
-                          className={`
-                            flex items-center justify-center gap-3 p-4 rounded-lg cursor-pointer
-                            transition-all duration-300 hover:scale-105
-                            ${formData.dapatMenemukan === val 
-                              ? 'bg-cyan-100 border-2 border-cyan-300' 
-                              : 'bg-gray-50 border-2 border-transparent hover:bg-cyan-50'}
-                          `}
-                        >
-                          <input
-                            type="radio"
-                            name="dapatMenemukan"
-                            value={val}
-                            checked={formData.dapatMenemukan === val}
-                            onChange={handleChange}
-                            className="hidden"
-                            required
-                          />
-                          <span className={`
-                            text-lg font-medium transition-colors duration-300
-                            ${formData.dapatMenemukan === val ? 'text-cyan-800' : 'text-gray-600'}
-                          `}>
-                            {val === "ya" ? "Ya ✓" : "Tidak ✗"}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block mb-3 font-semibold text-gray-800">
-                      💬 Kritik & Saran
-                      <span className="ml-2 text-sm font-normal text-gray-500">(Opsional)</span>
-                    </label>
-                    <div className="relative">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Kritik dan Saran
+                      </label>
                       <textarea
                         name="kritikSaran"
-                        value={formData.kritikSaran}
+                        rows={4}
                         onChange={handleChange}
-                        className="w-full p-4 transition-all duration-300 bg-white border-2 border-gray-200 rounded-lg shadow-md resize-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-300 hover:border-cyan-300 hover:shadow-lg"
-                        rows="4"
-                        placeholder="Bagikan pengalaman dan saran Anda untuk membantu kami meningkatkan layanan..."
-                      ></textarea>
-                      <div className="absolute text-sm text-gray-400 bottom-3 right-3">
-                        {formData.kritikSaran.length}/500
-                      </div>
+                        className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                        placeholder="Tulis kritik dan saran Anda di sini..."
+                      />
                     </div>
                   </div>
 
@@ -852,145 +805,107 @@ const FloatingAccessibilityBar = () => {
                     type="submit"
                     disabled={loading}
                     className={`
-                      w-full py-4 rounded-lg font-semibold text-white
-                      transition-all duration-300 transform
-                      flex items-center justify-center gap-2
-                      ${loading
-                        ? 'bg-gray-400 cursor-not-allowed opacity-80'
-                        : 'bg-cyan-600 hover:bg-cyan-700 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl'
+                      w-full px-4 py-2 text-sm font-medium text-white transition rounded-lg
+                      ${
+                        loading
+                          ? "bg-gray-400"
+                          : "bg-cyan-600 hover:bg-cyan-700"
                       }
+                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500
                     `}
                   >
                     {loading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                      <div className="flex items-center justify-center space-x-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
                         <span>Mengirim...</span>
-                      </>
+                      </div>
                     ) : (
-                      <>
-                        <Send className="w-5 h-5" />
-                        <span>Kirim Penilaian</span>
-                      </>
+                      "Kirim Penilaian"
                     )}
                   </button>
                 </form>
               )}
 
-              {/* Modal Akses Cepat */}
               {activeModal === "aksesCepat" && (
-                <div className="space-y-6">
-                  <div className="p-4 space-y-2 border rounded-lg bg-cyan-50 border-cyan-100">
-                    <h3 className="font-semibold text-cyan-900">
-                      🏛️ Layanan Diskominfo
-                    </h3>
-                    <p className="text-sm text-cyan-700">
-                      Akses berbagai layanan dan informasi penting dari Dinas
-                      Komunikasi dan Informatika Kota Bogor.
-                    </p>
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { title: "Beranda", icon: "🏠", path: "/" },
+                    { title: "Berita", icon: "📰", path: "/berita" },
+                    { title: "Layanan", icon: "💼", path: "/layanan" },
+                    { title: "Kontak", icon: "📞", path: "/kontak" },
+                    { title: "Profil", icon: "👥", path: "/profil" },
+                    { title: "Galeri", icon: "🖼️", path: "/galeri" },
+                  ].map((item) => (
+                    <button
+                      key={item.title}
+                      onClick={() => {
+                        navigate(item.path);
+                        setActiveModal(null);
+                      }}
+                      className="flex items-center p-4 space-x-3 text-left transition bg-white rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    >
+                      <span className="text-2xl">{item.icon}</span>
+                      <span className="font-medium text-gray-700">
+                        {item.title}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {activeModal === "search" && (
+                <div className="space-y-4">
+                  <div className="relative">
+                    <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                      placeholder="Cari berita..."
+                      className="w-full py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                    />
                   </div>
-                  <div className="space-y-3">
-                    {[
-                      {
-                        title: "Pengajuan TTE",
-                        desc: "Tanda tangan elektronik untuk mengesahkan dokumen secara digital",
-                        href: "https://tte.kotabogor.go.id",
-                        icon: "fa-signature",
-                      },
-                      {
-                        title: "Chat Bogor Citizen Support",
-                        desc: "Layanan chat untuk berkomunikasi dengan staf Bogor Citizen Support",
-                        href: "https://bcs.kotabogor.go.id",
-                        icon: "fa-comments",
-                      },
-                      {
-                        title: "Pembuatan Email Dinas",
-                        desc: "Buat email resmi untuk keperluan instansi dan organisasi",
-                        href: "https://email.kotabogor.go.id",
-                        icon: "fa-envelope",
-                      },
-                      {
-                        title: "PPID",
-                        desc: "Pejabat Pengelola Informasi Dan Dokumentasi Kota Bogor",
-                        href: "https://ppid.kotabogor.go.id",
-                        icon: "fa-file-alt",
-                      },
-                      {
-                        title: "Inspektorat Kota Bogor",
-                        desc: "Saluran pengaduan resmi terkait kinerja pemerintah daerah",
-                        href: "https://inspektorat.kotabogor.go.id",
-                        icon: "fa-building",
-                      },
-                    ].map((item, i) => (
-                      <a
-                        key={i}
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block p-4 transition-all bg-white rounded-lg border border-gray-100 hover:border-cyan-300 hover:shadow-lg hover:-translate-y-0.5"
-                        onClick={() => setActiveModal(null)}
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="p-3 text-xl text-white rounded-lg bg-cyan-800">
-                            <i className={`fas ${item.icon}`} />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <h3 className="font-semibold text-gray-800">
-                                {item.title}
-                              </h3>
-                              <i className="text-sm text-cyan-600 fas fa-external-link-alt" />
-                            </div>
-                            <p className="mt-1 text-sm text-gray-600">
-                              {item.desc}
-                            </p>
-                          </div>
-                        </div>
-                      </a>
-                    ))}
+
+                  <div className="space-y-2">
+                    {searchResults.length > 0 ? (
+                      searchResults.map((result) => (
+                        <a
+                          key={result.id}
+                          href={`/berita/${result.id}`}
+                          onClick={() => setActiveModal(null)}
+                          className="block p-3 transition bg-white rounded-lg hover:bg-gray-50"
+                        >
+                          <h3 className="text-sm font-medium text-gray-900">
+                            {result.title}
+                          </h3>
+                          <p className="mt-1 text-xs text-gray-500">
+                            {result.date}
+                          </p>
+                        </a>
+                      ))
+                    ) : searchQuery ? (
+                      <p className="p-3 text-sm text-center text-gray-500">
+                        Tidak ada hasil yang ditemukan
+                      </p>
+                    ) : null}
                   </div>
                 </div>
               )}
 
-              {/* Modal Search */}
-              {activeModal === "search" && (
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    placeholder="🔍 Ketik untuk mencari berita..."
-                    className="w-full p-4 text-gray-800 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-800 focus:border-transparent"
-                    autoFocus
-                  />
-                  {searchResults.length > 0 ? (
-                    <ul className="space-y-2 overflow-y-auto max-h-60">
-                      {searchResults.map((item) => (
-                        <li key={item.id}>
-                          <button
-                            onClick={() => {
-                              navigate(`/berita/${item.id}`);
-                              setActiveModal(null);
-                              setSearchQuery("");
-                              setSearchResults([]);
-                            }}
-                            className="w-full p-3 text-left text-gray-800 transition bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-cyan-100 hover:border-cyan-300"
-                          >
-                            <i className="mr-2 text-cyan-800 fas fa-newspaper"></i>
-                            {item.title}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    searchQuery && (
-                      <div className="p-6 text-center text-gray-500 bg-white rounded-lg shadow">
-                        <i className="block mb-2 text-3xl fas fa-search opacity-60"></i>
-                        <p>
-                          Tidak ada berita yang cocok dengan "{searchQuery}"
-                        </p>
-                      </div>
-                    )
-                  )}
+              {/* Feedback Toast */}
+              {submitStatus.show && (
+                <div
+                  className={`
+                  fixed bottom-4 right-4 p-4 rounded-lg shadow-lg
+                  ${submitStatus.success ? "bg-green-500" : "bg-red-500"}
+                  text-white transform transition-all duration-300
+                  animate-slide-in-bottom
+                `}
+                >
+                  <div className="flex items-center space-x-2">
+                    {submitStatus.success ? "✅" : "❌"}
+                    <span>{submitStatus.message}</span>
+                  </div>
                 </div>
               )}
             </div>

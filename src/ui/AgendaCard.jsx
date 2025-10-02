@@ -1,34 +1,32 @@
-// src/ui/AgendaCard.jsx
-import React from "react";
-import { Calendar as CalendarIcon, FileText } from "lucide-react";
+import { Clock } from 'lucide-react';
 
 const AgendaCard = ({ agenda }) => {
-  // Format tanggal dari field 'tanggal'
-  const formattedDate = new Date(agenda.tanggal).toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  // Fungsi formatTime tidak lagi dibutuhkan untuk deskripsi,
+  // tapi kita biarkan jika ada data waktu di masa depan.
+  const formatTime = (timeString) => {
+    if (!timeString) return '';
+    return timeString.substring(0, 5);
+  };
 
   return (
-    <div className="border-l-4 border-[#3C7A94] pl-4 py-2 hover:bg-gray-50 transition-colors">
-      {/* Menggunakan agenda.agenda untuk judul */}
-      <h4 className="mb-1 text-sm font-medium">{agenda.agenda}</h4>
-      <div className="space-y-1 text-xs text-gray-600">
-        <div className="flex items-center">
-          <CalendarIcon size={12} className="mr-1" /> {formattedDate}
+    <div className="flex items-start gap-4 p-3 transition-colors duration-200 rounded-lg hover:bg-slate-100">
+      <div className="flex-shrink-0 w-1 h-full mt-1 rounded-full bg-cyan-300"></div>
+      <div>
+        <p className="text-sm font-semibold text-gray-800 line-clamp-2">
+          {/* Menampilkan judul agenda */}
+          {agenda.agenda || "Judul tidak tersedia"}
+        </p>
+        
+        {/* [PERBAIKAN UTAMA DI SINI] */}
+        <div className="flex items-center mt-1 text-xs text-gray-500">
+          <Clock size={12} className="mr-1.5" />
+          {/* Tampilkan 'agenda.deskripsi' sebagai gantinya */}
+          <span>{agenda.deskripsi || "Tidak ada detail"}</span>
         </div>
-        {/* Menggunakan agenda.deskripsi untuk deskripsi */}
-        {agenda.deskripsi && (
-          <div className="flex items-start">
-            <FileText size={12} className="mr-1 mt-0.5 flex-shrink-0" /> 
-            <span className="leading-tight">{agenda.deskripsi}</span>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
 export default AgendaCard;
+

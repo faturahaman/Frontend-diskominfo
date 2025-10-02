@@ -16,6 +16,8 @@ import {
   Loader,
 } from "lucide-react";
 
+import { getAksesCepat } from "../api/aksesCepatApi";
+
 const FloatingAccessibilityBar = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [formData, setFormData] = useState({
@@ -30,6 +32,20 @@ const FloatingAccessibilityBar = () => {
   const [isDesktop, setIsDesktop] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+
+  // Akses Cepat
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await getAksesCepat();
+        setData(result);
+      } catch (err) {
+        console.error("Gagal ambil data:", err);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Debug state untuk monitoring Sienna
   const [siennaDebug, setSiennaDebug] = useState({
@@ -827,30 +843,20 @@ const FloatingAccessibilityBar = () => {
               )}
 
               {activeModal === "aksesCepat" && (
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { title: "Beranda", icon: "🏠", path: "/" },
-                    { title: "Berita", icon: "📰", path: "/berita" },
-                    { title: "Layanan", icon: "💼", path: "/layanan" },
-                    { title: "Kontak", icon: "📞", path: "/kontak" },
-                    { title: "Profil", icon: "👥", path: "/profil" },
-                    { title: "Galeri", icon: "🖼️", path: "/galeri" },
-                  ].map((item) => (
-                    <button
-                      key={item.title}
-                      onClick={() => {
-                        navigate(item.path);
-                        setActiveModal(null);
-                      }}
-                      className="flex items-center p-4 space-x-3 text-left transition bg-white rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                    >
-                      <span className="text-2xl">{item.icon}</span>
-                      <span className="font-medium text-gray-700">
-                        {item.title}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  {data.map((item) => (
+    <a
+  href={item.link}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex flex-col items-start p-5 space-y-2 text-left transition-all duration-200 bg-white rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 focus:outline-none"
+>
+  <span className="text-lg font-semibold text-gray-800">{item.judul}</span>
+  <p className="text-sm text-gray-500">{item.deskripsi}</p>
+</a>
+
+  ))}
+</div>
               )}
 
               {activeModal === "search" && (

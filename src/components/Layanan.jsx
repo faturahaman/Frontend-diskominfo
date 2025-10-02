@@ -22,7 +22,7 @@ const iconMap = {
   MessagesSquare,
 };
 
-const ServiceCard = ({ iconName, title, description, link, index, bgImage, pattern }) => {
+const ServiceCard = ({ iconName, title, description, link, index, bgImage, pattern, icon }) => {
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef(null);
 

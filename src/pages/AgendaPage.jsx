@@ -1,23 +1,44 @@
 // pages/AgendaPage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SecondaryPageTemplate from "./../ui/PageLayout";
 import Calendar from "../ui/Calendar";
-import { agendaData, monthNames } from "../dummy/data";
-import { Calendar as CalendarIcon, Search } from "lucide-react";
+import { getAgendas } from "../api/menuApi"; // Import API
+import { Calendar as CalendarIcon, Search, AlertCircle } from "lucide-react";
+
+const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 
 const AgendaPage = () => {
   const breadcrumb = [
     { label: "Beranda", link: "/" },
-    { label: "Agenda Diskominfo Kota", link: "/agenda" },
+    { label: "Agenda Diskominfo" },
   ];
 
-  const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+  const [agendas, setAgendas] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState("Bulan");
 
+  useEffect(() => {
+    const fetchAgendas = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await getAgendas();
+        setAgendas(response || []);
+      } catch (err) {
+        setError("Gagal memuat data agenda. Silakan coba lagi.");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchAgendas();
+  }, []);
+  
   const navigateMonth = (dir) => {
     setCurrentMonth((prev) => {
       const newDate = new Date(prev);
@@ -27,54 +48,39 @@ const AgendaPage = () => {
   };
 
   const handleDateSelect = (date) => {
-    if (selectedDate && selectedDate.toDateString() === date.toDateString()) {
-      setSelectedDate(null);
-    } else {
-      setSelectedDate(date);
-    }
+    setSelectedDate(selectedDate?.toDateString() === date.toDateString() ? null : date);
   };
 
-  const filteredAgendas = agendaData.filter(
+  const filteredAgendas = agendas.filter(
     (agenda) =>
-      agenda.agenda.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agenda.deskripsi.toLowerCase().includes(searchTerm.toLowerCase())
+      (agenda.agenda || agenda.judul || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (agenda.deskripsi || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getAgendaForView = () => {
+    // --- [PERBAIKAN UTAMA DI SINI] ---
     if (selectedDate) {
-      const dateStr = selectedDate.toISOString().split("T")[0];
-      return filteredAgendas.filter((a) => a.tanggal === dateStr);
+      // Membuat string YYYY-MM-DD secara manual untuk menghindari masalah timezone
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // getMonth() dimulai dari 0 (Januari=0)
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
+      // Filter berdasarkan string tanggal yang sudah benar
+      return filteredAgendas.filter((a) => a.tanggal && a.tanggal.startsWith(dateStr));
     }
+    // --- Akhir Perbaikan ---
 
-    if (viewMode === "Bulan") {
-      const monthStr = String(currentMonth.getMonth() + 1).padStart(2, "0");
-      const yearStr = currentMonth.getFullYear();
-      return filteredAgendas.filter((a) =>
-        a.tanggal.startsWith(`${yearStr}-${monthStr}`)
-      );
-    }
-    if (viewMode === "Minggu") {
-      const baseDate = new Date();
-      const startOfWeek = new Date(baseDate);
-      startOfWeek.setDate(baseDate.getDate() - baseDate.getDay());
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-      return filteredAgendas.filter((a) => {
-        const agendaDate = new Date(a.tanggal);
-        return agendaDate >= startOfWeek && agendaDate <= endOfWeek;
-      });
-    }
-    return filteredAgendas;
+    // Logika untuk tampilan per bulan (tidak diubah)
+    const yearStr = currentMonth.getFullYear();
+    const monthStr = String(currentMonth.getMonth() + 1).padStart(2, "0");
+    return filteredAgendas.filter((a) => a.tanggal && a.tanggal.startsWith(`${yearStr}-${monthStr}`));
   };
 
   const agendaToShow = getAgendaForView();
 
   const sidebarTitle = selectedDate
-    ? `Agenda ${selectedDate.toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })}`
+    ? `Agenda ${selectedDate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`
     : `Agenda Bulan ${monthNames[currentMonth.getMonth()]}`;
 
   return (
@@ -82,99 +88,77 @@ const AgendaPage = () => {
       title="Agenda Diskominfo Kota Bogor"
       breadcrumb={breadcrumb}
     >
-      {/* 🔎 Search & Filter */}
       <div className="flex flex-col items-start justify-between gap-4 mb-8 md:flex-row md:items-center">
-        <div className="relative w-full md:w-1/2">
-          <Search
-            className="absolute text-gray-400 transition-colors duration-200 -translate-y-1/2 left-3 top-1/2 group-hover:text-cyan-600"
-            size={20}
-          />
+        <div className="relative w-full md:w-1/2 group">
+          <Search className="absolute text-gray-400 transition-colors -translate-y-1/2 left-4 top-1/2 group-focus-within:text-cyan-600" size={20} />
           <input
             type="text"
             placeholder="Cari agenda..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full py-3 pl-10 pr-4 transition-all duration-300 border border-gray-200 shadow-sm rounded-2xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent hover:shadow-md"
+            className="w-full py-3 pl-12 pr-4 transition-all duration-300 border border-gray-300 rounded-full shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent hover:shadow-md"
           />
         </div>
-        <select
-          className="px-4 py-3 text-sm transition-all duration-300 border border-gray-200 shadow-sm rounded-2xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent hover:shadow-md"
-          value={viewMode}
-          onChange={(e) => {
-            setViewMode(e.target.value);
-            setSelectedDate(null);
-          }}
-        >
-          <option value="Bulan">📅 Lihat per Bulan</option>
-          <option value="Minggu">🗓️ Lihat per Minggu</option>
-        </select>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* 📌 Calendar */}
-        <Calendar
-          currentMonth={currentMonth}
-          monthNames={monthNames}
-          dayNames={dayNames}
-          agendaData={agendaData}
-          selectedDate={selectedDate}
-          onSelectDate={handleDateSelect}
-          navigateMonth={navigateMonth}
-        />
+      {error && (
+        <div className="flex flex-col items-center justify-center py-20 text-center text-red-700 rounded-lg bg-red-50">
+          <AlertCircle className="w-12 h-12 mb-4 text-red-400" />
+          <p className="text-lg font-semibold">{error}</p>
+        </div>
+      )}
 
-        {/* 📌 Sidebar Agenda */}
-        <div className="flex flex-col overflow-hidden bg-white border border-gray-100 shadow-lg lg:col-span-1 rounded-2xl">
-          <h3 className="sticky top-0 z-10 px-6 py-4 text-lg font-bold text-white shadow-md bg-gradient-to-r from-cyan-600 to-cyan-800">
-            {sidebarTitle}
-          </h3>
-          <div className="flex-1 p-6 overflow-y-auto max-h-[600px]">
-            {agendaToShow.length > 0 ? (
-              <ul className="space-y-5">
-                {agendaToShow.map((a) => (
-                  <li
-                    key={a.id}
-                    className="p-5 transition-all duration-300 border-l-4 rounded-xl border-cyan-600 bg-gradient-to-br from-cyan-50 to-white hover:shadow-lg hover:-translate-y-1 group"
-                  >
-                    <h4 className="font-semibold transition-colors duration-300 text-cyan-900 group-hover:text-cyan-700">
-                      {a.agenda}
-                    </h4>
-                    <div className="flex items-center mt-2 mb-3 text-sm text-gray-600">
-                      <CalendarIcon
-                        size={16}
-                        className="mr-2 text-cyan-600"
-                      />
-                      <span>
-                        {new Date(a.tanggal).toLocaleDateString("id-ID", {
-                          weekday: "long",
-                          day: "numeric",
-                          month: "long",
-                        })}
-                      </span>
-                    </div>
-                    <p className="text-sm leading-relaxed text-gray-700">
-                      {a.deskripsi}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-64 p-6 text-center rounded-xl bg-gradient-to-br from-gray-50 to-gray-100">
-                <div className="p-4 mb-4 rounded-full bg-cyan-100">
-                  <CalendarIcon size={32} className="text-cyan-600" />
+      {!error && (
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {isLoading ? (
+            <div className="bg-gray-200 lg:col-span-2 h-96 rounded-2xl animate-pulse"></div>
+          ) : (
+            <Calendar
+              currentMonth={currentMonth}
+              monthNames={monthNames}
+              dayNames={dayNames}
+              agendaData={agendas}
+              selectedDate={selectedDate}
+              onSelectDate={handleDateSelect}
+              navigateMonth={navigateMonth}
+            />
+          )}
+
+          <div className="flex flex-col overflow-hidden bg-white border border-gray-100 shadow-xl lg:col-span-1 rounded-2xl">
+            <h3 className="sticky top-0 z-10 px-6 py-4 text-lg font-bold text-white shadow-md bg-gradient-to-r from-cyan-600 to-cyan-800">
+              {sidebarTitle}
+            </h3>
+            <div className="flex-1 p-4 overflow-y-auto max-h-[600px]">
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[...Array(5)].map((_, i) => <div key={i} className="w-full h-16 bg-gray-200 rounded-lg animate-pulse"></div>)}
                 </div>
-                <p className="mb-2 text-lg font-semibold text-gray-700">
-                  Tidak Ada Agenda
-                </p>
-                <p className="max-w-xs text-sm text-gray-500">
-                  {selectedDate
-                    ? "Tidak ada jadwal untuk tanggal ini."
-                    : "Tidak ada jadwal untuk bulan ini."}
-                </p>
-              </div>
-            )}
+              ) : agendaToShow.length > 0 ? (
+                <ul className="space-y-4">
+                  {agendaToShow.map((a) => (
+                    <li key={a.id} className="p-4 transition-all duration-300 border-l-4 rounded-lg border-cyan-500 bg-slate-50 hover:shadow-lg hover:-translate-y-1 group">
+                      <h4 className="font-semibold text-gray-800 transition-colors duration-300 group-hover:text-cyan-700">
+                        {a.agenda || a.judul}
+                      </h4>
+                      <p className="mt-1 text-sm leading-relaxed text-gray-600 line-clamp-2">
+                        {a.deskripsi}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+                  <CalendarIcon size={32} className="mb-4 text-cyan-300" />
+                  <p className="font-semibold text-gray-700">Tidak Ada Agenda</p>
+                  <p className="max-w-xs mt-1 text-sm text-gray-500">
+                    {selectedDate ? "Tidak ada jadwal untuk tanggal ini." : "Tidak ada jadwal untuk bulan ini."}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </SecondaryPageTemplate>
   );
 };

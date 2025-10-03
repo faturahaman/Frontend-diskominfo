@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Navigation, Autoplay, Pagination } from "swiper/modules";
 
@@ -10,39 +10,8 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-// Aset gambar
-import Slide_1 from "../assets/banner_1.webp";
-import Slide_2 from "../assets/banner_2.webp";
-import Slide_3 from "../assets/banner_3.webp";
-import Slide_4 from "../assets/banner_4.webp";
-import BackgroundImage from "../assets/background_hero.webp";
-
-const slidesData = [
-  {
-    img: Slide_1,
-    title: "Selamat Hari Kemerdekaan",
-    subtitle: "Republik Indonesia",
-    description: "Merayakan semangat kemerdekaan dalam membangun negeri"
-  },
-  {
-    img: Slide_2,
-    title: "Stop Judi Online!",
-    subtitle: "Bogor Smart City",
-    description: "Bersama mewujudkan lingkungan digital yang sehat"
-  },
-  {
-    img: Slide_3,
-    title: "Aplikasi E-Candra",
-    subtitle: "Layanan Aduan dan Saran",
-    description: "Platform terintegrasi untuk pelayanan masyarakat"
-  },
-  {
-    img: Slide_4,
-    title: "Transformasi Digital",
-    subtitle: "Membangun Infrastruktur Terpadu",
-    description: "Inovasi teknologi untuk kesejahteraan bersama"
-  },
-];
+// api
+import { getBanner } from "../api/bannerApi";
 
   const scrollToLayanan = () => {
     document.getElementById("layanan")?.scrollIntoView({
@@ -54,9 +23,21 @@ const slidesData = [
       behavior: "smooth",
     });
   };
-
-
 export default function HeroSectionProfessional() {
+  // banner api
+  const [banner, setBanner] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await getBanner();
+        setBanner(result);
+      } catch (err) {
+        console.error("Gagal ambil data:", err);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <section className="relative w-full overflow-hidden bg-white">
       
@@ -145,7 +126,7 @@ export default function HeroSectionProfessional() {
             }}
             className="w-full pb-12 min-h-[420px]" /* reserve vertical space to reduce CLS */
           >
-            {slidesData.map((slide, index) => (
+            {banner.map((slide, index) => (
               <SwiperSlide key={index} className="!w-[85vw] sm:!w-[70vw] md:!w-[600px] lg:!w-[750px]">
                 {({ isActive }) => (
                   <div className={`relative w-full overflow-hidden transition-all duration-700 rounded-2xl group ${
@@ -153,8 +134,8 @@ export default function HeroSectionProfessional() {
                   }`}>
                     <div className="relative aspect-video">
                       <img
-                        src={slide.img}
-                        alt={slide.title}
+                        src={slide.banner_url}
+                        alt={slide.judul}
                         /* use a 16:9 size so browser reserves space; keep original variable names */
                         width={1600}
                         height={900}
@@ -168,13 +149,13 @@ export default function HeroSectionProfessional() {
                       {/* Content Overlay */}
                       <div className={`absolute inset-0 flex flex-col justify-end p-6 md:p-8 transition-all duration-700 ${isActive ? "opacity-100" : "opacity-0"}`}>
                         <div className="inline-block px-3 py-1 mb-3 text-xs font-semibold tracking-wider uppercase rounded-full text-cyan-400 bg-cyan-500/20 backdrop-blur-sm w-fit">
-                          {slide.subtitle}
+                          {slide.subjudul}
                         </div>
                         <h3 className="mb-2 text-2xl font-bold text-white md:text-3xl lg:text-4xl">
-                          {slide.title}
+                          {slide.judul}
                         </h3>
                         <p className="max-w-xl text-sm text-gray-200 md:text-base">
-                          {slide.description}
+                          {slide.deskripsi}
                         </p>
                       </div>
                     </div>

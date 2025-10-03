@@ -165,18 +165,9 @@ export default function ServicesSection() {
         )}
       </div>
 
-      <style jsx global>{`
-        .pattern-dots {
-          background-image: radial-gradient(circle at 1px 1px, #d1d5db 1px, transparent 0);
-          background-size: 20px 20px;
-        }
-        .pattern-lines {
-            background-color: #f3f4f6;
-            background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%, #e5e7eb),
-                              linear-gradient(-45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%, #e5e7eb);
-            background-size: 20px 20px;
-        }
-      `}</style>
+    
+
+
     </section>
   );
 }

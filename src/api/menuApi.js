@@ -19,6 +19,27 @@ export const getMenus = () => {
     });
 };
 
+export const searchNews = (query) => {
+  // Encode query untuk memastikan karakter spesial aman di URL
+  const encodedQuery = encodeURIComponent(query);
+
+  return fetch(`${API_BASE_URL}/pages?menu_name=Berita&search=${encodedQuery}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Gagal melakukan pencarian berita.");
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Asumsikan data berita ada di dalam properti 'data'
+      return data.data || [];
+    })
+    .catch((error) => {
+      console.error(`Error saat mencari berita dengan query "${query}":`, error);
+      return []; // Kembalikan array kosong jika terjadi error
+    });
+};
+
 /**
  * [BARU] Mengambil daftar data konten, bisa difilter berdasarkan menu_id.
  * Contoh: /api/pages?menu_id=1

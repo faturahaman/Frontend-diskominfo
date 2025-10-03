@@ -24,8 +24,9 @@ import DokumenPage from "./pages/DokumenPage";
 import NotFound from "./pages/NotFound"; // Pastikan Anda punya komponen 404
 import GalleryPage from './pages/GaleriPage'; // Asumsi file ada di src/pages/
 import DetailGalleryPage from './pages/DetailGaleriPage';
+import ProfilePage from './pages/Profil';
 import DetailAlbumPage from './pages/DetailAlbumPage';
-import PhotoPage from './pages/fotoPage';
+// import fotoPage from './pages/fotoPage';
 
 // =================================================================
 // 2. TETAP IMPORT HALAMAN DINAMIS
@@ -53,6 +54,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
 
         {/* Profil */}
+        <Route path="/profil" element={<ProfilePage />} />
         <Route path="/visi-misi" element={<VisiMisi />} />
         <Route path="/sejarah" element={<Sejarah />} />
         <Route path="/struktur" element={<Struktur />} />
@@ -96,7 +98,7 @@ function App() {
         <Route path="/album/:id" element={<DetailAlbumPage />} />
 
         {/* Halaman yang menampilkan SEMUA foto */}
-        <Route path="/photos" element={<PhotoPage />} />
+        <Route path="/photos" element={<FotoPage />} />
 
         {/* Halaman yang menampilkan SEMUA video */}
         <Route path="/videos" element={<VideoPage />} />

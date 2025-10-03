@@ -1,22 +1,18 @@
 // src/components/FloatingAccessibilityBar.jsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { newsData } from "../dummy/data";
 import {
   Star,
   MessageSquare,
   Accessibility,
   Search,
   Zap,
-  Home,
-  Newspaper,
-  ExternalLink,
-  Send,
-  AlertCircle,
   Loader,
+  Loader2,
 } from "lucide-react";
 
 import { getAksesCepat } from "../api/aksesCepatApi";
+import { searchNews } from "../api/menuApi";
 
 const FloatingAccessibilityBar = () => {
   const [activeModal, setActiveModal] = useState(null);
@@ -30,8 +26,12 @@ const FloatingAccessibilityBar = () => {
   const [siennaClicking, setSiennaClicking] = useState(false);
   const [showFloating, setShowFloating] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+
+  // New search states
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState(null);
 
   // Akses Cepat
   const [data, setData] = useState([]);
@@ -97,14 +97,12 @@ const FloatingAccessibilityBar = () => {
   useEffect(() => {
     logDebug("Starting Sienna initialization");
 
-    // 1. Check if script already exists
     const existingScript = document.querySelector('script[src*="sienna"]');
     if (existingScript) {
       logDebug("Sienna script already exists, removing it");
       existingScript.remove();
     }
 
-    // 2. Set up config BEFORE loading script
     if (!window.SIENNA_CONFIG) {
       logDebug("Setting up SIENNA_CONFIG");
       window.SIENNA_CONFIG = {
@@ -118,9 +116,8 @@ const FloatingAccessibilityBar = () => {
       logDebug("SIENNA_CONFIG already exists", window.SIENNA_CONFIG);
     }
 
-    // 3. Create and inject script
     const script = document.createElement("script");
-    script.src = "https://website-widgets.pages.dev/dist/sienna.min.js  ";
+    script.src = "https://website-widgets.pages.dev/dist/sienna.min.js";
     script.defer = true;
     script.async = false;
     scriptRef.current = script;
@@ -179,7 +176,6 @@ const FloatingAccessibilityBar = () => {
     document.head.appendChild(script);
     logDebug("Sienna script added to document head");
 
-    // 4. Set up mutation observer to detect button
     const observer = new MutationObserver((mutations, obs) => {
       logDebug("MutationObserver triggered", mutations.length + " mutations");
 
@@ -226,7 +222,6 @@ const FloatingAccessibilityBar = () => {
     });
     logDebug("MutationObserver started");
 
-    // 5. Fallback timeout
     const fallbackTimeout = setTimeout(() => {
       if (siennaLoading) {
         logDebug("Fallback timeout reached - checking for buttons manually");
@@ -247,7 +242,6 @@ const FloatingAccessibilityBar = () => {
       }
     }, 10000);
 
-    // Cleanup
     return () => {
       logDebug("Cleaning up Sienna initialization");
       clearTimeout(fallbackTimeout);
@@ -278,7 +272,6 @@ const FloatingAccessibilityBar = () => {
 
       let success = false;
 
-      // Approach 1: Use stored reference
       if (siennaBtnRef.current) {
         try {
           logDebug("Attempting to click stored button reference");
@@ -312,7 +305,6 @@ const FloatingAccessibilityBar = () => {
         }
       }
 
-      // Approach 2: Query selector fallback
       if (!success) {
         const selectors = [
           '.asw-menu-btn:not([style*="display: none"])',
@@ -373,7 +365,6 @@ const FloatingAccessibilityBar = () => {
         }
       }
 
-      // Approach 3: Try alternative APIs
       if (!success) {
         const possibleObjects = [
           window.Sienna,
@@ -409,7 +400,6 @@ const FloatingAccessibilityBar = () => {
         }
       }
 
-      // Check if menu is visible
       setTimeout(() => {
         const menu = document.querySelector(
           '.asw-menu, .sienna-menu, [class*="accessibility-menu"]'
@@ -455,13 +445,6 @@ const FloatingAccessibilityBar = () => {
     [siennaLoading, logDebug]
   );
 
-  // Debug info display - COMMENTED OUT
-  // useEffect(() => {
-  //   if (process.env.NODE_ENV === 'development') {
-  //     console.log('[SIENNA DEBUG STATE]', siennaDebug);
-  //   }
-  // }, [siennaDebug]);
-
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -477,7 +460,6 @@ const FloatingAccessibilityBar = () => {
     async (e) => {
       e.preventDefault();
 
-      // Basic validation
       if (!formData.kepuasan || !formData.dapatMenemukan) {
         setSubmitStatus({
           show: true,
@@ -507,10 +489,8 @@ const FloatingAccessibilityBar = () => {
           message: "✨ Terima kasih atas penilaian Anda!",
         });
 
-        // Reset form after successful submission
         setFormData({ kepuasan: "", dapatMenemukan: "", kritikSaran: "" });
 
-        // Close modal after a delay
         setTimeout(() => {
           setActiveModal(null);
           setSubmitStatus({ show: false, success: false, message: "" });
@@ -532,27 +512,42 @@ const FloatingAccessibilityBar = () => {
     [formData]
   );
 
-  const handleSearchChange = useCallback((e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    if (!query) {
+  // New search effect with debounce
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
       setSearchResults([]);
       return;
     }
 
-    const results = newsData.filter((item) =>
-      item.title.toLowerCase().includes(query.toLowerCase())
-    );
-    setSearchResults(results);
-  }, []);
+    setSearchLoading(true);
+    setSearchError(null);
 
+    const debounceTimeout = setTimeout(async () => {
+      try {
+        const results = await searchNews(searchQuery);
+        setSearchResults(results);
+      } catch (error) {
+        console.error("Pencarian gagal:", error);
+        setSearchError("Gagal memuat hasil pencarian.");
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [searchQuery]);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // MODIFIKASI: Mengganti skema warna ke 'slate' yang lebih modern
   const buttons = [
     {
       id: "tombolBeriPenilaian",
       title: "Beri Penilaian",
-      bg: "bg-cyan-800",
-      hover: "hover:bg-cyan-900",
+      bg: "bg-cyan-500",
+      hover: "hover:bg-slate-700",
       icon: Star,
       onClick: (e) => {
         e.preventDefault();
@@ -562,8 +557,8 @@ const FloatingAccessibilityBar = () => {
     },
     {
       title: "Aduan Warga",
-      bg: "bg-cyan-800",
-      hover: "hover:bg-cyan-900",
+      bg: "bg-cyan-500",
+      hover: "hover:bg-slate-700",
       icon: MessageSquare,
       href: "https://sibadra.kotabogor.go.id",
       target: "_blank",
@@ -571,16 +566,16 @@ const FloatingAccessibilityBar = () => {
     {
       id: "openAccessibilityMenuButton",
       title: siennaClicking ? "Memuat..." : "Aksesibilitas",
-      bg: siennaLoading ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-800",
-      hover: siennaLoading ? "" : "hover:bg-cyan-900",
+      bg: siennaLoading ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-500",
+      hover: siennaLoading ? "" : "hover:bg-slate-700",
       icon: siennaClicking ? Loader : Accessibility,
       onClick: handleSiennaClick,
     },
     {
       id: "openSearchButton",
       title: "Cari Berita",
-      bg: "bg-cyan-800",
-      hover: "hover:bg-cyan-900",
+      bg: "bg-cyan-500",
+      hover: "hover:bg-slate-700",
       icon: Search,
       onClick: (e) => {
         e.preventDefault();
@@ -590,8 +585,8 @@ const FloatingAccessibilityBar = () => {
     },
     !isHome && {
       title: "Akses Cepat",
-      bg: "bg-cyan-800",
-      hover: "hover:bg-cyan-900",
+      bg: "bg-cyan-500",
+      hover: "hover:bg-slate-700",
       icon: Zap,
       onClick: (e) => {
         e.preventDefault();
@@ -603,7 +598,6 @@ const FloatingAccessibilityBar = () => {
 
   return (
     <>
-      {/* Global Styles */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
@@ -621,41 +615,14 @@ const FloatingAccessibilityBar = () => {
         .animate-fade-out { animation: fadeOut 0.2s ease-out forwards; }
         .animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
         
-        /* Fix Sienna Menu Interaction Issues */
-        .asw-menu {
-          z-index: 999999 !important;
-          pointer-events: auto !important;
-          position: fixed !important;
-        }
-        
-        .asw-menu * {
-          pointer-events: auto !important;
-        }
-        
-        .asw-menu-btn {
-          pointer-events: auto !important;
-          z-index: 999999 !important;
-        }
-        
-        .asw-overlay {
-          z-index: 999998 !important;
-          pointer-events: auto !important;
-        }
-        
-        .asw-btn, .asw-menu-close, .asw-menu-reset, .asw-plus, .asw-minus {
-          pointer-events: auto !important;
-          cursor: pointer !important;
-        }
-        
-        .asw-menu-container {
-          pointer-events: auto !important;
-          z-index: 999999 !important;
-        }
+        .asw-menu { z-index: 999999 !important; pointer-events: auto !important; position: fixed !important; }
+        .asw-menu * { pointer-events: auto !important; }
+        .asw-menu-btn { pointer-events: auto !important; z-index: 999999 !important; }
+        .asw-overlay { z-index: 999998 !important; pointer-events: auto !important; }
+        .asw-btn, .asw-menu-close, .asw-menu-reset, .asw-plus, .asw-minus { pointer-events: auto !important; cursor: pointer !important; }
+        .asw-menu-container { pointer-events: auto !important; z-index: 999999 !important; }
       `}</style>
 
-      {/* Debug Info - REMOVED */}
-
-      {/* Loading Sienna */}
       {siennaLoading && (
         <div className="fixed top-6 right-6 p-3 bg-white shadow-lg rounded-lg flex items-center gap-3 z-[9999] animate-pulse">
           <div className="w-5 h-5 border-gray-300 rounded-full border-3 border-t-transparent animate-spin"></div>
@@ -665,12 +632,12 @@ const FloatingAccessibilityBar = () => {
         </div>
       )}
 
-      {/* Toggle Button — Hanya di Mobile */}
+      {/* MODIFIKASI: Tombol mobile diubah warnanya agar konsisten */}
       {!isDesktop && (
         <div className="fixed bottom-6 right-6 z-[9999]">
           <button
             onClick={() => setShowFloating(!showFloating)}
-            className="flex items-center justify-center text-2xl text-white transition-transform duration-300 rounded-full shadow-xl w-14 h-14 bg-cyan-800 hover:bg-cyan-900 hover:scale-110"
+            className="flex items-center justify-center text-2xl text-white transition-transform duration-300 rounded-full shadow-xl w-14 h-14 bg-cyan-500 hover:bg-slate-700 hover:scale-110"
             aria-label={
               showFloating
                 ? "Tutup menu aksesibilitas"
@@ -682,20 +649,21 @@ const FloatingAccessibilityBar = () => {
         </div>
       )}
 
-      {/* Floating Buttons */}
+      {/* MODIFIKASI: Penampung utama diubah untuk efek hide/show di desktop */}
       <div
         className={`
-          fixed flex flex-col gap-3 top-1/2 -translate-y-1/2 right-6 z-[9999] transition-all duration-300
+          fixed flex flex-col gap-4 top-1/2 -translate-y-1/3 right-0 z-[9999] transition-all duration-500 ease-in-out group
           ${
             isDesktop
-              ? "opacity-100 translate-x-0"
+              ? "translate-x-8 hover:translate-x-0" // Sembunyi setengah, muncul saat hover
               : showFloating
-              ? "opacity-100 translate-x-0"
-              : "opacity-0 translate-x-5 pointer-events-none"
+              ? "right-6 opacity-100 translate-x-0" // Posisi normal mobile saat tampil
+              : "right-6 opacity-0 translate-x-5 pointer-events-none" // Hilang saat mobile disembunyikan
           }
         `}
       >
         {buttons.map((btn, i) => (
+          // MODIFIKASI: Tombol diubah menjadi 'squircle' (rounded-2xl) dan diberi transisi berjenjang
           <a
             key={i}
             id={btn.id}
@@ -704,10 +672,11 @@ const FloatingAccessibilityBar = () => {
             target={btn.target}
             rel={btn.target ? "noreferrer" : undefined}
             onClick={btn.onClick}
-            className={`${btn.bg} ${btn.hover} w-14 h-14 text-white flex items-center justify-center rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 hover:shadow-xl group cursor-pointer`}
+            style={{ transitionDelay: `${i * 50}ms` }}
+            className={`${btn.bg} ${btn.hover} w-14 h-14 text-white flex items-center justify-center rounded-2xl shadow-lg transition-all duration-300 transform group-hover:scale-110 hover:!scale-110 hover:shadow-xl cursor-pointer`}
             aria-label={btn.title}
           >
-            <btn.icon className="w-5 h-5 transition-transform group-hover:scale-110" />
+            <btn.icon className="w-6 h-6 transition-transform group-hover:scale-110" />
             <div className="absolute z-50 px-3 py-2 mr-4 transition-all duration-300 transform translate-x-2 -translate-y-1/2 rounded-lg shadow-lg opacity-0 pointer-events-none right-full top-1/2 bg-gray-900/95 backdrop-blur-sm group-hover:opacity-100 group-hover:translate-x-0">
               <span className="block text-xs font-medium text-white whitespace-nowrap">
                 {btn.title}
@@ -718,7 +687,6 @@ const FloatingAccessibilityBar = () => {
         ))}
       </div>
 
-      {/* Modal */}
       {activeModal && (
         <div
           className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 sm:p-6 z-[9998] backdrop-blur-sm animate-fade-in"
@@ -730,7 +698,8 @@ const FloatingAccessibilityBar = () => {
             className="w-full max-w-md sm:max-w-lg max-h-[90vh] bg-white shadow-2xl rounded-2xl flex flex-col overflow-hidden transform transition-all duration-300 scale-100 hover:scale-[1.01] animate-slide-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between p-5 text-white bg-cyan-800 rounded-t-2xl">
+            {/* MODIFIKASI: Header modal diubah warnanya */}
+            <div className="sticky top-0 z-10 flex items-center justify-between p-5 text-white bg-cyan-500 rounded-t-2xl">
               <h2 className="text-lg font-bold">
                 {activeModal === "penilaian"
                   ? "📝 Beri Penilaian"
@@ -762,12 +731,13 @@ const FloatingAccessibilityBar = () => {
                               key={option}
                               className="flex items-center space-x-3"
                             >
+                              {/* MODIFIKASI: Warna radio button diubah */}
                               <input
                                 type="radio"
                                 name="kepuasan"
                                 value={option}
                                 onChange={handleChange}
-                                className="w-4 h-4 border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                                className="w-4 h-4 border-gray-300 text-slate-600 focus:ring-slate-500"
                               />
                               <span className="text-sm text-gray-700">
                                 {option}
@@ -788,12 +758,13 @@ const FloatingAccessibilityBar = () => {
                             key={option}
                             className="inline-flex items-center space-x-2"
                           >
+                            {/* MODIFIKASI: Warna radio button diubah */}
                             <input
                               type="radio"
                               name="dapatMenemukan"
                               value={option}
                               onChange={handleChange}
-                              className="w-4 h-4 border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                              className="w-4 h-4 border-gray-300 text-slate-600 focus:ring-slate-500"
                             />
                             <span className="text-sm text-gray-700">
                               {option}
@@ -807,16 +778,18 @@ const FloatingAccessibilityBar = () => {
                       <label className="block text-sm font-medium text-gray-700">
                         Kritik dan Saran
                       </label>
+                      {/* MODIFIKASI: Warna focus textarea diubah */}
                       <textarea
                         name="kritikSaran"
                         rows={4}
                         onChange={handleChange}
-                        className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                        className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg focus:ring-slate-500 focus:border-slate-500"
                         placeholder="Tulis kritik dan saran Anda di sini..."
                       />
                     </div>
                   </div>
 
+                  {/* MODIFIKASI: Warna tombol submit diubah */}
                   <button
                     type="submit"
                     disabled={loading}
@@ -825,9 +798,9 @@ const FloatingAccessibilityBar = () => {
                       ${
                         loading
                           ? "bg-gray-400"
-                          : "bg-cyan-600 hover:bg-cyan-700"
+                          : "bg-slate-600 hover:bg-slate-700"
                       }
-                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500
+                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500
                     `}
                   >
                     {loading ? (
@@ -843,20 +816,21 @@ const FloatingAccessibilityBar = () => {
               )}
 
               {activeModal === "aksesCepat" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-  {data.map((item) => (
-    <a
-  href={item.link}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="flex flex-col items-start p-5 space-y-2 text-left transition-all duration-200 bg-white rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 focus:outline-none"
->
-  <span className="text-lg font-semibold text-gray-800">{item.judul}</span>
-  <p className="text-sm text-gray-500">{item.deskripsi}</p>
-</a>
-
-  ))}
-</div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {data.map((item) => (
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex flex-col items-start p-5 space-y-2 text-left transition-all duration-200 bg-white shadow-sm rounded-xl hover:shadow-md hover:-translate-y-1 focus:outline-none"
+                    >
+                      <span className="text-lg font-semibold text-gray-800">
+                        {item.judul}
+                      </span>
+                      <p className="text-sm text-gray-500">{item.deskripsi}</p>
+                    </a>
+                  ))}
+                </div>
               )}
 
               {activeModal === "search" && (
@@ -867,38 +841,52 @@ const FloatingAccessibilityBar = () => {
                       type="text"
                       value={searchQuery}
                       onChange={handleSearchChange}
-                      placeholder="Cari berita..."
-                      className="w-full py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                      placeholder="Ketik untuk mencari berita..."
+                      className="w-full py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-slate-500 focus:border-slate-500"
+                      autoFocus
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    {searchResults.length > 0 ? (
+                  <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                    {searchLoading ? (
+                      <div className="flex items-center justify-center p-4 space-x-2 text-gray-500">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Mencari...</span>
+                      </div>
+                    ) : searchError ? (
+                      <p className="p-3 text-sm text-center text-red-500">
+                        {searchError}
+                      </p>
+                    ) : searchResults.length > 0 ? (
                       searchResults.map((result) => (
                         <a
-                          key={result.id}
-                          href={`/berita/${result.id}`}
-                          onClick={() => setActiveModal(null)}
-                          className="block p-3 transition bg-white rounded-lg hover:bg-gray-50"
-                        >
-                          <h3 className="text-sm font-medium text-gray-900">
-                            {result.title}
-                          </h3>
-                          <p className="mt-1 text-xs text-gray-500">
-                            {result.date}
-                          </p>
-                        </a>
+      key={result.id}
+      // MODIFIKASI: Sesuaikan href agar cocok dengan route di App.js
+      href={`/page/detail/${result.id}`}
+      onClick={() => setActiveModal(null)}
+      className="block p-3 transition bg-white rounded-lg hover:bg-gray-100"
+    >
+      <h3 className="text-sm font-medium text-gray-900">
+        {result.judul}
+      </h3>
+      <p className="mt-1 text-xs text-gray-500">
+       
+      </p>
+    </a>
                       ))
                     ) : searchQuery ? (
                       <p className="p-3 text-sm text-center text-gray-500">
-                        Tidak ada hasil yang ditemukan
+                        Tidak ada hasil yang ditemukan untuk "{searchQuery}"
                       </p>
-                    ) : null}
+                    ) : (
+                      <p className="p-3 text-sm text-center text-gray-400">
+                        Mulai ketik untuk mencari berita.
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
 
-              {/* Feedback Toast */}
               {submitStatus.show && (
                 <div
                   className={`

@@ -49,24 +49,40 @@ const PhotoCard = ({ photo }) => (
   </div>
 );
 
-const VideoCard = ({ video }) => (
+const VideoCard = ({ video }) => {
+  const isEmbed = video.embed_url !== null; // cek apakah pakai embed atau video lokal
+
+  return (
     <div className="overflow-hidden transition-all duration-300 bg-white shadow-lg group rounded-xl hover:shadow-2xl hover:-translate-y-2">
-        <div className="relative aspect-video">
-            {/* Tampilkan thumbnail jika ada, jika tidak, gunakan iframe */}
-            <iframe
-                src={video.embed_url} // embed_url dari backend
-                title={video.judul}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-            ></iframe>
-        </div>
-        <div className="p-4">
-            <h3 className="font-semibold text-gray-800 truncate">{video.judul}</h3>
-            {video.deskripsi && <p className="mt-1 text-sm text-gray-600 line-clamp-2">{video.deskripsi}</p>}
-        </div>
+      <div className="relative aspect-video">
+        {isEmbed ? (
+          // --- Untuk video dari YouTube / Vimeo (embed) ---
+          <iframe
+            src={video.embed_url.replace("?autoplay=1", "")} // hapus autoplay dari URL
+            title={video.judul}
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          ></iframe>
+        ) : (
+          // --- Untuk video lokal ---
+          <video
+            src={video.file_url} // misalnya field dari backend
+            controls // user bisa play manual
+            className="object-cover w-full h-full"
+          />
+        )}
+      </div>
+      <div className="p-4">
+        <h3 className="font-semibold text-gray-800 truncate">{video.judul}</h3>
+        {video.deskripsi && (
+          <p className="mt-1 text-sm text-gray-600 line-clamp-2">{video.deskripsi}</p>
+        )}
+      </div>
     </div>
-);
+  );
+};
+
 
 
 // --- KOMPONEN UTAMA ---

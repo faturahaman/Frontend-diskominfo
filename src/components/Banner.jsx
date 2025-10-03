@@ -1,137 +1,243 @@
 "use client";
 
-import {React} from "react";
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow, Navigation, Autoplay } from "swiper/modules";
+import { EffectCoverflow, Navigation, Autoplay, Pagination } from "swiper/modules";
 
 // Import CSS Swiper
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/navigation";
+import "swiper/css/pagination";
 
-// Aset gambar (sesuaikan path-nya)
-import Slide_1 from "../assets/banner_1.webp"; // Contoh: Gambar Kemerdekaan
-import Slide_2 from "../assets/banner_2.webp"; // Contoh: Gambar Stop Judi Online
-import Slide_3 from "../assets/banner_3.webp"; // Contoh: Gambar Aplikasi E-Candra
+// Aset gambar
+import Slide_1 from "../assets/banner_1.webp";
+import Slide_2 from "../assets/banner_2.webp";
+import Slide_3 from "../assets/banner_3.webp";
 import Slide_4 from "../assets/banner_4.webp";
-import BackgroundImage from "../assets/background_hero.webp"; 
+import BackgroundImage from "../assets/background_hero.webp";
 
-// [UPDATE] Data slide disesuaikan dengan screenshot terakhir
 const slidesData = [
-  { 
-    img: Slide_1, 
-    title: "Selamat Hari Kemerdekaan", 
-    subtitle: "Republik Indonesia" 
+  {
+    img: Slide_1,
+    title: "Selamat Hari Kemerdekaan",
+    subtitle: "Republik Indonesia",
+    description: "Merayakan semangat kemerdekaan dalam membangun negeri"
   },
-  { 
-    img: Slide_2, 
-    title: "Stop Judi Online!", 
-    subtitle: "Bogor Smart City" 
+  {
+    img: Slide_2,
+    title: "Stop Judi Online!",
+    subtitle: "Bogor Smart City",
+    description: "Bersama mewujudkan lingkungan digital yang sehat"
   },
-  { 
-    img: Slide_3, 
-    title: "Aplikasi E-Candra", 
-    subtitle: "Layanan Aduan dan Saran" 
+  {
+    img: Slide_3,
+    title: "Aplikasi E-Candra",
+    subtitle: "Layanan Aduan dan Saran",
+    description: "Platform terintegrasi untuk pelayanan masyarakat"
   },
-  { 
-    img: Slide_4, 
-    title: "Transformasi Digital", 
-    subtitle: "Membangun Infrastruktur Terpadu" 
+  {
+    img: Slide_4,
+    title: "Transformasi Digital",
+    subtitle: "Membangun Infrastruktur Terpadu",
+    description: "Inovasi teknologi untuk kesejahteraan bersama"
   },
 ];
 
-export default function HeroSectionCompact() {
+  const scrollToLayanan = () => {
+    document.getElementById("layanan")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+  const scrollToAbout = () => {
+    document.getElementById("tentangkami")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+
+
+export default function HeroSectionProfessional() {
   return (
-    // [DIUBAH] min-h-screen dihapus, tinggi dikontrol oleh padding vertikal (py)
-    // Ini memberi ruang untuk navbar di atas
-    <section className="relative flex flex-col justify-center w-full pt-24 overflow-hidden text-white bg-gray-900 sm:py-32">
+    <section className="relative w-full overflow-hidden bg-white">
       
-      {/* Background Image & Overlay */}
+      {/* Subtle Background Pattern */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={BackgroundImage}
-          alt="Latar Belakang Hero"
-          className="object-cover w-full h-full scale-105 blur-sm"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black/90"></div>
+        <div className="absolute inset-0 opacity-30 bg-gradient-to-br from-cyan-50 via-white to-teal-50"></div>
+        <div className="absolute top-0 right-0 rounded-full w-96 h-96 bg-cyan-100 blur-3xl opacity-20"></div>
+        <div className="absolute bottom-0 left-0 bg-teal-100 rounded-full w-96 h-96 blur-3xl opacity-20"></div>
+        
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                           linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
+        }}></div>
       </div>
 
-      {/* Konten Utama */}
-      <div className="relative z-10 w-full mx-auto max-w-7xl">
+      {/* Main Content */}
+      <div className="relative z-10 w-full px-4 pt-24 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
         
-        {/* Konten Teks */}
-        <div className="px-4 text-center md:px-8">
-          {/* [DIUBAH] Ukuran font sedikit dikecilkan untuk tampilan lebih ringkas */}
-          <h1 className="text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
-            Transformasi Digital Kota Bogor
+        {/* Header Section */}
+        <div className="mb-12 text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center px-4 py-2 mb-6 space-x-2 border rounded-full border-cyan-200 bg-cyan-50">
+            <span className="text-sm font-medium text-cyan-700">Selamat Datang di Website Resmi</span>
+          </div>
+
+          {/* Main Title */}
+          <h1 className="mb-4 text-4xl font-bold leading-tight text-gray-900 sm:text-5xl lg:text-6xl">
+            Dinas Komunikasi & Informatika Kota Bogor
           </h1>
-          <p className="max-w-3xl mx-auto mt-4 text-base text-gray-300 md:mt-5 md:text-lg">
-            Membangun komunikasi efektif, memperkuat pelayanan publik, dan mewujudkan Smart City yang inklusif.
+
+          {/* Subtitle */}
+          <p className="max-w-3xl mx-auto mb-8 text-lg leading-relaxed text-gray-600 sm:text-xl">
+            Membangun ekosistem digital yang inovatif untuk pelayanan publik yang lebih cepat, transparan, dan berkualitas tinggi bagi seluruh masyarakat Kota Bogor
           </p>
+
+          {/* CTA Buttons */}
+       <div className="flex flex-wrap justify-center gap-4">
+      {/* Tombol scroll ke layanan */}
+      <button
+        onClick={scrollToLayanan}
+        className="relative px-8 py-3 text-base font-semibold text-white rounded-lg 
+                   bg-gradient-to-r from-cyan-400 to-blue-500 shadow-lg
+                   transition-all duration-300 ease-out
+                   hover:from-cyan-500 hover:to-blue-600 hover:shadow-xl hover:-translate-y-0.5
+                   focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2"
+      >
+        Jelajahi Layanan
+      </button>
+
+      {/* Tombol biasa */}
+      <button onClick={scrollToAbout} className="px-8 py-3 text-base font-semibold text-gray-700 transition-all duration-300 bg-white border-2 border-gray-300 rounded-lg hover:border-cyan-600 hover:text-cyan-600 hover:-translate-y-0.5">
+        Pelajari Lebih Lanjut
+      </button>
+    </div>
         </div>
 
-        {/* [DIUBAH] Margin atas dikurangi agar lebih dekat dengan teks */}
-        <div className="mt-10 md:mt-12">
+        {/* Carousel Section */}
+        <div className="mb-12">
           <Swiper
-            modules={[EffectCoverflow, Navigation, Autoplay]}
+            modules={[EffectCoverflow, Navigation, Autoplay, Pagination]}
             effect={"coverflow"}
             loop={true}
             centeredSlides={true}
             slidesPerView={"auto"}
             grabCursor={true}
             autoplay={{
-              delay: 4000,
+              delay: 5000,
               disableOnInteraction: false,
+            }}
+            pagination={{
+              clickable: true,
+              dynamicBullets: true,
             }}
             coverflowEffect={{
               rotate: 0,
-              stretch: 30, // Jarak antar slide dibuat lebih ringkas
+              stretch: 0,
               depth: 100,
-              modifier: 1.5,
+              modifier: 2,
               slideShadows: false,
             }}
             navigation={{
               nextEl: ".swiper-button-next-custom",
               prevEl: ".swiper-button-prev-custom",
             }}
-            className="w-full"
+            className="w-full pb-12 min-h-[420px]" /* reserve vertical space to reduce CLS */
           >
             {slidesData.map((slide, index) => (
-              // [DIUBAH] Lebar slide dikecilkan agar carousel tidak terlalu mendominasi
-              <SwiperSlide key={index} className="!w-[70vw] sm:!w-[60vw] md:!w-[50vw] lg:!w-[640px]">
+              <SwiperSlide key={index} className="!w-[85vw] sm:!w-[70vw] md:!w-[600px] lg:!w-[750px]">
                 {({ isActive }) => (
-                  <div className="relative w-full overflow-hidden transition-transform duration-500 shadow-2xl aspect-video rounded-xl group">
-                    <img
-                      src={slide.img}
-                      alt={slide.title}
-                      className="object-cover w-full h-full"
-                    />
-                    <div className="absolute inset-0 transition-opacity duration-500 bg-gradient-to-t from-black/70 to-transparent"></div>
-                    <div
-                      className={`absolute bottom-0 left-0 p-4 md:p-5 text-white transition-all duration-500 ${
-                        isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                      }`}
-                    >
-                      <h3 className="text-base font-bold md:text-lg">{slide.title}</h3>
-                      <p className="mt-1 text-xs text-gray-200 md:text-sm">{slide.subtitle}</p>
+                  <div className={`relative w-full overflow-hidden transition-all duration-700 rounded-2xl group ${
+                    isActive ? 'shadow-2xl opacity-100' : 'opacity-60'
+                  }`}>
+                    <div className="relative aspect-video">
+                      <img
+                        src={slide.img}
+                        alt={slide.title}
+                        /* use a 16:9 size so browser reserves space; keep original variable names */
+                        width={1600}
+                        height={900}
+                        loading="lazy"
+                        className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+                      />
+                      
+                      {/* Overlay Gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/95 via-gray-900/50 to-transparent"></div>
+                      
+                      {/* Content Overlay */}
+                      <div className={`absolute inset-0 flex flex-col justify-end p-6 md:p-8 transition-all duration-700 ${isActive ? "opacity-100" : "opacity-0"}`}>
+                        <div className="inline-block px-3 py-1 mb-3 text-xs font-semibold tracking-wider uppercase rounded-full text-cyan-400 bg-cyan-500/20 backdrop-blur-sm w-fit">
+                          {slide.subtitle}
+                        </div>
+                        <h3 className="mb-2 text-2xl font-bold text-white md:text-3xl lg:text-4xl">
+                          {slide.title}
+                        </h3>
+                        <p className="max-w-xl text-sm text-gray-200 md:text-base">
+                          {slide.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
               </SwiperSlide>
             ))}
 
-            {/* Navigasi (tetap sama, posisinya akan mengikuti ukuran carousel yang baru) */}
-            <div className="absolute z-20 flex justify-between w-full px-2 -translate-y-1/2 top-1/2 sm:px-4 lg:px-0">
-                <button className="flex items-center justify-center w-10 h-10 transition-colors rounded-full swiper-button-prev-custom md:w-12 md:h-12 bg-white/10 backdrop-blur-sm hover:bg-white/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
-                </button>
-                <button className="flex items-center justify-center w-10 h-10 transition-colors rounded-full swiper-button-next-custom md:w-12 md:h-12 bg-white/10 backdrop-blur-sm hover:bg-white/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
-                </button>
+            {/* Custom Navigation Buttons */}
+            <div className="absolute z-20 flex justify-between w-full px-4 -translate-y-1/2 pointer-events-none top-1/2 lg:px-8">
+              <button className="flex items-center justify-center w-12 h-12 text-gray-700 transition-all duration-300 bg-white border-2 border-gray-300 rounded-full shadow-lg pointer-events-auto swiper-button-prev-custom hover:bg-cyan-600 hover:text-white hover:border-cyan-600 hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                  <path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                </svg>
+              </button>
+              <button className="flex items-center justify-center w-12 h-12 text-gray-700 transition-all duration-300 bg-white border-2 border-gray-300 rounded-full shadow-lg pointer-events-auto swiper-button-next-custom hover:bg-cyan-600 hover:text-white hover:border-cyan-600 hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                  <path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+              </button>
             </div>
           </Swiper>
         </div>
+
+        {/* Info Banner */}
+        <div className="p-6 mt-12 border bg-gradient-to-r from-cyan-50 to-teal-50 border-cyan-200 rounded-xl">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="flex items-start space-x-3">
+              <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full bg-cyan-100 text-cyan-600">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="mb-1 text-lg font-semibold text-gray-900">Butuh Bantuan?</h4>
+                <p className="text-sm text-gray-600">Tim kami siap membantu Anda 24/7 melalui berbagai saluran komunikasi</p>
+              </div>
+            </div>
+            <a href="kontak">
+              
+            <div className="px-6 py-2 text-sm font-semibold text-white transition-all duration-300 rounded-lg shadow-md bg-cyan-600 hover:bg-cyan-700 whitespace-nowrap">
+              Hubungi Kami
+            </div>
+            </a>
+          </div>
+        </div>
+
       </div>
+
+      {/* Custom Swiper Pagination Styles */}
+      <style>{`
+        .swiper-pagination-bullet {
+          background: #cbd5e1;
+          opacity: 1;
+          width: 8px;
+          height: 8px;
+        }
+        .swiper-pagination-bullet-active {
+          background: linear-gradient(to right, #0891b2, #14b8a6);
+          width: 24px;
+          border-radius: 4px;
+        }
+      `}</style>
     </section>
   );
 }

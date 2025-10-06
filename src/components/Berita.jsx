@@ -192,7 +192,7 @@ const NewsAgendaSection = () => {
             {/* View All Button */}
             <div className="mt-10">
               <Link 
-                to="/berita" 
+                to="/page/9" 
                 className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white transition-all duration-300 shadow-lg bg-gradient-to-r from-cyan-600 to-blue-600 group hover:shadow-xl hover:shadow-cyan-500/25 rounded-xl hover:-translate-y-1"
               >
                 <span>Lihat Semua Berita</span>

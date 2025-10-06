@@ -5,7 +5,7 @@ import { Quote, Users, Lightbulb, Target, CheckCircle2 } from "lucide-react";
 export default function SambutanFull() {
   const breadcrumb = [
     { label: "Beranda", link: "/" },
-    { label: "Profil", link: "#" },
+    { label: "Profil", link: "/profil" },
     { label: "Sambutan Kepala Dinas", link: "/sambutan-full" },
   ];
 

@@ -456,61 +456,84 @@ const FloatingAccessibilityBar = () => {
     message: "",
   });
 
+  // Penilaian
   const handleSubmit = useCallback(
-    async (e) => {
-      e.preventDefault();
+  async (e) => {
+    e.preventDefault();
 
-      if (!formData.kepuasan || !formData.dapatMenemukan) {
-        setSubmitStatus({
-          show: true,
-          success: false,
-          message: "Mohon lengkapi semua penilaian yang diperlukan",
-        });
-        setTimeout(
-          () => setSubmitStatus({ show: false, success: false, message: "" }),
-          3000
-        );
-        return;
+    if (!formData.kepuasan || !formData.dapatMenemukan) {
+      setSubmitStatus({
+        show: true,
+        success: false,
+        message: "Mohon lengkapi semua penilaian yang diperlukan",
+      });
+      setTimeout(
+        () => setSubmitStatus({ show: false, success: false, message: "" }),
+        3000
+      );
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Kirim data dengan format yang sama seperti di form
+      const backendData = {
+        kepuasan: formData.kepuasan, // "Sangat Puas", "Puas", dll
+        dapatMenemukan: formData.dapatMenemukan, // "Ya" atau "Tidak"
+        kritikSaran: formData.kritikSaran || null
+      };
+
+      console.log('Sending data:', backendData);
+
+      const res = await fetch("http://localhost:8000/api/penilaian", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(backendData),
+      });
+
+      console.log('Response status:', res.status);
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error('Error response:', errorData);
+        throw new Error(errorData.message || "Gagal mengirim penilaian");
       }
 
-      setLoading(true);
-      try {
-        const res = await fetch("http://localhost:8000/api/penilaian", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
+      const result = await res.json();
+      console.log('Success:', result);
 
-        if (!res.ok) throw new Error("Gagal mengirim penilaian");
+      setSubmitStatus({
+        show: true,
+        success: true,
+        message: "✨ Terima kasih atas penilaian Anda!",
+      });
 
-        setSubmitStatus({
-          show: true,
-          success: true,
-          message: "✨ Terima kasih atas penilaian Anda!",
-        });
+      setFormData({ kepuasan: "", dapatMenemukan: "", kritikSaran: "" });
 
-        setFormData({ kepuasan: "", dapatMenemukan: "", kritikSaran: "" });
-
-        setTimeout(() => {
-          setActiveModal(null);
-          setSubmitStatus({ show: false, success: false, message: "" });
-        }, 2000);
-      } catch (err) {
-        setSubmitStatus({
-          show: true,
-          success: false,
-          message: "❌ Gagal mengirim: " + err.message,
-        });
-        setTimeout(
-          () => setSubmitStatus({ show: false, success: false, message: "" }),
-          3000
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [formData]
-  );
+      setTimeout(() => {
+        setActiveModal(null);
+        setSubmitStatus({ show: false, success: false, message: "" });
+      }, 2000);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setSubmitStatus({
+        show: true,
+        success: false,
+        message: "❌ Gagal mengirim: " + err.message,
+      });
+      setTimeout(
+        () => setSubmitStatus({ show: false, success: false, message: "" }),
+        3000
+      );
+    } finally {
+      setLoading(false);
+    }
+  },
+  [formData]
+);
 
   // New search effect with debounce
   useEffect(() => {

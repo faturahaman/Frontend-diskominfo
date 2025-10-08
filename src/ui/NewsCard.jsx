@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
+import NoImage from "../../public/unnamed.webp";
 
 const NewsCard = ({ news, style }) => {
   const formatDate = (dateString) => {
@@ -20,19 +21,18 @@ const NewsCard = ({ news, style }) => {
       {/* Gambar Berita */}
       <div className="relative overflow-hidden">
         <img
-          src={news.thumbnail_url || news.gambar_url}
+          src={news.thumbnail_url || news.gambar_url || NoImage}
           alt={news.judul || "Gambar Berita"}
           loading="lazy"
           className="object-cover w-full h-56 transition duration-500 ease-in-out"
           onError={(e) => {
-            e.target.src =
-              "https://placehold.co/600x400/e2e8f0/94a3b8?text=Gambar+Tidak+Tersedia";
+            e.target.src = NoImage; // ✅ fallback image
           }}
         />
 
         {/* Overlay hitam geser dari kiri ke kanan */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-black/40 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 ease-out"></div>
+          <div className="absolute inset-0 transition-transform duration-500 ease-out -translate-x-full bg-black/40 group-hover:translate-x-0"></div>
 
           {/* Teks muncul dengan fade-in */}
           <div className="absolute inset-0 flex items-center justify-center">

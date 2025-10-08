@@ -1,4 +1,5 @@
 // src/api/menuApi.js
+import axios from "axios";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
@@ -119,4 +120,36 @@ export const getVideos = () => {
       console.error("Error fetching videos:", error);
       return [];
     });
+};
+
+export const getServices = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/services`);
+    return response.data.data;
+  } catch (error) {
+    console.error("❌ Gagal mengambil data layanan:", error);
+    throw new Error("Gagal memuat data layanan. Silakan coba lagi nanti.");
+  }
+};
+
+export const recordVisitor = async () => {
+  try {
+    await axios.post(`${API_BASE_URL}/visitors/record`);
+  } catch (error) {
+    console.error("❌ Gagal mencatat kunjungan:", error);
+  }
+};
+
+/**
+ * Mengambil statistik pengunjung (hari ini, bulan ini, tahun ini, total).
+ * @returns {Promise<Object>} Data statistik pengunjung.
+ */
+export const getVisitorStats = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/visitors/stats`);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Gagal mengambil statistik pengunjung:", error);
+    throw new Error("Tidak dapat memuat data statistik pengunjung.");
+  }
 };

@@ -8,7 +8,7 @@ import {
   Search,
   Zap,
   Loader,
-  Loader2,
+  Loader2, Smile, ThumbsUp, Meh, Frown, Angry, SmilePlus  
 } from "lucide-react";
 
 import { getAksesCepat } from "../api/aksesCepatApi";
@@ -741,101 +741,115 @@ const FloatingAccessibilityBar = () => {
 
             <div className="flex-1 p-5 space-y-5 overflow-y-auto bg-gray-50">
               {activeModal === "penilaian" && (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Apakah Anda puas dengan layanan kami?
-                      </label>
-                      <div className="mt-2 space-y-2">
-                        {["Sangat Puas", "Puas", "Cukup", "Kurang Puas"].map(
-                          (option) => (
-                            <label
-                              key={option}
-                              className="flex items-center space-x-3"
-                            >
-                              {/* MODIFIKASI: Warna radio button diubah */}
-                              <input
-                                type="radio"
-                                name="kepuasan"
-                                value={option}
-                                onChange={handleChange}
-                                className="w-4 h-4 border-gray-300 text-slate-600 focus:ring-slate-500"
-                              />
-                              <span className="text-sm text-gray-700">
-                                {option}
-                              </span>
-                            </label>
-                          )
-                        )}
-                      </div>
-                    </div>
+<form
+  onSubmit={handleSubmit}
+  className="w-full max-w-2xl p-6 mx-auto space-y-6 transition-all duration-300 bg-white border shadow-sm rounded-2xl hover:shadow-md"
+>
+  <h3 className="pb-2 text-lg font-semibold border-b text-slate-700">
+    Form Penilaian Pengunjung
+  </h3>
 
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Apakah informasi yang Anda cari mudah ditemukan?
-                      </label>
-                      <div className="mt-2 space-x-4">
-                        {["Ya", "Tidak"].map((option) => (
-                          <label
-                            key={option}
-                            className="inline-flex items-center space-x-2"
-                          >
-                            {/* MODIFIKASI: Warna radio button diubah */}
-                            <input
-                              type="radio"
-                              name="dapatMenemukan"
-                              value={option}
-                              onChange={handleChange}
-                              className="w-4 h-4 border-gray-300 text-slate-600 focus:ring-slate-500"
-                            />
-                            <span className="text-sm text-gray-700">
-                              {option}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
+  {/* Pertanyaan 1 - Tingkat Kepuasan */}
+  <div>
+    <label className="block mb-2 text-sm font-medium text-gray-700">
+      Apakah Anda puas dengan layanan kami?
+    </label>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {[
+        { label: "Sangat Puas", icon: Smile },
+        { label: "Puas", icon: SmilePlus },
+        { label: "Cukup", icon: Meh },
+        { label: "Kurang Puas", icon: Frown },
+      ].map(({ label, icon: Icon }) => (
+        <label
+          key={label}
+          className={`flex flex-col items-center justify-center p-4 text-sm transition-all border rounded-xl cursor-pointer hover:bg-slate-50 ${
+            formData.kepuasan === label
+              ? "border-cyan-500 bg-cyan-50 text-cyan-700 shadow-sm"
+              : "border-gray-200"
+          }`}
+        >
+          <input
+            type="radio"
+            name="kepuasan"
+            value={label}
+            checked={formData.kepuasan === label}
+            onChange={handleChange}
+            className="hidden"
+          />
+          <Icon
+            className={`w-6 h-6 mb-1 ${
+              formData.kepuasan === label ? "text-cyan-600" : "text-gray-400"
+            }`}
+          />
+          <span className="text-center">{label}</span>
+        </label>
+      ))}
+    </div>
+  </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Kritik dan Saran
-                      </label>
-                      {/* MODIFIKASI: Warna focus textarea diubah */}
-                      <textarea
-                        name="kritikSaran"
-                        rows={4}
-                        onChange={handleChange}
-                        className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg focus:ring-slate-500 focus:border-slate-500"
-                        placeholder="Tulis kritik dan saran Anda di sini..."
-                      />
-                    </div>
-                  </div>
+  {/* Pertanyaan 2 */}
+  <div>
+    <label className="block mb-2 text-sm font-medium text-gray-700">
+      Apakah informasi yang Anda cari mudah ditemukan?
+    </label>
+    <div className="flex flex-col gap-3 mt-2 sm:flex-row sm:gap-6">
+      {["Ya", "Tidak"].map((option) => (
+        <label
+          key={option}
+          className="inline-flex items-center space-x-2 transition-colors cursor-pointer hover:text-slate-700"
+        >
+          <input
+            type="radio"
+            name="dapatMenemukan"
+            value={option}
+            onChange={handleChange}
+            className="w-4 h-4 border-gray-300 text-slate-600 focus:ring-slate-500"
+          />
+          <span className="text-sm text-gray-700">{option}</span>
+        </label>
+      ))}
+    </div>
+  </div>
 
-                  {/* MODIFIKASI: Warna tombol submit diubah */}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className={`
-                      w-full px-4 py-2 text-sm font-medium text-white transition rounded-lg
-                      ${
-                        loading
-                          ? "bg-gray-400"
-                          : "bg-slate-600 hover:bg-slate-700"
-                      }
-                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500
-                    `}
-                  >
-                    {loading ? (
-                      <div className="flex items-center justify-center space-x-2">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Mengirim...</span>
-                      </div>
-                    ) : (
-                      "Kirim Penilaian"
-                    )}
-                  </button>
-                </form>
+  {/* Kritik & Saran */}
+  <div>
+    <label className="block mb-2 text-sm font-medium text-gray-700">
+      Kritik dan Saran
+    </label>
+    <textarea
+      name="kritikSaran"
+      rows={4}
+      onChange={handleChange}
+      className="w-full p-3 text-sm transition-all border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+      placeholder="Tulis kritik dan saran Anda di sini..."
+    ></textarea>
+  </div>
+
+  {/* Tombol Submit */}
+  <div className="pt-2">
+    <button
+      type="submit"
+      disabled={loading}
+      className={`w-full px-5 py-3 text-sm font-semibold text-white rounded-lg shadow-md transition-all duration-300 ${
+        loading
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-slate-600 hover:bg-slate-700 hover:shadow-lg hover:-translate-y-0.5"
+      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500`}
+    >
+      {loading ? (
+        <div className="flex items-center justify-center space-x-2">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          <span>Mengirim...</span>
+        </div>
+      ) : (
+        "Kirim Penilaian"
+      )}
+    </button>
+  </div>
+</form>
+
+
               )}
 
               {activeModal === "aksesCepat" && (

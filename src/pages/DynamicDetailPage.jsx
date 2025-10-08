@@ -37,6 +37,7 @@ const DynamicDetailPage = () => {
   }, [contentId]);
 
   const formatDate = (dateString) => {
+    if (!dateString) return "-";
     return new Date(dateString).toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
@@ -44,6 +45,7 @@ const DynamicDetailPage = () => {
     });
   };
 
+  // Loading State
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -52,6 +54,7 @@ const DynamicDetailPage = () => {
     );
   }
 
+  // Error State
   if (error) {
     return (
       <SecondaryPageTemplate
@@ -83,7 +86,7 @@ const DynamicDetailPage = () => {
   return (
     <SecondaryPageTemplate title={content.judul} breadcrumb={breadcrumb}>
       <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
+        {/* Tombol Kembali */}
         <Link
           to={content.menu ? `/page/${content.menu.id}` : "/"}
           className="inline-flex items-center gap-2 mb-6 transition-colors text-cyan-600 hover:text-cyan-800"
@@ -92,36 +95,43 @@ const DynamicDetailPage = () => {
           <span>Kembali ke {content.menu?.nama || "Daftar"}</span>
         </Link>
 
-        {/* Metadata */}
+        {/* H1 Judul (Hanya jika ada) */}
+        {content.judul && (
+          <h1 className="mb-4 text-3xl font-extrabold leading-tight text-gray-800 lg:text-4xl">
+            {content.judul}
+          </h1>
+        )}
+
+        {/* Metadata Tanggal */}
         <div className="flex items-center mb-6 text-sm text-gray-500">
-          <Calendar size={16} className="mr-2" />
+          <Calendar size={16} className="mr-2 text-cyan-600" />
           <span>Diterbitkan pada {formatDate(content.created_at)}</span>
         </div>
 
-        {/* Main Image */}
+        {/* Gambar Utama */}
         {content.gambar_url && (
           <img
             src={content.gambar_url}
-            alt={content.judul}
+            alt={content.judul || "Gambar Konten"}
             className="w-full h-auto max-h-[500px] object-cover rounded-2xl shadow-lg mb-8"
           />
         )}
 
-        {/* Content */}
+        {/* Isi Konten */}
         <div
           className="prose text-gray-800 lg:prose-xl max-w-none"
           dangerouslySetInnerHTML={{ __html: content.isi_konten }}
         />
 
-        {/* Download Document */}
+        {/* Dokumen Lampiran */}
         {content.dokumen_url && (
-          <div className="pt-8 mt-12 border-t-2 border-dashed">
-            <h3 className="mb-4 text-lg font-bold">Lampiran</h3>
+          <div className="pt-8 mt-12 border-t-2 border-gray-200 border-dashed">
+            <h3 className="mb-4 text-lg font-bold text-gray-800">Lampiran</h3>
             <a
               href={content.dokumen_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-6 py-3 text-base font-medium text-white transition-all duration-300 transform border border-transparent rounded-lg shadow-md bg-cyan-600 hover:bg-cyan-700 hover:scale-105"
+              className="inline-flex items-center gap-3 px-6 py-3 text-base font-medium text-white transition-all duration-300 transform rounded-lg shadow-md bg-cyan-600 hover:bg-cyan-700 hover:scale-105"
             >
               <Download size={20} />
               Unduh Dokumen Lampiran

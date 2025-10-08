@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios"; // Pastikan sudah install: npm install axios
 import {
   ChevronDown,
   Globe,
@@ -10,19 +9,21 @@ import {
   MessagesSquare,
   Landmark,
   Building,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
+import { getServices } from "../api/menuApi"; 
+// Mapping icon string -> komponen
+const iconMap = { Building, Landmark, Globe, FileText, MessagesSquare };
 
-// Mapping nama icon dari string ke komponen React
-const iconMap = {
-  Building,
-  Landmark,
-  Globe,
-  FileText,
-  MessagesSquare,
-};
-
-const ServiceCard = ({ iconName, title, description, link, index, bgImage, pattern, icon }) => {
+const ServiceCard = ({
+  iconName,
+  title,
+  description,
+  link,
+  index,
+  bgImage,
+  pattern,
+}) => {
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef(null);
 
@@ -36,20 +37,17 @@ const ServiceCard = ({ iconName, title, description, link, index, bgImage, patte
       },
       { threshold: 0.1 }
     );
-
     if (cardRef.current) observer.observe(cardRef.current);
-    return () => {
-      if (cardRef.current) observer.unobserve(cardRef.current);
-    };
+    return () => observer.disconnect();
   }, []);
 
-  const isExternal = link.startsWith('http');
-  const LinkComponent = isExternal ? 'a' : Link;
+  const isExternal = link.startsWith("http");
+  const LinkComponent = isExternal ? "a" : Link;
   const linkProps = isExternal
     ? { href: link, target: "_blank", rel: "noopener noreferrer" }
     : { to: link };
 
-  const Icon = iconMap[iconName] || Globe; // Default icon jika tidak ditemukan
+  const Icon = iconMap[iconName] || Globe;
 
   return (
     <LinkComponent
@@ -57,14 +55,17 @@ const ServiceCard = ({ iconName, title, description, link, index, bgImage, patte
       {...linkProps}
       className={`
         group relative h-full overflow-hidden bg-gray-100 p-8 rounded-2xl
-        transition-all duration-500 ease-out
-        ${pattern}
-        ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+        transition-all duration-500 ease-out ${pattern}
+        ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
       `}
       style={{ animationDelay: `${index * 100}ms` }}
     >
       <div className="absolute top-0 left-0 z-0 w-full h-full transition-all duration-500 ease-in-out -translate-x-full group-hover:translate-x-0">
-        <img src={bgImage} alt={`${title} background`} className="object-cover w-full h-full" />
+        <img
+          src={bgImage}
+          alt={`${title} background`}
+          className="object-cover w-full h-full"
+        />
         <div className="absolute inset-0 bg-cyan-800/70"></div>
       </div>
       <div className="relative z-10 flex flex-col h-full">
@@ -96,26 +97,24 @@ export default function ServicesSection() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkScreenSize = () => setIsMobile(window.innerWidth < 768);
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchData = async () => {
       try {
-        // Ganti URL ini dengan URL API Laravel Anda
-        const response = await axios.get('http://127.0.0.1:8000/api/services');
-        setServices(response.data.data);
+        const data = await getServices();
+        setServices(data);
       } catch (err) {
-        setError("Gagal memuat data layanan. Silakan coba lagi nanti.");
-        console.error(err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchServices();
+    fetchData();
   }, []);
 
   const initialCount = isMobile ? 3 : 4;
@@ -129,7 +128,8 @@ export default function ServicesSection() {
             Layanan Digital Terpadu
           </h2>
           <p className="max-w-2xl mx-auto mt-4 text-lg text-gray-600">
-            Akses berbagai portal layanan publik dan informasi resmi dari Pemerintah Kota Bogor di satu tempat.
+            Akses berbagai portal layanan publik dan informasi resmi dari
+            Pemerintah Kota Bogor di satu tempat.
           </p>
           <div className="w-20 h-1 mx-auto mt-4 rounded-full bg-cyan-500"></div>
         </div>
@@ -141,12 +141,7 @@ export default function ServicesSection() {
           <>
             <div className="grid w-full max-w-6xl grid-cols-1 gap-6 mx-auto sm:grid-cols-2 lg:grid-cols-4">
               {displayedServices.map((service, index) => (
-                <ServiceCard
-                  key={service.id}
-                  index={index}
-                  iconName={service.icon}
-                  {...service}
-                />
+                <ServiceCard key={service.id} index={index} {...service} />
               ))}
             </div>
 
@@ -156,18 +151,20 @@ export default function ServicesSection() {
                   onClick={() => setShowMore(!showMore)}
                   className="inline-flex items-center gap-3 px-8 py-3 font-semibold text-white transition-all duration-300 ease-in-out rounded-full shadow-lg bg-cyan-700 hover:bg-cyan-800 hover:scale-105"
                 >
-                  <span>{showMore ? "Tampilkan Lebih Sedikit" : "Tampilkan Semua"}</span>
-                  <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${showMore ? "rotate-180" : ""}`} />
+                  <span>
+                    {showMore ? "Tampilkan Lebih Sedikit" : "Tampilkan Semua"}
+                  </span>
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform duration-300 ${
+                      showMore ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
               </div>
             )}
           </>
         )}
       </div>
-
-    
-
-
     </section>
   );
 }

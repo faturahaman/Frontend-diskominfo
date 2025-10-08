@@ -34,7 +34,7 @@ const Profil = () => {
         {/* Hero Section */}
         <div className="pt-10 text-center border-b pb-14 border-slate-200">
           <img 
-            src="src\assets\BannerLink\kominfologo2.webp"
+            src="/LOGO BIRU.webp"
             alt="Diskominfo Logo"
             className="mx-auto mb-6 md:w-32"
           />

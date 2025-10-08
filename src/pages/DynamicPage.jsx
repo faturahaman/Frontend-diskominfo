@@ -154,21 +154,23 @@
 
   // -------- Komponen untuk Tampilan Daftar (List View) --------
   const ListView = ({ data }) => (
-    <div className="space-y-6">
-      {data.map((item) => {
-        const isDocument = !!item.dokumen_url;
+  <div className="space-y-4">
+    {data.map((item) => {
+      const isDocument = !!item.dokumen_url;
 
-        if (isDocument) {
-          return (
-            <div
-              key={item.id}
-              className="p-6 transition-all duration-300 bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-md hover:-translate-y-1"
-            >
-              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+      if (isDocument) {
+        return (
+          <div
+            key={item.id}
+            className="flex flex-col justify-between p-4 transition-all duration-300 bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-md hover:-translate-y-0.5 sm:flex-row sm:items-center"
+          >
+            {/* Bagian Kiri (Judul + Tanggal + Deskripsi) */}
+            <div className="flex-1 min-w-0">
+              <h3 className="mb-1 text-base font-semibold text-gray-900 line-clamp-1">
                 {item.judul}
               </h3>
-              <div className="flex items-center mb-3 text-sm text-gray-500">
-                <Calendar size={16} className="mr-2" />
+              <div className="flex items-center mb-1 text-xs text-gray-500">
+                <Calendar size={14} className="mr-1.5" />
                 <span>
                   {new Date(item.created_at).toLocaleDateString("id-ID", {
                     day: "numeric",
@@ -178,73 +180,80 @@
                 </span>
               </div>
               <div
-                className="mb-4 text-sm text-gray-600"
+                className="text-sm text-gray-600 line-clamp-2"
                 dangerouslySetInnerHTML={{ __html: item.isi_konten }}
               />
+            </div>
+
+            {/* Bagian Kanan (Tombol Unduh) */}
+            <div className="flex-shrink-0 mt-3 sm:mt-0 sm:ml-4">
               <a
                 href={item.dokumen_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 text-sm font-medium transition-all duration-300 border rounded-lg text-cyan-700 border-cyan-700 hover:bg-cyan-700 hover:text-white hover:shadow group"
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium transition-all duration-300 border rounded-lg text-cyan-700 border-cyan-700 hover:bg-cyan-700 hover:text-white hover:shadow group"
               >
-                <Download className="w-4 h-4 mr-2 transition-transform group-hover:rotate-[-15deg]" />
-                Unduh Dokumen
+                <Download className="w-4 h-4 mr-1.5 transition-transform group-hover:rotate-[-15deg]" />
+                Unduh
               </a>
             </div>
-          );
-        }
-
-        return (
-          <Link
-            key={item.id}
-            to={`/page/detail/${item.id}`}
-            className="flex flex-col overflow-hidden transition-all duration-300 bg-white border border-gray-200 shadow-sm rounded-xl md:flex-row hover:shadow-lg hover:-translate-y-1 group"
-          >
-            <div className="relative w-full h-48 md:w-64 md:h-auto">
-              {item.gambar_url ? (
-                <img
-                  src={item.gambar_url}
-                  alt={item.judul}
-                  className="object-cover w-full h-full transition-transform duration-500 md:group-hover:scale-105"
-                />
-              ) : (
-                <div className="flex items-center justify-center w-full h-full bg-gray-50">
-                  <ImageIcon className="w-10 h-10 text-gray-300" />
-                </div>
-              )}
-              <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-t from-black/40 via-transparent to-transparent group-hover:opacity-100" />
-            </div>
-            <div className="flex-1 p-6">
-              <h3 className="mb-2 text-lg font-semibold text-gray-900 transition-colors group-hover:text-cyan-700">
-                {item.judul}
-              </h3>
-              <div className="flex items-center mb-3 text-sm text-gray-500">
-                <Calendar size={16} className="mr-2" />
-                <span>
-                  {new Date(item.created_at).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-              <div
-                className="mb-4 text-sm text-gray-600 line-clamp-3"
-                dangerouslySetInnerHTML={{ __html: item.isi_konten }}
-              />
-              <div className="inline-flex items-center text-sm font-medium text-cyan-700 hover:underline">
-                Baca Selengkapnya{" "}
-                <ArrowRight
-                  size={16}
-                  className="ml-2 transition-transform group-hover:translate-x-1"
-                />
-              </div>
-            </div>
-          </Link>
+          </div>
         );
-      })}
-    </div>
-  );
+      }
+
+      // -------- Jika bukan dokumen --------
+      return (
+        <Link
+          key={item.id}
+          to={`/page/detail/${item.id}`}
+          className="flex flex-col overflow-hidden transition-all duration-300 bg-white border border-gray-200 shadow-sm rounded-xl md:flex-row hover:shadow-lg hover:-translate-y-0.5 group"
+        >
+          <div className="relative w-full h-40 md:w-56 md:h-auto">
+            {item.gambar_url ? (
+              <img
+                src={item.gambar_url}
+                alt={item.judul}
+                className="object-cover w-full h-full transition-transform duration-500 md:group-hover:scale-105"
+              />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full bg-gray-50">
+                <ImageIcon className="w-8 h-8 text-gray-300" />
+              </div>
+            )}
+            <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-t from-black/30 via-transparent to-transparent group-hover:opacity-100" />
+          </div>
+          <div className="flex-1 p-4">
+            <h3 className="mb-1 text-base font-semibold text-gray-900 transition-colors group-hover:text-cyan-700 line-clamp-1">
+              {item.judul}
+            </h3>
+            <div className="flex items-center mb-2 text-xs text-gray-500">
+              <Calendar size={14} className="mr-1.5" />
+              <span>
+                {new Date(item.created_at).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
+            <div
+              className="mb-3 text-sm text-gray-600 line-clamp-2"
+              dangerouslySetInnerHTML={{ __html: item.isi_konten }}
+            />
+            <div className="inline-flex items-center text-xs font-medium text-cyan-700 hover:underline">
+              Baca Selengkapnya{" "}
+              <ArrowRight
+                size={14}
+                className="ml-1 transition-transform group-hover:translate-x-1"
+              />
+            </div>
+          </div>
+        </Link>
+      );
+    })}
+  </div>
+);
+
 
   // -------- Komponen Utama Halaman Dinamis --------
 // -------- Komponen Utama Halaman Dinamis --------
@@ -386,7 +395,7 @@ const DynamicPage = () => {
             {renderContent()}
 
             {!loading && (
-              <p className="mt-6 text-sm text-gray-500 text-center">
+              <p className="mt-6 text-sm text-center text-gray-500">
                 Menampilkan {pageData.length} dari {totalItems} data
               </p>
             )}

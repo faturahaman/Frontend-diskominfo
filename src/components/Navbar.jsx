@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { getMenus } from "../api/menuApi";
 
-const logoColor = "/LOGO BIRU.webp"; // Pastikan logo ada di folder public
+const logoColor = "/LOGO BIRU.webp";
 
 export default function Navbar() {
   const [menuData, setMenuData] = useState([]);
@@ -20,6 +20,7 @@ export default function Navbar() {
 
   const isHome = location.pathname === "/";
 
+  // === FETCH MENU DATA ===
   useEffect(() => {
     setIsLoading(true);
     getMenus()
@@ -33,6 +34,7 @@ export default function Navbar() {
       });
   }, []);
 
+  // === DETECT MOBILE ===
   useEffect(() => {
     const checkScreenSize = () => setIsMobile(window.innerWidth < 768);
     checkScreenSize();
@@ -40,12 +42,14 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
+  // === SCROLL EFFECT ===
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // === DISABLE BODY SCROLL ON MOBILE MENU ===
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? "hidden" : "unset";
     return () => {
@@ -53,6 +57,7 @@ export default function Navbar() {
     };
   }, [isMenuOpen]);
 
+  // === CLOSE MENU ON OUTSIDE CLICK ===
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
@@ -64,6 +69,7 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // === CLOSE MENU ON NAVIGATION ===
   useEffect(() => {
     setIsMenuOpen(false);
     setActiveSubmenu(null);
@@ -106,8 +112,7 @@ export default function Navbar() {
   const isSolid = isScrolled || isMenuOpen || isMobile;
 
   const navClasses = clsx(
-    "fixed top-0 z-50 w-full",
-    "transition-[padding,background-color] duration-500 ease-in-out",
+    "fixed top-0 z-50 w-full transition-[padding,background-color] duration-500 ease-in-out",
     {
       "bg-white": isSolid,
       "bg-gradient-to-b from-white/80 to-transparent pt-4 pb-10":
@@ -119,11 +124,10 @@ export default function Navbar() {
 
   const linkClasses = (isActive, hasSubmenu = false) => {
     const baseClasses =
-      "relative px-4 py-2 text-sm font-medium transition-colors " +
-      "after:content-[''] after:absolute after:bottom-0 after:left-0 " +
-      "after:h-[2px] after:w-full after:origin-left after:scale-x-0 " +
-      "after:rounded-full after:bg-gradient-to-r after:from-cyan-400 after:to-blue-500 " +
-      "after:transition-transform after:duration-300 after:ease-out";
+      "relative px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out " +
+      "after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full " +
+      "after:origin-left after:scale-x-0 after:rounded-full after:bg-gradient-to-r " +
+      "after:from-cyan-400 after:to-blue-500 after:transition-transform after:duration-300 after:ease-out";
 
     const submenuClasses = hasSubmenu ? "flex items-center gap-1" : "";
 
@@ -131,7 +135,7 @@ export default function Navbar() {
       return clsx(
         baseClasses,
         submenuClasses,
-        "text-white",
+        "text-white hover:text-cyan-300",
         isActive ? "after:scale-x-100" : "hover:after:scale-x-100"
       );
     }
@@ -140,7 +144,7 @@ export default function Navbar() {
       return clsx(
         baseClasses,
         submenuClasses,
-        "text-gray-700",
+        "text-gray-700 hover:text-cyan-600",
         isActive ? "after:scale-x-100" : "hover:after:scale-x-100"
       );
     }
@@ -148,7 +152,7 @@ export default function Navbar() {
     return clsx(
       baseClasses,
       submenuClasses,
-      "text-black",
+      "text-black hover:text-cyan-600",
       isActive ? "after:scale-x-100" : "hover:after:scale-x-100"
     );
   };
@@ -162,7 +166,8 @@ export default function Navbar() {
   return (
     <nav ref={navRef} className={navClasses}>
       <div className="mx-auto max-w-7xl">
-        <div className="flex items-center justify-between h-20 px-4 md:px-6"> {/* Menambah tinggi navbar sedikit */}
+        <div className="flex items-center justify-between h-20 px-4 md:px-6">
+          {/* === LOGO === */}
           <Link
             to="/"
             onClick={closeMenu}
@@ -171,12 +176,10 @@ export default function Navbar() {
             <img
               src={logoColor}
               alt="Logo Kominfo"
-              // Perubahan ukuran logo di sini
               className="w-auto transition-all duration-300 h-14 hover:scale-105"
             />
             <span
               className={clsx(
-                // Perubahan ukuran teks di sini
                 "text-xl font-bold transition-colors duration-300",
                 {
                   "text-white": !isHome && !isSolid,
@@ -185,14 +188,16 @@ export default function Navbar() {
                 }
               )}
             >
-            Diskominfo 
+              Diskominfo
             </span>
           </Link>
 
+          {/* === DESKTOP MENU === */}
           <div className="items-center hidden space-x-2 md:flex">
             <Link to="/" className={linkClasses(location.pathname === "/")}>
               Beranda
             </Link>
+
             {isLoading ? (
               <div className="flex space-x-3">
                 {[...Array(4)].map((_, i) => (
@@ -208,10 +213,11 @@ export default function Navbar() {
                 return (
                   <div
                     key={link.id}
-                    className="relative"
+                    className="relative group"
                     onMouseEnter={() => handleMouseEnter(index)}
                     onMouseLeave={handleMouseLeave}
                   >
+                    {/* === NAV ITEM === */}
                     {hasSubmenu ? (
                       <button
                         className={linkClasses(
@@ -221,13 +227,14 @@ export default function Navbar() {
                           true
                         )}
                       >
-                        {link.nama}
+                        {/* Panah di kiri */}
                         <ChevronDown
                           className={clsx(
-                            "w-4 h-4 transition-transform duration-300",
-                            activeSubmenu === index && "rotate-180"
+                            "w-4 h-4 mr-1 transition-transform duration-300",
+                            activeSubmenu === index ? "-rotate-90" : ""
                           )}
                         />
+                        {link.nama}
                       </button>
                     ) : (
                       <Link
@@ -239,11 +246,13 @@ export default function Navbar() {
                         {link.nama}
                       </Link>
                     )}
+
+                    {/* === SUBMENU === */}
                     {hasSubmenu && activeSubmenu === index && (
                       <div
+                        className="absolute left-0 mt-3 origin-top bg-white shadow-2xl w-52 rounded-xl ring-1 ring-black/5 animate-fade-in-up"
                         onMouseEnter={() => handleMouseEnter(index)}
                         onMouseLeave={handleMouseLeave}
-                        className="absolute left-0 w-48 mt-2 origin-top bg-white rounded-lg shadow-xl ring-1 ring-black/5 animate-fade-in-up"
                       >
                         <div className="py-2">
                           {link.children.map((subItem) => (
@@ -252,29 +261,13 @@ export default function Navbar() {
                               to={createLink(subItem)}
                               onClick={closeMenu}
                               className={clsx(
-                                "group flex items-center justify-between w-full text-left px-4 py-2 text-sm transition-all duration-300 rounded-md",
-                                location.pathname === createLink(subItem)
-                                  ? "bg-cyan-100 text-cyan-900 font-semibold"
-                                  : "text-gray-700 hover:bg-cyan-50"
+                                "group flex items-center w-full px-4 py-2 text-sm text-gray-700 transition-all duration-300 rounded-md",
+                                "hover:bg-cyan-50 hover:text-cyan-700"
                               )}
                             >
-                              <span className="transition-transform duration-300 group-hover:translate-x-1">
+                              <span className="transition-all duration-300 transform group-hover:translate-x-1">
                                 {subItem.nama}
                               </span>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="w-4 h-4 transition-all duration-300 transform -translate-x-1 opacity-0 text-cyan-500 group-hover:opacity-100 group-hover:translate-x-0"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M9 5l7 7-7 7"
-                                />
-                              </svg>
                             </Link>
                           ))}
                         </div>
@@ -285,6 +278,8 @@ export default function Navbar() {
               })
             )}
           </div>
+
+          {/* === MOBILE TOGGLE BUTTON === */}
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -297,8 +292,9 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* === MOBILE MENU === */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-black md:hidden animate-slide-down-and-fade">
+        <div className="fixed inset-0 z-40 bg-cyan-600 md:hidden animate-slide-down-and-fade">
           <div className="absolute top-4 right-4">
             <button
               onClick={closeMenu}
@@ -322,6 +318,7 @@ export default function Navbar() {
               >
                 Beranda
               </Link>
+
               {isLoading ? (
                 <div className="space-y-3">
                   {[...Array(5)].map((_, i) => (

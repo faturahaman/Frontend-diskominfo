@@ -37,7 +37,7 @@ export default function TentangSection() {
   };
 
   return (
-    <section id="tentang" className="p-3 py-16 bg-white sm:py-24">
+    <section id="tentang" className="px-12 bg-white y-16 p sm:py-24">
       <div className="container px-4 mx-auto">
         <div className="grid items-center grid-cols-1 gap-y-12 lg:grid-cols-12 lg:gap-x-16">
           {/* --- Kolom Kiri: Logo & Intro --- */}

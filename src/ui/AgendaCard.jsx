@@ -13,7 +13,7 @@ const AgendaCard = ({ agenda, style }) => {
 
   return (
     <div 
-      className="flex items-start gap-4 p-4 transition-all duration-300 bg-white border border-transparent rounded-lg opacity-0 hover:bg-sky-50/70 hover:border-sky-200 hover:shadow-md animate-fade-in-up"
+      className="flex items-start gap-4 p-4 transition-all duration-300 bg-white border border-transparent rounded-lg opacity-0 w-[60%] hover:bg-sky-50/70 hover:border-sky-200 hover:shadow-md animate-fade-in-up"
       style={style}
     >
       {/* Kolom Ikon Baru */}

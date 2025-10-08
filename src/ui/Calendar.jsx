@@ -33,7 +33,7 @@ const Calendar = ({
   // --- Akhir Perbaikan ---
 
   return (
-    <div className="p-6 bg-white border border-gray-200 shadow-xl lg:col-span-2 rounded-2xl">
+    <div className="p-6 w-[80%] bg-white border border-gray-200 shadow-xl lg:col-span-2 rounded-2xl">
       {/* Header Kalender */}
       <div className="flex items-center justify-between mb-6">
         <button

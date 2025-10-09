@@ -15,8 +15,8 @@ import {
   Frown,
   Angry,
   SmilePlus,
-  Plus, // <-- Import Plus icon for the main button
-  X, // <-- Import X icon for the close button
+  Menu,
+  X,
 } from "lucide-react";
 
 import { getAksesCepat } from "../api/aksesCepatApi";
@@ -32,7 +32,7 @@ const FloatingAccessibilityBar = () => {
   const [loading, setLoading] = useState(false);
   const [siennaLoading, setSiennaLoading] = useState(true);
   const [siennaClicking, setSiennaClicking] = useState(false);
-  const [showFloating, setShowFloating] = useState(false); // This now controls the menu on both desktop and mobile
+  const [showFloating, setShowFloating] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
 
   // New search states
@@ -476,10 +476,9 @@ const FloatingAccessibilityBar = () => {
 
       setLoading(true);
       try {
-        // Kirim data dengan format yang sama seperti di form
         const backendData = {
-          kepuasan: formData.kepuasan, // "Sangat Puas", "Puas", dll
-          dapatMenemukan: formData.dapatMenemukan, // "Ya" atau "Tidak"
+          kepuasan: formData.kepuasan,
+          dapatMenemukan: formData.dapatMenemukan,
           kritikSaran: formData.kritikSaran || null,
         };
 
@@ -654,27 +653,43 @@ const FloatingAccessibilityBar = () => {
         </div>
       )}
 
-      {/* MODIFICATION: Main container for the circular widget */}
-      <div className="fixed bottom-[50%] right-6 z-[9999]">
+      {/* Posisi kontainer berubah berdasarkan ukuran layar */}
+      <div
+        className={`fixed z-[9999] ${
+          isDesktop
+            ? "top-1/2 right-6 -translate-y-1/2"
+            : "bottom-6 right-6"
+        }`}
+      >
         <div className="relative flex flex-col items-center">
-          {/* These are the action buttons that fan out */}
           {buttons.map((btn, i) => {
-            // Logic to position buttons in a semi-circle
-            const angle = 110 + i * 35; // Starting angle and increment
-            const radius = isDesktop ? 120 : 90; // Larger radius for desktop
-            const x = radius * Math.cos((angle * Math.PI) / 180);
-            const y = radius * Math.sin((angle * Math.PI) / 180);
+            // Logika untuk posisi tombol
+            let transformStyle = "translate(0, 0)";
+            if (showFloating) {
+              if (isDesktop) {
+                // Logika melingkar untuk desktop
+                const angle = 125 + i * 40;
+                const radius = 120;
+                const x = radius * Math.cos((angle * Math.PI) / 180);
+                const y = radius * Math.sin((angle * Math.PI) / 180);
+                transformStyle = `translate(${x}px, ${-y}px)`;
+              } else {
+                // Logika vertikal untuk mobile
+                const mobileY = -(i + 1) * 70; // 70px jarak antar tombol
+                transformStyle = `translateY(${mobileY}px)`;
+              }
+            }
+            
+            const transitionDelay = showFloating ? `${(buttons.length - i) * 40}ms` : '0ms';
 
             return (
               <div
                 key={i}
                 className="absolute transition-all duration-300 ease-in-out"
                 style={{
-                  transform: showFloating
-                    ? `translate(${x}px, ${-y}px)` // Move to position
-                    : "translate(0, 0)", // Stay at center
+                  transform: transformStyle,
                   opacity: showFloating ? 1 : 0,
-                  transitionDelay: `${(buttons.length - i) * 40}ms`, // Staggered animation
+                  transitionDelay: transitionDelay,
                 }}
               >
                 <a
@@ -688,18 +703,23 @@ const FloatingAccessibilityBar = () => {
                   aria-label={btn.title}
                 >
                   <btn.icon className="w-6 h-6" />
-                  <div className="absolute z-50 px-3 py-2 mr-4 transition-all duration-300 transform translate-x-2 -translate-y-1/2 rounded-lg shadow-lg opacity-0 pointer-events-none right-full top-1/2 bg-gray-900/95 backdrop-blur-sm group-hover:opacity-100 group-hover:translate-x-0">
-                    <span className="block text-xs font-medium text-white whitespace-nowrap">
-                      {btn.title}
-                    </span>
-                    <div className="absolute right-0 w-2 h-2 transform rotate-45 translate-x-1/2 -translate-y-1/2 top-1/2 bg-gray-900/95"></div>
+                  <div
+                    className={`absolute z-50 px-3 py-2 text-xs font-medium text-white whitespace-nowrap transition-all duration-300 transform -translate-y-1/2 rounded-lg shadow-lg opacity-0 pointer-events-none bg-gray-900/95 backdrop-blur-sm top-1/2 group-hover:opacity-100 ${
+                      isDesktop ? 'right-full mr-4 group-hover:translate-x-0' : 'left-1/2 -translate-x-1/2 -top-2 group-hover:-translate-y-2'
+                    }`}
+                  >
+                    {btn.title}
+                    <div
+                      className={`absolute w-2 h-2 transform bg-gray-900/95 ${
+                        isDesktop ? 'right-0 translate-x-1/2 -translate-y-1/2 top-1/2 rotate-45' : 'bottom-0 translate-y-1/2 -translate-x-1/2 left-1/2 rotate-45'
+                      }`}
+                    ></div>
                   </div>
                 </a>
               </div>
             );
           })}
 
-          {/* Main toggle button, always visible */}
           <button
             onClick={() => setShowFloating(!showFloating)}
             className="relative z-10 flex items-center justify-center w-16 h-16 text-3xl text-white transition-transform duration-300 rounded-full shadow-xl bg-cyan-500 hover:bg-slate-700 hover:scale-110"
@@ -709,14 +729,14 @@ const FloatingAccessibilityBar = () => {
                 : "Buka menu aksesibilitas"
             }
           >
-            <Plus
+            <Menu
               className={`absolute transition-all duration-300 ${
-                showFloating ? "rotate-45 opacity-0" : "rotate-0 opacity-100"
+                showFloating ? "opacity-0 scale-50" : "opacity-100 scale-100"
               }`}
             />
             <X
               className={`absolute transition-all duration-300 ${
-                showFloating ? "rotate-0 opacity-100" : "-rotate-45 opacity-0"
+                showFloating ? "opacity-100 scale-100" : "opacity-0 scale-50"
               }`}
             />
           </button>
@@ -725,7 +745,7 @@ const FloatingAccessibilityBar = () => {
 
       {activeModal && (
         <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 sm:p-6 z-[9998] backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-[9998] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in sm:p-6"
           onClick={() => setActiveModal(null)}
           role="dialog"
           aria-modal="true"

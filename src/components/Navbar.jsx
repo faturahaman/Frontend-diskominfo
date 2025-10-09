@@ -5,6 +5,7 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { getMenus } from "../api/menuApi";
 
 const logoColor = "/LOGO BIRU.webp";
+const logoBogor = "/kotabogor.webp";
 
 export default function Navbar() {
   const [menuData, setMenuData] = useState([]);
@@ -173,6 +174,12 @@ export default function Navbar() {
             onClick={closeMenu}
             className="flex items-center flex-shrink-0 gap-3 pl-3"
           >
+            <img
+              src={logoBogor}
+              alt="Logo Kominfo"
+              className="w-auto transition-all duration-300 h-14 hover:scale-105"
+            />
+            |
             <img
               src={logoColor}
               alt="Logo Kominfo"

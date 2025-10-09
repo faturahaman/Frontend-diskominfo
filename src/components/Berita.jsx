@@ -1,16 +1,17 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, ArrowRight, AlertCircle, Calendar, Newspaper, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, AlertCircle, Calendar, Newspaper, Sparkles, FileText } from "lucide-react";
 import NewsCard from "../ui/NewsCard";
 import AgendaCard from "../ui/AgendaCard";
 import { getContentByMenuName, getAgendas } from "../api/menuApi";
+// --- 1. Impor library toast ---
+import toast, { Toaster } from 'react-hot-toast';
 
 const monthNames = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 const dayNames = ["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
 
 const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
-// Komponen Tombol Tanggal dengan desain lebih baik
 const AgendaDayButton = ({ day, isSelected, isToday, hasAgenda, onSelectDate }) => (
   <button
     onClick={() => onSelectDate(day)}
@@ -38,7 +39,6 @@ const AgendaDayButton = ({ day, isSelected, isToday, hasAgenda, onSelectDate }) 
   </button>
 );
 
-// Loading skeleton untuk berita
 const NewsCardSkeleton = () => (
   <div className="overflow-hidden bg-white border border-slate-200 rounded-2xl animate-pulse">
     <div className="bg-slate-200 h-52"></div>
@@ -83,6 +83,36 @@ const NewsAgendaSection = () => {
     fetchData();
   }, []);
 
+  // --- 2. Fungsi untuk menampilkan toast ---
+  const showDetailToast = (agenda) => {
+    toast.custom(
+      (t) => (
+        <div
+          className={`${
+            t.visible ? 'animate-fade-in-up' : 'animate-fade-out'
+          } flex w-full max-w-md items-start gap-4 rounded-xl bg-white p-4 shadow-lg`}
+        >
+          <div className="flex-shrink-0 pt-1">
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-sky-100 text-sky-700">
+              <FileText size={20} />
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-slate-800">{agenda.judul}</p>
+            <p className="mt-1 text-sm text-slate-600">{agenda.deskripsi}</p>
+          </div>
+          <div className="flex-shrink-0">
+            <button onClick={() => toast.dismiss(t.id)} className="text-xl text-slate-400 hover:text-slate-700">&times;</button>
+          </div>
+        </div>
+      ),
+      {
+        position: 'bottom-center',
+        duration: 5000,
+      }
+    );
+  };
+
   const daysPerPage = 7;
   const totalDaysInMonth = useMemo(() => getDaysInMonth(currentDisplayMonth), [currentDisplayMonth]);
   const [currentPage, setCurrentPage] = useState(Math.floor((selectedDate.getDate() - 1) / daysPerPage));
@@ -125,6 +155,9 @@ const NewsAgendaSection = () => {
 
   return (
     <section className="relative py-20 overflow-hidden bg-gradient-to-b from-slate-50 to-white sm:py-24">
+      {/* --- 3. Tambahkan komponen Toaster di sini --- */}
+      <Toaster />
+
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full w-96 h-96 bg-cyan-100 opacity-20 blur-3xl"></div>
       <div className="absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2 bg-blue-100 rounded-full w-96 h-96 opacity-20 blur-3xl"></div>
@@ -277,7 +310,8 @@ const NewsAgendaSection = () => {
                           opacity: 0
                         }}
                       >
-                        <AgendaCard agenda={agenda} />
+                        {/* --- 4. Hubungkan onClick ke fungsi toast --- */}
+                        <AgendaCard agenda={agenda} onClick={showDetailToast} />
                       </div>
                     ))
                   ) : (

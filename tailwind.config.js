@@ -17,5 +17,8 @@ export default {
       },
     },
   },
-  plugins: [require("tailwind-scrollbar")],
+  plugins: [
+    require("tailwind-scrollbar"),
+    // HAPUS: require("@tailwindcss/typography"),
+  ],
 };

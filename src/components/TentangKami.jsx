@@ -37,7 +37,8 @@ export default function TentangSection() {
   };
 
   return (
-    <section id="tentang" className="px-12 bg-white y-16 p sm:py-24">
+    // MODIFIKASI: Padding disesuaikan untuk mobile dan desktop
+    <section id="tentang" className="px-6 py-16 bg-white sm:px-12 sm:py-24">
       <div className="container px-4 mx-auto">
         <div className="grid items-center grid-cols-1 gap-y-12 lg:grid-cols-12 lg:gap-x-16">
           {/* --- Kolom Kiri: Logo & Intro --- */}
@@ -47,13 +48,17 @@ export default function TentangSection() {
             whileInView="visible"
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-5"
+            // MODIFIKASI: Teks diatur ke tengah pada mobile
+            className="text-center lg:col-span-5 lg:text-left"
           >
-            <div className="flex items-center mb-6 space-x-3">
+            {/* MODIFIKASI: Logo dan judul diatur ke tengah pada mobile */}
+            <div className="flex flex-col items-center mb-6 space-y-4 lg:flex-row lg:space-y-0 lg:space-x-3">
               <img
                 className="w-auto h-14"
                 src="/LOGO BIRU.webp"
-                alt="Logo Diskominfo" width={50} height={50}
+                alt="Logo Diskominfo"
+                width={56}
+                height={56}
               />
               <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
                 Mengenal Diskominfo
@@ -91,7 +96,8 @@ export default function TentangSection() {
                   whileInView="visible"
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.15 * index }}
-                  className="p-6 transition-all duration-300 shadow-sm bg-slate-50 rounded-xl hover:shadow-md"
+                  // MODIFIKASI: Kartu dibuat agar teksnya rata kiri
+                  className="p-6 text-left transition-all duration-300 shadow-sm bg-slate-50 rounded-xl hover:shadow-md"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">{fungsi.icon}</div>
@@ -99,7 +105,9 @@ export default function TentangSection() {
                       <h3 className="text-lg font-semibold text-slate-800">
                         {fungsi.title}
                       </h3>
-                      <p className="mt-1 text-slate-600">{fungsi.description}</p>
+                      <p className="mt-1 text-slate-600">
+                        {fungsi.description}
+                      </p>
                     </div>
                   </div>
                 </motion.div>

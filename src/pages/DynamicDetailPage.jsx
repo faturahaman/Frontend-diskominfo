@@ -142,13 +142,14 @@ const DynamicDetailPage = () => {
         </div>
 
         {/* Gambar Utama (jika ada) */}
-        {content.gambar_url && (
-          <img
-            src={content.gambar_url}
-            alt={content.judul}
-            className="w-full h-auto max-h-[500px] object-cover rounded-2xl shadow-lg mb-8"
-          />
-        )}
+      {content.gambar_url && (
+  <img
+    src={content.gambar_url}
+    alt={content.judul}
+    className="w-full max-w-3xl h-auto max-h-[400px] object-cover rounded-2xl shadow-lg mb-8 mx-auto" // Added max-w-3xl and mx-auto
+  />
+)}
+
 
         {/*
           [KUNCI UTAMA] Menampilkan Konten HTML dari Quill.

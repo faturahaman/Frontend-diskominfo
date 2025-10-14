@@ -13,7 +13,7 @@ const VideoCard = ({ video }) => {
 
     return (
         <a
-            href={video.video_url} // Selalu link ke URL asli untuk dibuka di tab baru
+            href={video.video_url} 
             target="_blank"
             rel="noopener noreferrer"
             className="block overflow-hidden transition-all duration-300 bg-white shadow-lg group rounded-xl hover:shadow-2xl hover:-translate-y-2"

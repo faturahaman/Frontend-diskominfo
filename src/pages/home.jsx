@@ -1,7 +1,7 @@
 // HomePage.jsx
 import React from "react";
 import Navbar from "../components/Navbar";
-import Banner from "../components/Banner";
+import Banner from "../components/HeroSection";
 import Sambutan from "../components/Sambutan";
 import Layanan from "../components/Layanan";
 import Berita from "../components/Berita";

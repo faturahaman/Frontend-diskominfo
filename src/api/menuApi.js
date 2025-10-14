@@ -3,9 +3,6 @@ import axios from "axios";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
-/**
- * Mengambil struktur menu navigasi dari Laravel.
- */
 export const getMenus = () => {
   return fetch(`${API_BASE_URL}/menus`)
     .then((response) => {
@@ -19,6 +16,7 @@ export const getMenus = () => {
       return [];
     });
 };
+
 
 export const searchNews = (query) => {
   // Encode query untuk memastikan karakter spesial aman di URL
@@ -139,11 +137,6 @@ export const recordVisitor = async () => {
     console.error("❌ Gagal mencatat kunjungan:", error);
   }
 };
-
-/**
- * Mengambil statistik pengunjung (hari ini, bulan ini, tahun ini, total).
- * @returns {Promise<Object>} Data statistik pengunjung.
- */
 export const getVisitorStats = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/visitors/stats`);
@@ -153,3 +146,5 @@ export const getVisitorStats = async () => {
     throw new Error("Tidak dapat memuat data statistik pengunjung.");
   }
 };
+
+export const APIpenilaian = `${API_BASE_URL}/penilaian`;

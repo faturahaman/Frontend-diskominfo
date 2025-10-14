@@ -1,22 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { Instagram, Facebook, Twitter, Youtube, ArrowUp } from "lucide-react";
-import { recordVisitor, getVisitorStats } from "../api/menuApi"; // Pastikan path import ini benar
+import { recordVisitor, getVisitorStats } from "../api/menuApi";
+
+// ✅ Utility untuk animasi angka dari 0 ke target
+const animateValue = (start, end, duration, callback) => {
+  let startTime = null;
+  const step = (timestamp) => {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    const value = Math.floor(progress * (end - start) + start);
+    callback(value);
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+};
 
 export default function Footer() {
-  // State untuk data statistik
   const [stats, setStats] = useState({
-    today: "--",
-    this_month: "----",
-    this_year: "------",
-    total: "-------",
+    today: 0,
+    this_month: 0,
+    this_year: 0,
+    total: 0,
   });
 
-  // State untuk mengatur visibilitas tombol "kembali ke atas"
   const [isVisible, setIsVisible] = useState(false);
 
-  // Fungsi untuk scroll kembali ke atas (menuju section dengan id="banner")
   const scrollToTop = () => {
-    // Anda bisa mengganti 'banner' dengan ID section teratas di halaman Anda jika berbeda
     const topSection = document.getElementById("banner");
     if (topSection) {
       topSection.scrollIntoView({ behavior: "smooth" });
@@ -24,41 +33,45 @@ export default function Footer() {
   };
 
   useEffect(() => {
-    // Fungsi untuk menampilkan/menyembunyikan tombol berdasarkan posisi scroll
     const toggleVisibility = () => {
-      // Tombol akan muncul setelah user scroll sejauh 300px
       if (window.scrollY > 300) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
       }
     };
-
-    // Tambahkan event listener saat komponen pertama kali dirender
     window.addEventListener("scroll", toggleVisibility);
 
-    // Fungsi untuk merekam pengunjung dan mengambil data statistik
     const trackAndFetchStats = async () => {
       try {
         await recordVisitor();
         const data = await getVisitorStats();
-        setStats(data);
+
+        animateValue(0, Number(data.today), 1000, (val) =>
+          setStats((prev) => ({ ...prev, today: val }))
+        );
+        animateValue(0, Number(data.this_month), 1200, (val) =>
+          setStats((prev) => ({ ...prev, this_month: val }))
+        );
+        animateValue(0, Number(data.this_year), 1400, (val) =>
+          setStats((prev) => ({ ...prev, this_year: val }))
+        );
+        animateValue(0, Number(data.total), 1600, (val) =>
+          setStats((prev) => ({ ...prev, total: val }))
+        );
       } catch (error) {
         console.error("Gagal terhubung ke API statistik:", error);
       }
     };
     trackAndFetchStats();
 
-    // Cleanup: Hapus event listener saat komponen tidak lagi digunakan untuk mencegah memory leak
     return () => window.removeEventListener("scroll", toggleVisibility);
-  }, []); // Array dependensi kosong agar useEffect hanya berjalan sekali saat mount
+  }, []);
 
   return (
     <footer className="bg-[#141426] text-gray-200">
       <div className="px-6 py-12 mx-auto max-w-7xl md:px-12 lg:px-20">
-        {/* Grid utama */}
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
-          {/* Kolom 1: Peta Lokasi */}
           <div className="h-56 overflow-hidden shadow-md rounded-xl md:h-64">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.742886392522!2d106.7937473153549!3d-6.554228995260786!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c42636a38911%3A0x29623588e36065c2!2sDinas%20Komunikasi%20dan%20Informatika%20(Diskominfo)%20Kota%20Bogor!5e0!3m2!1sen!2sid!4v1678886543210!5m2!1sen!2sid"
@@ -70,7 +83,6 @@ export default function Footer() {
             ></iframe>
           </div>
 
-          {/* Kolom 2: Kontak & Sosial Media */}
           <div>
             <h3 className="pl-3 mb-4 text-lg font-semibold text-white border-l-4 border-cyan-500">
               Kontak Kami
@@ -95,7 +107,6 @@ export default function Footer() {
               </a>
             </p>
 
-            {/* Ikon Sosial Media */}
             <div className="flex gap-4">
               {[
                 { icon: Instagram, href: "https://www.instagram.com/kominfobogor", label: "Instagram" },
@@ -117,7 +128,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Kolom 3: Statistik Pengunjung */}
           <div>
             <h3 className="pl-3 mb-4 text-lg font-semibold text-white border-l-4 border-cyan-500">
               Statistika Pengunjung
@@ -134,18 +144,17 @@ export default function Footer() {
                   className="flex justify-between pb-2 border-b border-gray-700"
                 >
                   <span>{label}</span>
-                  <span className="font-semibold">{Number(value).toLocaleString("id-ID")}</span>
+                  <span className="font-semibold">
+                    {Number(value).toLocaleString("id-ID")}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        {/* Copyright & Tombol Kembali ke Atas */}
         <div className="relative pt-6 mt-12 text-xs text-center text-gray-400 border-t border-gray-700">
           <p>© {new Date().getFullYear()} Dinas Kominfo Kota Bogor. All Rights Reserved.</p>
-
-          {/* Tombol "Kembali ke Atas" akan muncul di sini */}
           {isVisible && (
             <button
               onClick={scrollToTop}

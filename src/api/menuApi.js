@@ -148,3 +148,15 @@ export const getVisitorStats = async () => {
 };
 
 export const APIpenilaian = `${API_BASE_URL}/penilaian`;
+
+export const getAksesCepat = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/akses-cepat`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+

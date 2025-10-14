@@ -18,8 +18,8 @@
 
   // Impor komponen-komponen lain yang dibutuhkan
   import AccessibilityWidget from "../ui/AccessibilityWidget"; // Pastikan path ini benar
-  import { getAksesCepat } from "../api/aksesCepatApi";
-  import { searchNews, APIpenilaian } from "../api/menuApi";
+  // import { getAksesCepat } from "../api/aksesCepatApi";
+  import { searchNews, APIpenilaian, getAksesCepat  } from "../api/menuApi";
 
   const API_PENILAIAN = APIpenilaian;
   const FloatingAccessibilityBar = () => {

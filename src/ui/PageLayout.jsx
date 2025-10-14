@@ -21,7 +21,7 @@ const SecondaryPageTemplate = ({ title, breadcrumb = [], children }) => {
           </div>
 
           {/* Konten header */}
-          <div className="container relative z-10 px-4 mx-auto mt-10 sm:px-6 lg:px-8">
+          <div className="container relative z-10 px-4 mx-auto mt-20 sm:px-6 lg:px-8">
             <div className="flex flex-col justify-end h-64 pb-24 md:h-72 md:pb-28">
               <motion.div
                 initial="hidden"

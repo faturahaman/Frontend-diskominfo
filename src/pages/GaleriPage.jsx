@@ -96,11 +96,8 @@ const VideoCard = ({ video }) => {
             className="object-cover w-full h-full"
           />
         )}
-        
       </div>
-      
-      {/* Info di bawah video (sembunyi saat hover) */}
-      <div className="p-4 transition-opacity duration-300 group-hover:opacity-0">
+      <div className="p-4">
         <h3 className="font-semibold text-gray-800 truncate">{video.judul}</h3>
         {video.deskripsi && (
           <p className="mt-1 text-sm text-gray-600 line-clamp-2">{video.deskripsi}</p>

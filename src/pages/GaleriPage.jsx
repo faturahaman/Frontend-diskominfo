@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Camera, BookImage, Video, ArrowRight, Loader, AlertCircle } from "lucide-react";
-
-// Import API functions
-import { getAlbums, getPhotos, getVideos } from "../api/api"; 
-
-// Import page template
+import { getAlbums, getPhotos, getVideos } from "../api/api";
 import SecondaryPageTemplate from "../ui/PageLayout";
 
-// --- KOMPONEN CARD ---
-
+// Album Card dengan efek hover baru
 const AlbumCard = ({ album }) => (
   <Link
     to={`/album/${album.id}`}
@@ -19,13 +14,24 @@ const AlbumCard = ({ album }) => (
       <img
         src={album.cover_album_url}
         alt={album.nama}
-        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
         onError={(e) => {
-          e.target.src = '/placeholder-album.jpg'; // Fallback image
+          e.target.src = '/placeholder-album.jpg';
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-      <div className="absolute bottom-4 left-4">
+      
+      {/* Overlay gelap yang muncul saat hover */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30 transition-opacity duration-300 opacity-0 group-hover:opacity-100 flex items-center justify-center">
+        <div className="text-center p-4">
+          <h3 className="text-xl font-bold text-white mb-2">{album.nama}</h3>
+          <p className="text-sm text-gray-200">
+            {album.galeri_count || 0} Foto
+          </p>
+        </div>
+      </div>
+      
+      {/* Info di bawah gambar (sembunyi saat hover) */}
+      <div className="absolute bottom-4 left-4 transition-opacity duration-300 group-hover:opacity-0">
         <h3 className="text-xl font-bold text-white drop-shadow-md">{album.nama}</h3>
         <p className="text-sm text-gray-200">
           {album.galeri_count || 0} Foto
@@ -35,27 +41,40 @@ const AlbumCard = ({ album }) => (
   </Link>
 );
 
+// Photo Card dengan efek hover baru
 const PhotoCard = ({ photo }) => (
   <div className="overflow-hidden bg-white rounded-lg shadow-md group">
     <div className="relative h-56 overflow-hidden">
       <img
         src={photo.file_url}
         alt={photo.judul || 'Foto Galeri'}
-        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
         onError={(e) => {
-          e.target.src = '/placeholder-photo.jpg'; // Fallback image
+          e.target.src = '/placeholder-photo.jpg';
         }}
       />
+      
+      {/* Overlay gelap saat hover */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30 transition-opacity duration-300 opacity-0 group-hover:opacity-100 flex items-center justify-center">
+        <div className="text-center p-4">
+          <h3 className="text-lg font-bold text-white">
+            {photo.judul || 'Tanpa Judul'}
+          </h3>
+        </div>
+      </div>
     </div>
+    
+    {/* Judul di bawah gambar (sembunyi saat hover) */}
     {photo.judul && (
-      <div className="p-3">
+      <div className="p-3 transition-opacity duration-300 group-hover:opacity-0">
         <h3 className="text-sm font-semibold text-gray-700 truncate">{photo.judul}</h3>
       </div>
     )}
   </div>
 );
 
+// Video Card dengan efek hover baru
 const VideoCard = ({ video }) => {
   const isEmbed = video.embed_url && video.embed_url !== null;
 
@@ -77,8 +96,11 @@ const VideoCard = ({ video }) => {
             className="object-cover w-full h-full"
           />
         )}
+        
       </div>
-      <div className="p-4">
+      
+      {/* Info di bawah video (sembunyi saat hover) */}
+      <div className="p-4 transition-opacity duration-300 group-hover:opacity-0">
         <h3 className="font-semibold text-gray-800 truncate">{video.judul}</h3>
         {video.deskripsi && (
           <p className="mt-1 text-sm text-gray-600 line-clamp-2">{video.deskripsi}</p>
@@ -88,8 +110,6 @@ const VideoCard = ({ video }) => {
   );
 };
 
-// --- KOMPONEN UTAMA ---
-
 const GalleryPage = () => {
   const [albums, setAlbums] = useState([]);
   const [photos, setPhotos] = useState([]);
@@ -97,7 +117,6 @@ const GalleryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Jumlah item yang ingin ditampilkan di halaman utama
   const itemsToShow = 6;
 
   useEffect(() => {
@@ -106,37 +125,23 @@ const GalleryPage = () => {
         setLoading(true);
         setError(null);
 
-        // Ambil semua data secara paralel
         const [albumsRes, photosRes, videosRes] = await Promise.all([
           getAlbums(),
           getPhotos(),
           getVideos()
         ]);
 
-        // ✅ FIX: Handle nested response structure
-        // Axios response: response.data = { success: true, data: [...] }
-        // Jadi kita perlu akses response.data.data
-        
         const albumsData = albumsRes.data?.data || albumsRes.data || [];
         const photosData = photosRes.data?.data || photosRes.data || [];
         const videosData = videosRes.data?.data || videosRes.data || [];
 
-        // Validate that we got arrays
         setAlbums(Array.isArray(albumsData) ? albumsData : []);
         setPhotos(Array.isArray(photosData) ? photosData : []);
         setVideos(Array.isArray(videosData) ? videosData : []);
 
-        console.log('✅ Gallery data loaded:', {
-          albums: albumsData.length,
-          photos: photosData.length,
-          videos: videosData.length
-        });
-
       } catch (err) {
         console.error('❌ Error fetching gallery data:', err);
         setError("Gagal memuat data galeri. Silakan coba lagi nanti.");
-        
-        // Set empty arrays on error
         setAlbums([]);
         setPhotos([]);
         setVideos([]);
@@ -172,7 +177,6 @@ const GalleryPage = () => {
       );
     }
 
-    // Check if all data is empty
     const hasData = albums.length > 0 || photos.length > 0 || videos.length > 0;
 
     if (!hasData) {
@@ -191,16 +195,18 @@ const GalleryPage = () => {
 
     return (
       <div className="space-y-20">
-        {/* --- Album Section --- */}
+        {/* Album Section */}
         {albums.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Album Terbaru</h2>
+              <h2 className="text-3xl font-bold text-gray-800 border-l-4 border-cyan-500 pl-3">
+                Album Terbaru
+              </h2>
               <Link 
                 to="/albums" 
-                className="text-blue-600 hover:text-blue-700 hover:underline"
+                className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:underline"
               >
-                Lihat Semua →
+                Lihat Semua <ArrowRight size={16} />
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -212,7 +218,7 @@ const GalleryPage = () => {
               <div className="flex justify-center mt-12">
                 <Link 
                   to="/albums" 
-                  className="px-6 py-2 font-semibold text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-600"
+                  className="px-6 py-3 font-semibold text-white transition-colors bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:from-cyan-600 hover:to-blue-600 shadow-md hover:shadow-lg"
                 >
                   Tampilkan Semua Album ({albums.length})
                 </Link>
@@ -221,16 +227,18 @@ const GalleryPage = () => {
           </section>
         )}
 
-        {/* --- Photo Section --- */}
+        {/* Photo Section */}
         {photos.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Foto Terbaru</h2>
+              <h2 className="text-3xl font-bold text-gray-800 border-l-4 border-cyan-500 pl-3">
+                Foto Terbaru
+              </h2>
               <Link 
                 to="/photos" 
-                className="text-blue-600 hover:text-blue-700 hover:underline"
+                className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:underline"
               >
-                Lihat Semua →
+                Lihat Semua <ArrowRight size={16} />
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -242,7 +250,7 @@ const GalleryPage = () => {
               <div className="flex justify-center mt-12">
                 <Link 
                   to="/photos" 
-                  className="px-6 py-2 font-semibold text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-600"
+                  className="px-6 py-3 font-semibold text-white transition-colors bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:from-cyan-600 hover:to-blue-600 shadow-md hover:shadow-lg"
                 >
                   Tampilkan Semua Foto ({photos.length})
                 </Link>
@@ -251,16 +259,18 @@ const GalleryPage = () => {
           </section>
         )}
 
-        {/* --- Video Section --- */}
+        {/* Video Section */}
         {videos.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Video Terbaru</h2>
+              <h2 className="text-3xl font-bold text-gray-800 border-l-4 border-cyan-500 pl-3">
+                Video Terbaru
+              </h2>
               <Link 
                 to="/videos" 
-                className="text-blue-600 hover:text-blue-700 hover:underline"
+                className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:underline"
               >
-                Lihat Semua →
+                Lihat Semua <ArrowRight size={16} />
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -272,7 +282,7 @@ const GalleryPage = () => {
               <div className="flex justify-center mt-12">
                 <Link 
                   to="/videos" 
-                  className="px-6 py-2 font-semibold text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-600"
+                  className="px-6 py-3 font-semibold text-white transition-colors bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:from-cyan-600 hover:to-blue-600 shadow-md hover:shadow-lg"
                 >
                   Tampilkan Semua Video ({videos.length})
                 </Link>

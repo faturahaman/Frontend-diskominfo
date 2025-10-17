@@ -1,39 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import SecondaryPageTemplate from "../ui/PageLayout"; 
-import { Building, Archive, Briefcase, Network, ShieldCheck, Gem } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import SecondaryPageTemplate from "../ui/PageLayout";
+import { Archive, Briefcase, Network, ShieldCheck, Gem } from "lucide-react";
+import axios from "axios";
 
-const historyData = [
-  {
-    period: "1995 - 2001",
-    title: "Cikal Bakal: Sub Bagian Pengolahan Data",
-    description: "Berawal dari unit kecil di bawah Bagian Organisasi Setda Kota Bogor, dipimpin oleh Dra. Hj. Entin Sumartini di Jl. Ir. H. Juanda No. 10.",
-    icon: <Gem size={24} className="text-white" />,
-  },
-  {
-    period: "2001 - 2005",
-    title: "Kantor Pengolahan Data Elektronik (KPDE)",
-    description: "Menjadi lembaga mandiri berdasarkan Perda No. 10 Tahun 2000, berlokasi di Gedung Kemuning Gading dengan beberapa pergantian pimpinan.",
-    icon: <Archive size={24} className="text-white" />,
-  },
-  {
-    period: "2005 - 2008",
-    title: "Peleburan: Bidang Telematika",
-    description: "KPDE dilebur menjadi Bidang Telematika di bawah Dinas Informasi, Pariwisata dan Kebudayaan, dengan dua seksi: Jaringan dan Aplikasi.",
-    icon: <Briefcase size={24} className="text-white" />,
-  },
-  {
-    period: "2008 - 2016",
-    title: "Era Baru: Dinas Komunikasi dan Informatika",
-    description: "Melalui Perda No. 7 Tahun 2008, Diskominfo dibentuk sebagai dinas mandiri untuk fokus pada pengembangan e-Government.",
-    icon: <Network size={24} className="text-white" />,
-  },
-  {
-    period: "2016 - Sekarang",
-    title: "Bentuk Final: Diskominfo, Statistik & Persandian",
-    description: "Mengikuti PP No. 18 Tahun 2016, urusan statistik dan persandian dilebur ke dalam dinas, membentuk nomenklatur yang berlaku hingga kini.",
-    icon: <ShieldCheck size={24} className="text-white" />,
-  },
-];
+// Icon mapper
+const iconMap = {
+  Gem: <Gem size={24} className="text-white" />,
+  Archive: <Archive size={24} className="text-white" />,
+  Briefcase: <Briefcase size={24} className="text-white" />,
+  Network: <Network size={24} className="text-white" />,
+  ShieldCheck: <ShieldCheck size={24} className="text-white" />,
+};
 
 const TimelineItem = ({ data, index }) => {
   const ref = useRef(null);
@@ -67,7 +44,7 @@ const TimelineItem = ({ data, index }) => {
 
         {/* Dot / Icon */}
         <div className="z-10 flex items-center justify-center w-12 h-12 rounded-full shadow-lg bg-cyan-600">
-          {data.icon}
+          {iconMap[data.icon] || <Gem size={24} className="text-white" />}
         </div>
 
         {/* Card */}
@@ -86,11 +63,28 @@ const TimelineItem = ({ data, index }) => {
 };
 
 const Sejarah = () => {
+  const [historyData, setHistoryData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const breadcrumb = [
     { label: "Home", link: "/" },
     { label: "Profil", link: "/profil" },
     { label: "Sejarah", link: "/sejarah" },
   ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/statis-pages/sejarah");
+        setHistoryData(response.data.konten);
+      } catch (error) {
+        console.error("Error fetching sejarah:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <SecondaryPageTemplate title="Sejarah Perkembangan" breadcrumb={breadcrumb}>
@@ -102,15 +96,18 @@ const Sejarah = () => {
           Menelusuri jejak transformasi digital dan pelayanan informasi di Kota Bogor dari masa ke masa.
         </p>
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Garis Tengah */}
-          <div className="absolute w-1 h-full transform -translate-x-1/2 left-1/2 bg-slate-300"></div>
-
-          {historyData.map((item, index) => (
-            <TimelineItem key={index} data={item} index={index} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-12">Memuat data...</div>
+        ) : historyData.length === 0 ? (
+          <div className="text-center py-12 text-red-600">Data tidak ditemukan</div>
+        ) : (
+          <div className="relative">
+            <div className="absolute w-1 h-full transform -translate-x-1/2 left-1/2 bg-slate-300"></div>
+            {historyData.map((item, index) => (
+              <TimelineItem key={index} data={item} index={index} />
+            ))}
+          </div>
+        )}
       </div>
     </SecondaryPageTemplate>
   );

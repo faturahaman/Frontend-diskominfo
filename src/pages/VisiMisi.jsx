@@ -1,11 +1,45 @@
+import { useState, useEffect } from "react";
 import SecondaryPageTemplate from "../ui/PageLayout";
+import axios from "axios";
 
 const VisiMisi = () => {
-  // Breadcrumb configuration
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const breadcrumb = [
     { label: "Beranda", link: "/" },
     { label: "Visi & Misi", link: "/visi-misi" },
   ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/statis-pages/visi-misi");
+        setData(response.data.konten);
+      } catch (error) {
+        console.error("Error fetching visi-misi:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <SecondaryPageTemplate title="Visi & Misi" breadcrumb={breadcrumb}>
+        <div className="text-center py-12">Memuat data...</div>
+      </SecondaryPageTemplate>
+    );
+  }
+
+  if (!data) {
+    return (
+      <SecondaryPageTemplate title="Visi & Misi" breadcrumb={breadcrumb}>
+        <div className="text-center py-12 text-red-600">Data tidak ditemukan</div>
+      </SecondaryPageTemplate>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -16,8 +50,7 @@ const VisiMisi = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Visi</h2>
             <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
               <p className="text-lg text-center font-medium text-blue-900">
-                "Terwujudnya pelayanan informasi publik yang transparan dan
-                akuntabel menuju Kota Bogor yang modern"
+                "{data.visi}"
               </p>
             </div>
           </div>
@@ -28,26 +61,11 @@ const VisiMisi = () => {
             <div className="space-y-4">
               <div className="bg-white p-6 rounded-lg border border-gray-200">
                 <ol className="list-decimal list-inside space-y-4">
-                  <li className="text-gray-800">
-                    Meningkatkan kualitas infrastruktur teknologi informasi dan
-                    komunikasi yang terintegrasi
-                  </li>
-                  <li className="text-gray-800">
-                    Meningkatkan kualitas sumber daya manusia bidang teknologi
-                    informasi dan komunikasi
-                  </li>
-                  <li className="text-gray-800">
-                    Meningkatkan pelayanan informasi publik yang akurat dan
-                    terpercaya
-                  </li>
-                  <li className="text-gray-800">
-                    Meningkatkan kualitas pelayanan komunikasi dan informatika
-                    yang profesional
-                  </li>
-                  <li className="text-gray-800">
-                    Meningkatkan kerjasama dan koordinasi dengan stakeholder
-                    dalam pengembangan teknologi informasi dan komunikasi
-                  </li>
+                  {data.misi.map((item, idx) => (
+                    <li key={idx} className="text-gray-800">
+                      {item}
+                    </li>
+                  ))}
                 </ol>
               </div>
             </div>
@@ -58,23 +76,11 @@ const VisiMisi = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Tujuan</h2>
             <div className="bg-white p-6 rounded-lg border border-gray-200">
               <ol className="list-decimal list-inside space-y-4">
-                <li className="text-gray-800">
-                  Mewujudkan infrastruktur TIK yang handal dan terintegrasi
-                </li>
-                <li className="text-gray-800">
-                  Mewujudkan SDM yang kompeten di bidang TIK
-                </li>
-                <li className="text-gray-800">
-                  Mewujudkan sistem informasi yang akurat dan terpercaya
-                </li>
-                <li className="text-gray-800">
-                  Mewujudkan pelayanan komunikasi dan informatika yang
-                  profesional
-                </li>
-                <li className="text-gray-800">
-                  Mewujudkan kerja sama yang sinergis dengan stakeholder dalam
-                  pengembangan TIK
-                </li>
+                {data.tujuan.map((item, idx) => (
+                  <li key={idx} className="text-gray-800">
+                    {item}
+                  </li>
+                ))}
               </ol>
             </div>
           </div>

@@ -1,8 +1,8 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import SecondaryPageTemplate from "../ui/PageLayout";
 import { User } from "lucide-react";
+import axios from "axios";
 
-// --- Komponen Kartu Profil ---
 const PersonCard = ({ foto, nama, jabatan, size = "md", highlight = false }) => {
   const sizeClasses = {
     lg: "w-44 h-44",
@@ -40,7 +40,6 @@ const PersonCard = ({ foto, nama, jabatan, size = "md", highlight = false }) => 
   );
 };
 
-// --- Komponen Judul Seksi ---
 const SectionTitle = ({ title, subtitle }) => (
   <div className="mb-12 text-center">
     <h2 className="mb-2 text-3xl font-bold text-gray-900">{title}</h2>
@@ -52,60 +51,52 @@ const SectionTitle = ({ title, subtitle }) => (
 );
 
 export default function Struktur() {
+  const [strukturData, setStrukturData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const breadcrumb = [
     { label: "Beranda", link: "/" },
     { label: "Struktur Organisasi" },
   ];
 
-  const strukturData = {
-    kepalaDinas: {
-      nama: "Rudiyana S.STP.M.Sc",
-      jabatan: "Kepala Dinas Komunikasi dan Informatika",
-      foto: "src/assets/struktural/rudiyana.webp",
-    },
-    sekretariat: {
-      nama: "Oki Tri Fasiasta Nurmala Alam S.STP",
-      jabatan: "Sekretaris Dinas",
-      foto: "src/assets/struktural/oki.webp",
-    },
-    bidang: [
-      { 
-        nama: "Junenti Kolbert Nadeak, ST. ME", 
-        jabatan: "Kepala Bidang APTIKA", 
-        foto: "src/assets/struktural/junenti.webp" 
-      },
-      { 
-        nama: "Dian Intannia Lesmana S.Sos. ME", 
-        jabatan: "Kepala Bidang Informasi dan Komunikasi Publik", 
-        foto: "src/assets/struktural/dian.webp" 
-      },
-      { 
-        nama: "Arofa Abdilla Rahman ST.MT", 
-        jabatan: "Kepala Bidang Persandian dan Keamanan Informasi", 
-        foto: "src/assets/struktural/arofa.webp" 
-      },
-      { 
-        nama: "Tosan Wiar Ramadhani, S.Kom., M.TI", 
-        jabatan: "Kepala Bidang Statistik Sektoral", 
-        foto: "src/assets/struktural/tosan.webp" 
-      },
-    ],
-    subBagian: [
-      { 
-        nama: "Susilawaty Syariefah, S.Sos. MA", 
-        jabatan: "Kasubag Umum dan Kepegawaian", 
-        foto: "src/assets/struktural/susi.webp" 
-      },
-    ],
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/statis-pages/struktur-organisasi");
+        setStrukturData(response.data.konten);
+      } catch (error) {
+        console.error("Error fetching struktur:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <SecondaryPageTemplate title="Struktur Organisasi" breadcrumb={breadcrumb}>
+        <div className="text-center py-12">Memuat data...</div>
+      </SecondaryPageTemplate>
+    );
+  }
+
+  if (!strukturData) {
+    return (
+      <SecondaryPageTemplate title="Struktur Organisasi" breadcrumb={breadcrumb}>
+        <div className="text-center py-12 text-red-600">Data tidak ditemukan</div>
+      </SecondaryPageTemplate>
+    );
+  }
 
   return (
     <SecondaryPageTemplate title="Struktur Organisasi" breadcrumb={breadcrumb}>
       <div className="space-y-20">
-         <SectionTitle 
-            title="Kepala Dinas" 
-            subtitle="Pemimpin tertinggi di Dinas Komunikasi dan Informatika"
-          />
+        <SectionTitle 
+          title="Kepala Dinas" 
+          subtitle="Pemimpin tertinggi di Dinas Komunikasi dan Informatika"
+        />
+        
         {/* Kepala Dinas */}
         <section className="flex justify-center py-8">
           <PersonCard
@@ -157,7 +148,6 @@ export default function Struktur() {
             ))}
           </div>
         </section>
-
       </div>
     </SecondaryPageTemplate>
   );

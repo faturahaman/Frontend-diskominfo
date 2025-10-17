@@ -66,13 +66,12 @@ export default function HeroSectionProfessional() {
       <div className="relative z-10 w-full px-4 pt-20 pb-12 mx-auto max-w-7xl sm:pt-24 sm:pb-16 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-8 text-center sm:mb-12">
-          <div className="inline-flex items-center px-3 py-1.5 mb-4 space-x-2 border rounded-full border-cyan-200 bg-cyan-50 sm:px-4 sm:py-2 sm:mb-6">
+          {/* <div className="inline-flex items-center px-3 py-1.5 mb-4 space-x-2 border rounded-full border-cyan-200 bg-cyan-50 sm:px-4 sm:py-2 sm:mb-6">
             <span className="text-xs font-medium text-cyan-700 sm:text-sm">
               Selamat Datang di Website Resmi
             </span>
-          </div>
-
-          <h1 className="px-2 mb-3 text-3xl font-bold leading-tight text-gray-900 sm:mb-4 sm:text-4xl lg:text-5xl xl:text-6xl">
+          </div> */}
+          <h1 className="px-2  mb-3 text-3xl font-bold leading-tight text-gray-900 sm:mb-4 sm:text-4xl lg:text-5xl xl:text-6xl">
             Dinas Komunikasi & Informatika Kota Bogor
           </h1>
 
@@ -105,10 +104,12 @@ export default function HeroSectionProfessional() {
         </div>
 
         {/* Carousel Section */}
-        <div className="relative mb-8 sm:mb-12">
+        <div className="relative mb-8 sm:mb-12 -mt-6 sm:-mt-8">
+
           {isLoading ? (
             <div className="w-full pb-8 min-h-[280px] sm:min-h-[350px] md:min-h-[420px] flex items-center justify-center">
-              <div className="w-[90vw] sm:w-[85vw] md:w-[70vw] lg:w-[750px] aspect-video bg-gray-200 rounded-xl sm:rounded-2xl animate-pulse flex items-center justify-center">
+              <div className="!w-[80vw] sm:!w-[75vw] md:!w-[60vw] lg:!w-[680px]"
+>
                 <svg
                   className="w-10 h-10 text-gray-400 animate-spin sm:w-12 sm:h-12"
                   fill="none"

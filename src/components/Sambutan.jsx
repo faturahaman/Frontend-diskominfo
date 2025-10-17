@@ -21,29 +21,7 @@ export default function SambutanRedesign() {
           transition={{ duration: 0.5 }}
           className="relative p-8 mx-auto bg-white border border-gray-200 shadow-md rounded-2xl lg:p-12"
         >
-        <div className="mb-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center px-4 py-1 mb-3 text-sm font-medium rounded-full bg-cyan-100 text-cyan-800"
-          >
-            Pesan dari Pimpinan
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
-            className="text-3xl font-extrabold tracking-tight text-cyan-900 sm:text-4xl"
-          >
-            Sambutan Kepala Dinas
-          </motion.h1>
-
-          <p className="mt-2 text-sm text-gray-600">
-            Dinas Komunikasi dan Informatika Kota Bogor
-          </p>
-        </div>
+      
           <div className="grid items-center gap-10 lg:grid-cols-12">
             {/* Foto */}
             <motion.div
@@ -53,11 +31,12 @@ export default function SambutanRedesign() {
               className="flex justify-center lg:justify-start lg:col-span-4"
             >
               <div className="p-4 text-center transition-all duration-300 bg-white border shadow-sm hover:shadow-md rounded-xl">
-                <img
-                  src="/rudiyana.jpg"
-                  alt="Kepala Dinas Rudiyana"
-                  className="object-cover mx-auto mb-4 border-2 rounded-lg shadow-sm w-44 h-44 border-cyan-100"
-                />
+               <img
+  src="/rudiyana.jpg"
+  alt="Kepala Dinas Rudiyana"
+  className="object-cover object-top mx-auto mb-4 border-2 rounded-lg shadow-sm w-48 h-64 border-cyan-100"
+/>
+
                 <h2 className="text-base font-semibold text-cyan-900">
                   Rudiyana, S.STP., M.Sc
                 </h2>

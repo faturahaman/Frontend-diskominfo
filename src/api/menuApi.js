@@ -40,7 +40,7 @@ export const searchNews = (query) => {
 };
 
 /**
- * [BARU] Mengambil daftar data konten, bisa difilter berdasarkan menu_id.
+ *  Mengambil daftar data konten, bisa difilter berdasarkan menu_id.
  * Contoh: /api/pages?menu_id=1
  */
 export const getPageContent = (menuId) => {
@@ -50,7 +50,7 @@ export const getPageContent = (menuId) => {
 };
 
 /**
- * [BARU] Mengambil data konten berdasarkan nama menu.
+ *  Mengambil data konten berdasarkan nama menu.
  * Contoh: /api/pages?menu_name=Berita
  */
 export const getContentByMenuName = (menuName) => {
@@ -67,7 +67,7 @@ export const getContentByMenuName = (menuName) => {
 };
 
 /**
- * [BARU] Mengambil semua data agenda.
+ *  Mengambil semua data agenda.
  */
 export const getAgendas = () => {
   return fetch(`${API_BASE_URL}/agendas`)
@@ -94,7 +94,7 @@ export const getAlbums = () => {
 };
 
 /**
- * [BARU] Mengambil detail satu album beserta foto-fotonya.
+ *  Mengambil detail satu album beserta foto-fotonya.
  */
 export const getAlbumDetails = (albumId) => {
   return fetch(`${API_BASE_URL}/albums/${albumId}`)

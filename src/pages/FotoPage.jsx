@@ -9,12 +9,9 @@ import "yet-another-react-lightbox/styles.css";
 
 const ITEMS_PER_PAGE = 15;
 
-// ✅ --- PERUBAHAN UTAMA DI SINI --- ✅
-// --- Card Foto (Dengan Judul, Tanggal, dan Deskripsi) ---
-// --- Card Foto (Dengan Judul, Tanggal, dan Deskripsi) ---
+
 const PhotoCard = ({ photo, onClick }) => {
-  // ✅ PERUBAHAN HANYA DI FUNGSI INI
-  // Mengubah format tanggal menjadi DD/MM/YYYY
+
   const formatDate = (dateString) => {
     if (!dateString) return "Tanggal tidak tersedia";
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -26,7 +23,6 @@ const PhotoCard = ({ photo, onClick }) => {
       className="flex flex-col overflow-hidden transition-shadow duration-300 bg-white rounded-lg shadow-md cursor-pointer group hover:shadow-xl"
       onClick={onClick}
     >
-      {/* 1. Bagian Gambar */}
       <div className="relative overflow-hidden aspect-square">
         <img
           src={photo.file_url}
@@ -38,14 +34,12 @@ const PhotoCard = ({ photo, onClick }) => {
         </div>
       </div>
 
-      {/* 2. Bagian Konten Teks di Bawah Gambar */}
       <div className="flex flex-col flex-grow p-4">
         <h3 className="font-bold text-gray-800 truncate text-md group-hover:text-cyan-600">
           {photo.judul || "Tanpa Judul"}
         </h3>
         <div className="flex items-center mt-2 text-xs text-gray-500">
           <Calendar className="inline-block w-4 h-4 mr-2" />
-          {/* Hasilnya akan menjadi: 13/10/2025 */}
           <span>{formatDate(photo.created_at)}</span>
         </div>
       </div>
@@ -53,7 +47,6 @@ const PhotoCard = ({ photo, onClick }) => {
   );
 };
 
-// --- Komponen Halaman Utama (Tidak ada perubahan logika, hanya memakai PhotoCard baru) ---
 const PhotoPage = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);

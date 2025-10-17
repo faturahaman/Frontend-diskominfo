@@ -66,9 +66,9 @@ export default function TentangSection() {
             </div>
 
             <p className="mt-2 text-lg text-slate-600">
-              Badan pemerintah yang bertugas membantu kepala daerah dalam urusan
-              pemerintahan di bidang komunikasi, informatika, statistik, dan
-              persandian.
+          Instansi pemerintah yang bertugas membantu kepala daerah dalam urusan 
+          pemerintahan di bidang komunikasi, informatika, statistik, dan persandian.
+
             </p>
             <Link
               to="/profil"

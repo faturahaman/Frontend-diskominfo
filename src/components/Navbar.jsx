@@ -5,7 +5,7 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { getMenus } from "../api/menuApi";
 
 const logoColor = "/LOGO BIRU.webp";
-const logoBogor = "/kotabogor.webp";
+const logoBogor = "/images(2).webp";
 
 export default function Navbar() {
   const [menuData, setMenuData] = useState([]);

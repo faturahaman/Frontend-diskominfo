@@ -4,9 +4,6 @@ import AccessibilityWidget from "./ui/AccessibilityWidget";
 import FloatingIconBar from "./components/FloatinIcons";
 import { BrowserRouter} from 'react-router-dom';
 
-// =================================================================
-// 1. KEMBALIKAN SEMUA IMPORT HALAMAN STATIS ANDA
-// =================================================================
 import HomePage from "./pages/home";
 import VisiMisi from "./pages/VisiMisi";
 import Sejarah from "./pages/Sejarah";
@@ -21,8 +18,8 @@ import CalendarPage from "./pages/AgendaPage";
 import SambutanFull from "./pages/SambutanFull";
 import Kontak from "./pages/Kontak";
 import DokumenPage from "./pages/DokumenPage";
-import NotFound from "./pages/NotFound"; // Pastikan Anda punya komponen 404
-import GalleryPage from './pages/GaleriPage'; // Asumsi file ada di src/pages/
+import NotFound from "./pages/NotFound";
+import GalleryPage from './pages/GaleriPage'; 
 import DetailGalleryPage from './pages/DetailGaleriPage';
 import ProfilePage from './pages/Profil';
 import DetailAlbumPage from './pages/DetailAlbumPage';

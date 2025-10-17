@@ -18,8 +18,6 @@ const Calendar = ({
   const dates = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const leadingBlanks = Array.from({ length: firstDay }, (_, i) => <div key={`blank-${i}`} />);
 
-  // --- [PERBAIKAN UTAMA DI SINI] ---
-  // Fungsi ini sekarang menggunakan metode yang aman dari timezone
   const hasAgendaOnDate = (date) => {
     // Membuat string YYYY-MM-DD secara manual tanpa konversi
     const year = date.getFullYear();
@@ -27,10 +25,8 @@ const Calendar = ({
     const day = String(date.getDate()).padStart(2, '0');
     const dateString = `${year}-${month}-${day}`;
 
-    // Mencocokkan dengan data dari API
     return agendaData.some(agenda => agenda.tanggal && agenda.tanggal.startsWith(dateString));
   };
-  // --- Akhir Perbaikan ---
 
   return (
     <div className="p-6 w-[80%] bg-white border border-gray-200 shadow-xl lg:col-span-2 rounded-2xl">
